@@ -1445,7 +1445,12 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
             const searchTerm = artist + ' ' + title;
             const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
             try {
-                const res = await fetchWithTimeout(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=music&entity=song&limit=50`, {}, SEARCH_REQUEST_TIMEOUT_MS);
+                // iTunes-Suche über Server-Proxy (umgeht CORS-Probleme auf Mobile)
+                const res = await fetchWithTimeout('/api/itunes-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ term: searchTerm, limit: 50 })
+                }, SEARCH_REQUEST_TIMEOUT_MS);
                 const data = await res.json();
 
                 if (debug) {

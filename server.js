@@ -532,6 +532,28 @@ Genau ${numCandidates} Einträge in "songs". Jeder Eintrag muss "artist", "song"
         return;
       }
 
+      // iTunes-Suche als Proxy (umgeht CORS-Probleme auf Mobile)
+      if (req.url === '/api/itunes-search') {
+        const { term, limit } = data;
+        if (!term) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'term fehlt' }));
+          return;
+        }
+        try {
+          const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=${limit || 50}`;
+          const itunesRes = await fetch(itunesUrl);
+          const itunesData = await itunesRes.json();
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(itunesData));
+        } catch (e) {
+          console.error('iTunes-Proxy Fehler:', e);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: e.message || 'iTunes-Fehler' }));
+        }
+        return;
+      }
+
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Not found' }));
     } catch (e) {
