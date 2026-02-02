@@ -1409,7 +1409,7 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                     previewUrl: t.previewUrl || null
                 };
             } catch (e) {
-                console.error('searchSpotifyForOriginal:', e);
+                console.error('searchSpotifyForOriginal Fehler:', e.message || e);
                 return null;
             }
         }
@@ -1679,7 +1679,29 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 statusEl.classList.remove('status-loading', 'fade-in');
             }
         }
-        /** Debug: In der Konsole `window.DEBUG_SUGGEST = true` setzen, dann „Spiel starten“ – Request/Response erscheinen in der Konsole. */
+        /** Debug-Modus: ?debug=1 an URL anhängen für sichtbare Fehleranzeige */
+        const DEBUG_MODE = new URLSearchParams(window.location.search).get('debug') === '1';
+        if (DEBUG_MODE) {
+            window.DEBUG_SUGGEST = true;
+            const debugBox = document.createElement('div');
+            debugBox.id = 'debugBox';
+            debugBox.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow:auto;background:#111;color:#0f0;font-family:monospace;font-size:12px;padding:10px;z-index:9999;';
+            document.body.appendChild(debugBox);
+            const origConsole = { log: console.log, error: console.error, warn: console.warn };
+            const addDebug = (type, args) => {
+                const line = document.createElement('div');
+                line.style.color = type === 'error' ? '#f66' : type === 'warn' ? '#ff0' : '#0f0';
+                line.textContent = `[${type}] ${Array.from(args).map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')}`;
+                debugBox.appendChild(line);
+                debugBox.scrollTop = debugBox.scrollHeight;
+            };
+            console.log = (...args) => { origConsole.log(...args); addDebug('log', args); };
+            console.error = (...args) => { origConsole.error(...args); addDebug('error', args); };
+            console.warn = (...args) => { origConsole.warn(...args); addDebug('warn', args); };
+            window.onerror = (msg, src, line, col, err) => addDebug('error', [`${msg} at ${src}:${line}:${col}`]);
+            console.log('Debug-Modus aktiv');
+        }
+        /** Debug: In der Konsole `window.DEBUG_SUGGEST = true` setzen, dann „Spiel starten" – Request/Response erscheinen in der Konsole. */
         /** Holt eine Liste von Song-Vorschlägen von der API (Kuratoren-Prompt). Gibt Array von { artist, song } oder []. */
         async function fetchSuggestSongList(genreNames, difficulty, yearMinVal, yearMaxVal, count = 12) {
             const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
@@ -2092,6 +2114,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         }
 
         async function loadNewSong(waitForFirstExplanation = false) {
+            if (DEBUG_MODE) console.log('loadNewSong gestartet, waitForFirstExplanation:', waitForFirstExplanation);
             guessSubmitted = false;
             currentSong = null;
             songInfoPromise = null;
