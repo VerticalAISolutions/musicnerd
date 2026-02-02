@@ -420,14 +420,22 @@
         @keyframes play-loading-spin-head {
             to { transform: rotate(270deg); }
         }
-        /* Auf Mobil: Spinner langsamer (2.5s), damit er dreht ohne zu hängen */
+        /* Auf Mobil: Einfacher pulsierender Kreis statt komplexem Spinner */
         @media (max-width: 768px), (hover: none) {
-            .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail {
-                animation-duration: 2.5s;
+            .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail,
+            .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc,
+            .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
+                display: none !important;
             }
-            .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
-                animation-duration: 2.5s;
+            .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
+                stroke-width: 3;
+                opacity: 1;
+                animation: pulse-ring 1.5s ease-in-out infinite;
             }
+        }
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 0.3; stroke-width: 2; }
+            50% { opacity: 1; stroke-width: 4; }
         }
         .play-btn {
             position: relative;
