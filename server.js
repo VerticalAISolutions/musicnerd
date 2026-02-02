@@ -52,7 +52,12 @@ function serveStatic(req, res) {
           res.end('Not Found');
           return;
         }
-        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.writeHead(200, {
+          'Content-Type': 'text/html',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        });
         res.end(data);
       });
       return;
@@ -67,7 +72,14 @@ function serveStatic(req, res) {
         res.end('Server Error');
         return;
       }
-      res.writeHead(200, { 'Content-Type': contentType });
+      // No-Cache für HTML-Dateien
+      const headers = { 'Content-Type': contentType };
+      if (ext === '.html') {
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        headers['Pragma'] = 'no-cache';
+        headers['Expires'] = '0';
+      }
+      res.writeHead(200, headers);
       res.end(data);
     });
   });
