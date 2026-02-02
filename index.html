@@ -1653,46 +1653,48 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
             'Gleich geht\'s los.'
         ];
         const SENTENCE_PAUSE_MS = 2000;
-        function isMobileOrReducedMotion() {
-            return typeof window !== 'undefined' && (
-                window.matchMedia('(max-width: 768px)').matches ||
-                window.matchMedia('(hover: none)').matches ||
-                window.matchMedia('(prefers-reduced-motion: reduce)').matches
-            );
-        }
-        /** isFirstLoad: true = lange „Am Anfang dauert es…“-Reihe, false = nur „Weiter geht's“. Auf Mobil nur statische Meldung, keine Animation. */
+
+        /** Einfache Ladeanimation die auf allen Geräten funktioniert */
         function startLoadingStatus(statusEl, isFirstLoad = true) {
             if (!statusEl) return null;
-            const isMobile = isMobileOrReducedMotion();
             statusEl.classList.add('status-loading');
-            const handle = { intervalId: null };
+            const handle = { intervalId: null, dotIntervalId: null };
+
             if (!isFirstLoad) {
                 statusEl.textContent = 'Weiter geht\'s';
-                statusEl.classList.add('fade-in');
                 return handle;
             }
-            statusEl.textContent = LOADING_MESSAGES[0];
-            statusEl.classList.add('fade-in');
-            let index = 0;
+
+            let msgIndex = 0;
+            let dots = 0;
+            const baseText = LOADING_MESSAGES[msgIndex];
+            statusEl.textContent = baseText;
+
+            // Pulsierende Punkte alle 400ms
+            handle.dotIntervalId = setInterval(() => {
+                if (!statusEl.classList.contains('status-loading')) return;
+                dots = (dots + 1) % 4;
+                const currentBase = LOADING_MESSAGES[msgIndex] || LOADING_MESSAGES[0];
+                statusEl.textContent = currentBase + '.'.repeat(dots);
+            }, 400);
+
+            // Text wechseln alle 2 Sekunden
             handle.intervalId = setInterval(() => {
                 if (!statusEl.classList.contains('status-loading')) return;
-                index += 1;
-                if (index >= LOADING_MESSAGES.length) {
-                    clearInterval(handle.intervalId);
-                    handle.intervalId = null;
-                    return;
+                msgIndex += 1;
+                if (msgIndex >= LOADING_MESSAGES.length) {
+                    msgIndex = 0; // Loop zurück zum Anfang
                 }
-                statusEl.classList.remove('fade-in');
-                statusEl.textContent = LOADING_MESSAGES[index];
-                // Reflow erzwingen damit Animation auf Mobile neu startet
-                void statusEl.offsetWidth;
-                statusEl.classList.add('fade-in');
+                dots = 0;
+                statusEl.textContent = LOADING_MESSAGES[msgIndex];
             }, SENTENCE_PAUSE_MS);
+
             return handle;
         }
         function stopLoadingStatus(statusEl, handle) {
-            if (handle != null && handle.intervalId != null) {
-                clearInterval(handle.intervalId);
+            if (handle != null) {
+                if (handle.intervalId != null) clearInterval(handle.intervalId);
+                if (handle.dotIntervalId != null) clearInterval(handle.dotIntervalId);
             }
             if (statusEl) {
                 statusEl.classList.remove('status-loading', 'fade-in');
