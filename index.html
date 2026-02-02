@@ -632,6 +632,17 @@
             margin-bottom: 6px;
             border-radius: 8px;
             font-size: 14px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        @media (max-width: 400px) {
+            .player-result-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .player-result-diff {
+                font-size: 13px !important;
+            }
         }
         .player-result-row.perfect {
             background: rgba(135, 241, 255, 0.2);
@@ -2446,7 +2457,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 if (diff === 0) cls = 'perfect';
                 else if (diff <= 5) cls = 'close';
 
-                let diffText = diff === 0 ? 'Perfekt!' : `${diff} Jahr${diff > 1 ? 'e' : ''} daneben! (dein Tipp: ${p.guess})`;
+                const isMobile = window.innerWidth < 400;
+                let diffText = diff === 0 ? 'Perfekt!' :
+                    isMobile ? `${diff} Jahr${diff > 1 ? 'e' : ''} (${p.guess})` :
+                    `${diff} Jahr${diff > 1 ? 'e' : ''} daneben! (dein Tipp: ${p.guess})`;
                 return `
                     <div class="player-result-row ${cls}">
                         <span class="player-result-name">${p.name}</span>
