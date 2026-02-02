@@ -1371,7 +1371,7 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
         }
 
         /** Fetch mit Timeout (vermeidet minutenlanges Warten auf Mobil). */
-        const SEARCH_REQUEST_TIMEOUT_MS = 10000;
+        const SEARCH_REQUEST_TIMEOUT_MS = 30000; // 30 Sekunden für Render Cold Start
         function fetchWithTimeout(url, options, timeoutMs) {
             const t = timeoutMs ?? SEARCH_REQUEST_TIMEOUT_MS;
             const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), t));
@@ -1493,7 +1493,7 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 if (debug) console.log('  ✅ Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
                 return original;
             } catch (e) {
-                console.error('searchItunesForOriginal:', e);
+                console.error('searchItunesForOriginal:', e.name, e.message, e.stack || '');
                 return null;
             }
         }
