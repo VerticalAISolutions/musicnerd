@@ -2269,14 +2269,9 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                         const phrase = shuffledQueries[i];
                         const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
                         if (!originalArtist || !songTitle) continue;
-                        let found = null;
-                        if (isMobileOrReducedMotion()) {
-                            found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
-                            if (!found) found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
-                        } else {
-                            found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
-                            if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
-                        }
+                        // Gleiche Suchstrategie für alle Geräte: Spotify zuerst (über Server), dann iTunes
+                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
+                        if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
                         if (found) {
                             const key = songKey(found.artistName, found.trackName);
                             if (playedSongKeys.has(key)) continue;
