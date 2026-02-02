@@ -1665,6 +1665,8 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 }
                 statusEl.classList.remove('fade-in');
                 statusEl.textContent = LOADING_MESSAGES[index];
+                // Reflow erzwingen damit Animation auf Mobile neu startet
+                void statusEl.offsetWidth;
                 statusEl.classList.add('fade-in');
             }, SENTENCE_PAUSE_MS);
             return handle;
