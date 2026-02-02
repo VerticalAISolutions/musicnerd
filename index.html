@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicNerd</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --electric-aqua: #87F1FF;
+            --icy-aqua: #C0F5FA;
+            --old-rose: #BD8B9C;
+            --cherry-rose: #AF125A;
+            --dark-blue: #0f1a2e;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px;
+            background: var(--dark-blue);
+            color: var(--icy-aqua);
+            min-height: 100vh;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--old-rose);
+            opacity: 0.7;
+        }
+        .footer a {
+            color: var(--old-rose);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: var(--icy-aqua);
+            opacity: 1;
+        }
+
+        /* Intro Screen */
+        .intro-screen {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .intro-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--electric-aqua);
+            margin-bottom: 35px;
+        }
+        .intro-lead {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--icy-aqua);
+            margin-bottom: 35px;
+            text-align: center;
+        }
+        .intro-section {
+            text-align: left;
+            margin-bottom: 28px;
+        }
+        .intro-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--electric-aqua);
+            margin-bottom: 8px;
+        }
+        .intro-section-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--old-rose);
+        }
+        .intro-ready {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--icy-aqua);
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+        .intro-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .intro-btn:hover {
+            background: #c91a6a;
+        }
+        .setup-nav {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .setup-nav .back-btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: transparent;
+            color: var(--old-rose);
+            border: 2px solid var(--old-rose);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .setup-nav .back-btn:hover {
+            border-color: var(--icy-aqua);
+            color: var(--icy-aqua);
+        }
+        .setup-nav .next-btn {
+            flex: 2;
+            padding: 14px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .setup-nav .next-btn:hover {
+            background: #c91a6a;
+        }
+        h1 {
+            color: var(--electric-aqua);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        .container {
+            width: 100%;
+        }
+
+        /* Setup Screen */
+        .setup-screen {
+            width: 100%;
+        }
+        .setup-section {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .setup-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--electric-aqua);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Player Setup */
+        .player-count {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .player-count-btn {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--old-rose);
+            background: transparent;
+            color: var(--icy-aqua);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .player-count-btn.selected {
+            background: var(--cherry-rose);
+            border-color: var(--cherry-rose);
+            color: white;
+        }
+        .player-count-btn:hover {
+            border-color: var(--electric-aqua);
+        }
+        .player-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .player-name-input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(192, 245, 250, 0.1);
+            color: var(--icy-aqua);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+        }
+        .player-name-input::placeholder {
+            color: var(--old-rose);
+            opacity: 0.6;
+        }
+        .player-name-input:focus {
+            outline: 2px solid var(--electric-aqua);
+        }
+
+        /* Genre Grid */
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .genre-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(192, 245, 250, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .genre-item:hover {
+            background: rgba(192, 245, 250, 0.2);
+        }
+        .genre-item.selected {
+            background: rgba(175, 18, 90, 0.4);
+        }
+        .genre-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--old-rose);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .genre-item.selected .genre-checkbox {
+            background: var(--cherry-rose);
+            border-color: var(--cherry-rose);
+        }
+        .genre-checkbox::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 2px;
+            opacity: 0;
+        }
+        .genre-item.selected .genre-checkbox::after {
+            opacity: 1;
+        }
+        .genre-name {
+            font-size: 13px;
+            color: var(--icy-aqua);
+        }
+
+        /* Year Range Slider */
+        .year-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--electric-aqua);
+        }
+        .range-slider {
+            position: relative;
+            height: 36px;
+        }
+        .range-slider input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: transparent;
+            pointer-events: none;
+            -webkit-appearance: none;
+        }
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--cherry-rose);
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            border: 3px solid var(--icy-aqua);
+        }
+        .slider-track {
+            position: absolute;
+            top: 8px;
+            width: 100%;
+            height: 6px;
+            background: rgba(189, 139, 156, 0.3);
+            border-radius: 3px;
+        }
+        .slider-range {
+            position: absolute;
+            top: 8px;
+            height: 6px;
+            background: var(--cherry-rose);
+            border-radius: 3px;
+        }
+
+        /* Buttons */
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .start-btn:hover {
+            background: #c91a6a;
+        }
+        .start-btn:disabled {
+            background: var(--old-rose);
+            cursor: not-allowed;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+        .game-screen.visible {
+            display: block;
+        }
+        .play-btn-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 15px auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .play-countdown-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        /* Ein Icon: nur Lade-Ring ODER Ring + Dreieck (Play-Button) */
+        .play-countdown-bg {
+            stroke: var(--electric-aqua);
+            stroke-width: 3;
+            opacity: 0.4;
+        }
+        .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
+            stroke-width: 1;
+            opacity: 0.22;
+        }
+        .play-loading-tail {
+            stroke: var(--electric-aqua);
+            opacity: 0;
+            transform: rotate(-180deg);
+            transform-origin: 50px 50px;
+            stroke-linecap: round;
+        }
+        .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail {
+            opacity: 0.45;
+            animation: play-loading-spin 1.4s linear infinite;
+        }
+        .play-loading-arc {
+            stroke: var(--electric-aqua);
+            opacity: 0;
+            transform: rotate(-90deg);
+            transform-origin: 50px 50px;
+        }
+        .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
+            opacity: 1;
+            animation: play-loading-spin 1.4s linear infinite;
+        }
+        .play-countdown-progress {
+            stroke: var(--electric-aqua);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.2s linear;
+            visibility: hidden;
+        }
+        .play-btn-wrapper:has(.play-btn.playing) .play-countdown-progress {
+            visibility: visible;
+        }
+        .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
+            visibility: hidden;
+        }
+        @keyframes play-loading-spin {
+            to { transform: rotate(180deg); }
+        }
+        .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
+            animation-name: play-loading-spin-head;
+        }
+        @keyframes play-loading-spin-head {
+            to { transform: rotate(270deg); }
+        }
+        /* Auf Mobil: Spinner langsamer (2.5s), damit er dreht ohne zu hängen */
+        @media (max-width: 768px), (hover: none) {
+            .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail {
+                animation-duration: 2.5s;
+            }
+            .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
+                animation-duration: 2.5s;
+            }
+        }
+        .play-btn {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0;
+            background: none;
+            border: none;
+            box-shadow: none;
+            cursor: pointer;
+            font-size: 40px;
+            color: var(--electric-aqua);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s ease, opacity 0.25s ease;
+        }
+        .play-btn .play-btn-icon {
+            display: inline-block;
+            transform: translateX(2px) rotate(-0.5deg);
+        }
+        .play-btn:hover:not(:disabled) {
+            color: var(--icy-aqua);
+        }
+        .play-btn:active:not(:disabled) {
+            opacity: 0.9;
+        }
+        .play-btn:disabled {
+            cursor: not-allowed;
+            color: rgba(192, 245, 250, 0.4);
+        }
+        .play-btn.loading .play-btn-icon {
+            opacity: 0;
+        }
+        .play-btn .play-btn-countdown { display: none !important; }
+        .play-btn.playing .play-btn-icon { display: inline !important; }
+        .play-btn.playing {
+            color: var(--electric-aqua);
+        }
+        .play-btn:not(.loading) .play-btn-icon {
+            transition: opacity 0.25s ease;
+        }
+        .status {
+            font-size: 26px;
+            font-weight: 600;
+            text-align: center;
+            min-height: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--electric-aqua);
+            margin-bottom: 20px;
+        }
+        .status.status-loading {
+            /* gleicher Stil wie .status, nur fade-in bei Wechsel */
+        }
+        .status.status-loading.fade-in {
+            animation: statusFadeIn 0.6s ease-out;
+        }
+        @keyframes statusFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Auf Mobilgeräten: Animation erlauben, aber will-change begrenzen */
+        @media (max-width: 768px), (hover: none) {
+            .status {
+                contain: layout style;
+            }
+            .status.status-loading.fade-in {
+                animation: statusFadeIn 0.6s ease-out;
+                opacity: 1;
+                will-change: opacity;
+            }
+        }
+
+        /* Player Guess Section */
+        .players-guess-section {
+            display: none;
+        }
+        .players-guess-section.visible {
+            display: block;
+        }
+        .player-guess-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(192, 245, 250, 0.08);
+            border-radius: 10px;
+        }
+        .player-guess-name {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--icy-aqua);
+            text-align: left;
+        }
+        .player-guess-input {
+            width: 90px;
+            padding: 10px;
+            font-size: 20px;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            background: rgba(192, 245, 250, 0.15);
+            color: var(--electric-aqua);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .player-guess-input:focus {
+            outline: 2px solid var(--electric-aqua);
+        }
+        .player-guess-input::placeholder {
+            color: var(--old-rose);
+            opacity: 0.5;
+            font-size: 14px;
+        }
+        .player-guess-input.submitted {
+            background: rgba(175, 18, 90, 0.3);
+        }
+        .submit-all-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .submit-all-btn:hover {
+            background: #c91a6a;
+        }
+        .submit-all-btn:disabled {
+            background: var(--old-rose);
+            cursor: not-allowed;
+        }
+
+        /* Result */
+        .result {
+            position: relative;
+            margin-top: 20px;
+            padding: 20px;
+            padding-bottom: 60px;
+            background: rgba(192, 245, 250, 0.1);
+            border-radius: 16px;
+            display: none;
+        }
+        .result.visible {
+            display: block;
+        }
+        .result-year {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--electric-aqua);
+        }
+        .result-year-note {
+            font-size: 14px;
+            color: var(--old-rose);
+            opacity: 0.9;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+        .result-song-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--icy-aqua);
+            margin: 8px 0 4px 0;
+            line-height: 1.3;
+        }
+        .result-artist-name {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--old-rose);
+            margin: 0 0 16px 0;
+            line-height: 1.3;
+        }
+        .result-song-info {
+            text-align: left;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--icy-aqua);
+            margin: 16px 0;
+            padding: 14px;
+            background: rgba(192, 245, 250, 0.08);
+            border-radius: 12px;
+        }
+        .player-results {
+            margin-top: 15px;
+            text-align: left;
+        }
+        .player-result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .player-result-row.perfect {
+            background: rgba(135, 241, 255, 0.2);
+        }
+        .player-result-row.close {
+            background: rgba(189, 139, 156, 0.2);
+        }
+        .player-result-row.far {
+            background: rgba(175, 18, 90, 0.2);
+        }
+        .player-result-name {
+            font-weight: 600;
+            color: var(--icy-aqua);
+        }
+        .player-result-diff {
+            color: var(--icy-aqua);
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .player-result-row.perfect .player-result-diff {
+            color: var(--electric-aqua);
+        }
+
+        /* Streaming Links */
+        .streaming-links {
+            margin-top: 15px;
+            margin-bottom: 36px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(189, 139, 156, 0.3);
+        }
+        .streaming-label {
+            font-size: 11px;
+            color: var(--old-rose);
+            margin-bottom: 18px;
+        }
+        .streaming-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .stream-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .stream-link.spotify { background: #1DB954; color: white; }
+        .stream-link.apple { background: #fc3c44; color: white; }
+        .stream-link.deezer { background: #a238ff; color: white; }
+        .stream-link.tidal { background: #000; color: white; }
+
+        .result-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 36px;
+            flex-wrap: wrap;
+        }
+        .result-btn {
+            padding: 12px 25px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: var(--old-rose);
+            color: var(--dark-blue);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .result-btn:hover {
+            background: var(--icy-aqua);
+        }
+        .settings-btn {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            padding: 12px;
+            font-size: 52px;
+            line-height: 1;
+            background: none;
+            color: var(--old-rose);
+            border: none;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .settings-btn:hover {
+            opacity: 1;
+            color: var(--icy-aqua);
+        }
+
+        /* Difficulty Selection */
+        .difficulty-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .difficulty-btn {
+            flex: 1;
+            padding: 12px 8px;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            border: 2px solid var(--old-rose);
+            background: transparent;
+            color: var(--icy-aqua);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .difficulty-btn.selected {
+            background: var(--cherry-rose);
+            border-color: var(--cherry-rose);
+            color: white;
+        }
+        .difficulty-btn:hover {
+            border-color: var(--electric-aqua);
+        }
+        .standings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 26, 46, 0.95);
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .standings-overlay.visible {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .standings-content {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .standings-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--electric-aqua);
+            margin-bottom: 10px;
+        }
+        .standings-round {
+            font-size: 14px;
+            color: var(--old-rose);
+            margin-bottom: 20px;
+        }
+        .standings-list {
+            text-align: left;
+        }
+        .standings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            background: rgba(192, 245, 250, 0.1);
+        }
+        .standings-row:first-child {
+            background: rgba(135, 241, 255, 0.2);
+        }
+        .standings-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--old-rose);
+            width: 30px;
+        }
+        .standings-row:first-child .standings-rank {
+            color: var(--electric-aqua);
+        }
+        .standings-name {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--icy-aqua);
+        }
+        .standings-score {
+            font-size: 16px;
+            color: var(--old-rose);
+        }
+        .standings-score span {
+            font-weight: 700;
+            color: var(--electric-aqua);
+        }
+        .close-standings-btn {
+            margin-top: 25px;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Genre-Popup (kein Genre ausgewählt) */
+        .genre-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 26, 46, 0.9);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .genre-popup-overlay.visible {
+            display: flex;
+        }
+        .genre-popup-box {
+            background: var(--dark-blue);
+            border: 2px solid var(--electric-aqua);
+            border-radius: 16px;
+            padding: 28px 32px;
+            text-align: center;
+            max-width: 320px;
+            box-shadow: 0 8px 32px rgba(135, 241, 255, 0.15);
+        }
+        .genre-popup-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--electric-aqua);
+            margin: 0 0 22px 0;
+        }
+        .genre-popup-btn {
+            padding: 12px 28px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .genre-popup-btn:hover {
+            background: #c91a6a;
+        }
+
+        /* Mobile-first responsive adjustments */
+
+        /* Improve touch targets */
+        .range-slider {
+            height: 44px;
+            padding: 10px 0;
+        }
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            width: 28px;
+            height: 28px;
+        }
+        .range-slider input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            background: var(--cherry-rose);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid var(--icy-aqua);
+        }
+        .slider-track {
+            top: 19px;
+        }
+        .slider-range {
+            top: 19px;
+        }
+
+        /* Prevent zoom on input focus (iOS) */
+        input[type="text"],
+        input[type="number"] {
+            font-size: 16px;
+        }
+
+        /* Better touch feedback */
+        .player-count-btn:active,
+        .genre-item:active,
+        .difficulty-btn:active,
+        .intro-btn:active,
+        .start-btn:active,
+        .result-btn:active,
+        .setup-nav button:active {
+            transform: scale(0.97);
+        }
+
+        /* Small phones (< 360px) */
+        @media (max-width: 359px) {
+            body {
+                padding: 15px;
+                padding-bottom: 55px;
+            }
+            .intro-title {
+                font-size: 28px;
+            }
+            .intro-lead {
+                font-size: 15px;
+            }
+            .intro-section-title {
+                font-size: 17px;
+            }
+            .intro-section-text {
+                font-size: 14px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .genre-name {
+                font-size: 12px;
+            }
+            .player-count-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .play-btn {
+                width: 90px;
+                height: 90px;
+                font-size: 36px;
+            }
+            .result-year {
+                font-size: 36px;
+            }
+        }
+
+        /* Tablets and larger (>= 768px) */
+        @media (min-width: 768px) {
+            body {
+                padding: 30px;
+                padding-bottom: 70px;
+            }
+            .intro-title {
+                font-size: 48px;
+            }
+            .intro-lead {
+                font-size: 20px;
+            }
+            .intro-section-title {
+                font-size: 22px;
+            }
+            h1 {
+                font-size: 32px;
+            }
+            .genre-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .genre-item {
+                padding: 12px 14px;
+            }
+            .genre-name {
+                font-size: 14px;
+            }
+            .play-btn {
+                width: 120px;
+                height: 120px;
+                font-size: 48px;
+            }
+            .player-guess-row {
+                padding: 14px 16px;
+            }
+            .result {
+                padding: 25px;
+                padding-bottom: 65px;
+            }
+            .result-year {
+                font-size: 48px;
+            }
+            .result-song-title {
+                font-size: 24px;
+            }
+            .result-artist-name {
+                font-size: 20px;
+            }
+            .standings-content {
+                max-width: 450px;
+            }
+        }
+
+        /* Desktop (>= 1024px) */
+        @media (min-width: 1024px) {
+            .genre-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .intro-screen {
+                padding: 50px 0;
+            }
+        }
+
+        /* Landscape mode on phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .intro-screen {
+                padding: 15px 0;
+            }
+            .intro-title {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            .intro-lead {
+                margin-bottom: 20px;
+            }
+            .intro-section {
+                margin-bottom: 15px;
+            }
+            .intro-ready {
+                margin-top: 20px;
+            }
+            .play-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+                margin: 10px 0;
+            }
+            .standings-overlay {
+                padding: 15px;
+            }
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            body {
+                padding-bottom: calc(60px + env(safe-area-inset-bottom));
+            }
+            .footer {
+                padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Intro Screen -->
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-title">MusicNerd</div>
+
+            <div class="intro-lead">
+                Ihr hört gemeinsam einen 30-Sekunden-Ausschnitt eines Songs – ohne Titel, ohne Hinweise.
+            </div>
+
+            <div class="intro-section">
+                <div class="intro-section-title">Schätzt das Jahr.</div>
+                <div class="intro-section-text">Jede*r tippt, wann der Song erschienen ist.<br>Kein Googeln. Nur Gehör, Erfahrung und Gefühl.</div>
+            </div>
+
+            <div class="intro-section">
+                <div class="intro-section-title">Auflösung & Einordnung.</div>
+                <div class="intro-section-text">Nach der Auflösung seht ihr, wer am nächsten dran war – und warum der Song vielleicht täuscht.</div>
+            </div>
+
+            <div class="intro-section">
+                <div class="intro-section-title">Wer gewinnt?</div>
+                <div class="intro-section-text">Am Ende zählt, wer insgesamt die geringste Abweichung hat.</div>
+            </div>
+
+            <div class="intro-ready">Bereit?</div>
+            <button class="intro-btn" onclick="showSetup()">Los geht's!</button>
+        </div>
+
+        <!-- Setup Screen 1: Players -->
+        <div class="setup-screen" id="setupPlayers" style="display: none;">
+            <h1 style="margin-top: 0;">Wer spielt mit?</h1>
+            <div class="setup-section">
+                <label class="setup-label">Anzahl Spieler</label>
+                <div class="player-count" id="playerCount"></div>
+            </div>
+            <div class="setup-section">
+                <label class="setup-label">Namen</label>
+                <div class="player-inputs" id="playerInputs"></div>
+            </div>
+            <div class="setup-nav">
+                <button class="next-btn" onclick="showSetupOptions()">Weiter</button>
+            </div>
+        </div>
+
+        <!-- Setup Screen 2: Options -->
+        <div class="setup-screen" id="setupOptions" style="display: none;">
+            <h1 style="margin-top: 0;">Spieloptionen</h1>
+            <!-- Genres -->
+            <div class="setup-section">
+                <label class="setup-label">Genres</label>
+                <div class="genre-grid" id="genreGrid"></div>
+            </div>
+
+            <!-- Year Range -->
+            <div class="setup-section">
+                <label class="setup-label">Zeitraum</label>
+                <div class="year-display">
+                    <span id="yearMin">1940</span>
+                    <span id="yearMax">2025</span>
+                </div>
+                <div class="range-slider">
+                    <div class="slider-track"></div>
+                    <div class="slider-range" id="sliderRange"></div>
+                    <input type="range" id="rangeMin" min="1940" max="2025" value="1940">
+                    <input type="range" id="rangeMax" min="1940" max="2025" value="2025">
+                </div>
+            </div>
+
+            <!-- Difficulty -->
+            <div class="setup-section">
+                <label class="setup-label">Schwierigkeit</label>
+                <div class="difficulty-buttons" id="difficultyButtons"></div>
+            </div>
+
+            <div class="setup-nav">
+                <button class="back-btn" onclick="showSetupPlayers()">Zurück</button>
+                <button class="next-btn" id="startBtn" onclick="startGame()">Spiel starten</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="play-btn-wrapper" id="playBtnWrapper">
+                <svg class="play-countdown-ring" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle class="play-countdown-bg" cx="50" cy="50" r="47" fill="none" stroke-width="4"/>
+                    <circle class="play-loading-tail" cx="50" cy="50" r="47" fill="none" stroke-width="2" stroke-dasharray="74 221" stroke-linecap="round"/>
+                    <circle class="play-loading-arc" cx="50" cy="50" r="47" fill="none" stroke-width="2.5" stroke-dasharray="28 267" stroke-linecap="round"/>
+                    <circle id="playCountdownRing" class="play-countdown-progress" cx="50" cy="50" r="47" fill="none" stroke-width="3" stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+                </svg>
+                <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><span class="play-btn-icon">▶</span><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
+            </div>
+            <div class="status" id="status">Klicke zum Abspielen</div>
+
+            <div class="players-guess-section" id="playersGuessSection">
+                <div id="playerGuessRows"></div>
+                <button class="submit-all-btn" id="submitAllBtn" onclick="submitAllGuesses()">Alle Tipps abgeben</button>
+            </div>
+
+            <div class="result" id="result">
+                <div class="result-year" id="resultYear"></div>
+                <div class="result-year-note" id="resultYearNote" style="display: none;"></div>
+                <div class="result-song-title" id="resultSongTitle"></div>
+                <div class="result-artist-name" id="resultArtistName"></div>
+                <div class="result-song-info" id="resultSongInfo" style="display: none;">
+                    <div id="songInfoText"></div>
+                </div>
+                <div class="player-results" id="playerResults"></div>
+                <div class="streaming-links">
+                    <div class="streaming-label">Ganzen Song hören:</div>
+                    <div class="streaming-buttons" id="streamingButtons"></div>
+                </div>
+                <div class="result-buttons">
+                    <button class="result-btn" onclick="showStandings()">Zwischenstand</button>
+                    <button class="result-btn" onclick="loadNewSong()">Nächster Song</button>
+                </div>
+                <button class="settings-btn" onclick="backToSetup()" title="Einstellungen">⚙</button>
+            </div>
+
+            <!-- Standings Overlay -->
+            <div class="standings-overlay" id="standingsOverlay">
+                <div class="standings-content">
+                    <div class="standings-title">Zwischenstand</div>
+                    <div class="standings-round" id="standingsRound"></div>
+                    <div class="standings-list" id="standingsList"></div>
+                    <button class="close-standings-btn" onclick="hideStandings()">Weiter spielen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Genre-Popup: außerhalb gameScreen, damit es auf der Setup-Seite sichtbar ist -->
+    <div class="genre-popup-overlay" id="genrePopupOverlay" onclick="if (event.target === this) hideGenrePopup();">
+        <div class="genre-popup-box">
+            <p class="genre-popup-text">Bitte Genre auswählen</p>
+            <button class="genre-popup-btn" type="button" onclick="hideGenrePopup()">OK</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        powered by <a href="https://www.vais.one" target="_blank">Vertical AI Solutions</a>
+    </footer>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        function showSetup() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('setupPlayers').style.display = 'block';
+        }
+
+        function showSetupPlayers() {
+            document.getElementById('setupOptions').style.display = 'none';
+            document.getElementById('setupPlayers').style.display = 'block';
+        }
+
+        function showSetupOptions() {
+            document.getElementById('setupPlayers').style.display = 'none';
+            document.getElementById('setupOptions').style.display = 'block';
+        }
+
+        /* Genre-Metadaten für UI und API. Songlisten (beginner/intermediate/expert) kommen aus fallback-genres/*.js (listsKey). */
+        const genres = [
+            { id: 'rock', name: 'Rock', listsKey: 'genreRockLists' },
+            { id: 'pop', name: 'Pop', listsKey: 'genrePopLists' },
+            { id: 'hiphop', name: 'Hip-Hop', listsKey: 'genreHiphopLists' },
+            { id: 'electronic', name: 'Electronic', listsKey: 'genreElectronicLists' },
+            { id: 'rnb', name: 'R&B / Soul', listsKey: 'genreRnbSoulLists' },
+            { id: 'jazz', name: 'Jazz', listsKey: 'genreJazzLists' },
+            { id: 'metal', name: 'Metal', listsKey: 'genreMetalLists' },
+            { id: 'country', name: 'Country', listsKey: 'genreCountryLists' },
+            { id: 'indie', name: 'Indie', listsKey: 'genreIndieLists' },
+            { id: 'punk', name: 'Punk', listsKey: 'genrePunkLists' },
+            { id: 'klassik', name: 'Klassik', listsKey: 'genreKlassikLists' },
+            { id: 'techno', name: 'Techno', listsKey: 'genreTechnoLists' }
+        ];
+
+        const difficulties = [
+            { id: 'beginner', name: 'Beginner' },
+            { id: 'intermediate', name: 'Intermediate' },
+            { id: 'expert', name: 'Expert' }
+        ];
+
+        /**
+         * API-URLs: Relativ zur aktuellen Domain.
+         * Voraussetzung: Webserver (nginx) leitet /api/* an den Node.js Server (Port 3001) weiter.
+         */
+        const OPENAI_PROXY_URL = '/api/song-info';
+        const OPENAI_SUGGEST_URL = '/api/suggest-song';
+        /** Spotify-Suche über den gleichen Server (Client Credentials); primäre Quelle für Song-Previews. */
+        const SPOTIFY_SEARCH_URL = '/api/spotify-search';
+
+        /** Prompt für KI-generierte Song-Erläuterung (z. B. bei API-Anbindung). */
+        const SONG_INFO_PROMPT = `Erkläre kurz (maximal 3–4 Sätze), warum dieser Song zeitlich so einzuordnen ist.
+Beziehe dich auf konkrete hörbare Merkmale (z. B. Drum-Sound, Synths, Vocal-Stil). Ton: musikbegeisterter Freund.
+Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. Jeder Satz: etwas Hörbares oder Konkretes.`;
+
+        /**
+         * Erzeugt die Song-Info zur Auflösung je nach Schwierigkeitslevel.
+         * Folgt SONG_INFO_PROMPT: konkrete hörbare Merkmale, zwei Epochen-Hinweise, warum falsch datiert, Ton: musikbegeisterter Freund.
+         */
+        function getSongInfoForDifficulty(artistName, trackName, releaseYear, difficulty) {
+            const decade = Math.floor(releaseYear / 10) * 10;
+            const decadeLabel = releaseYear < 2000 ? `${decade}er` : `${decade}`;
+
+            if (difficulty === 'beginner') {
+                return {
+                    label: '',
+                    text: `Der Drum-Sound und der Mix verraten die ${decadeLabel}-Jahre – der Vocal-Stil und das Arrangement passen genau in diese Phase.`
+                };
+            }
+            if (difficulty === 'intermediate') {
+                return {
+                    label: '',
+                    text: `Am Synth-Sound und am Arrangement hört man die ${decadeLabel}-Jahre; der Mix und die Art, wie die Stimme sitzt, sind typisch für die Zeit.`
+                };
+            }
+            if (difficulty === 'expert') {
+                return {
+                    label: '',
+                    text: `Drum-Sound und Wahl der Synths (oder Gitarrenverzerrung) sind zwei klare Anhaltspunkte für die ${decadeLabel}-Jahre – Arrangement und Mix bestätigen das.`
+                };
+            }
+            return null;
+        }
+
+        /** Entfernt Klammer-/Suffix-Varianten für zuverlässige Deduplizierung (z. B. "Queen (UK)" → "queen"). */
+        function normalizeForDedup(str) {
+            const s = (str || '').trim().toLowerCase();
+            return s.replace(/\s*\([^)]*\)\s*$/g, '').replace(/\s*-\s*topic\s*$/i, '').replace(/\s*-\s*[^-|]+$/g, '').trim();
+        }
+        /** Normierter Song-Key für Deduplizierung – gleicher Song trotz "Queen" vs "Queen (UK)" etc. */
+        function songKey(artist, song) {
+            return `${normalizeForDedup(artist)}|${normalizeForDedup(song)}`;
+        }
+        /** Blocklist: Vorschläge mit diesen Substrings (Artist oder Song) werden verworfen – NUR Originale, KEINE Covers. */
+        const BLOCKLIST_ARTIST = [
+            'chant masters', 'vitamin string quartet', 'vitamin string', 'piano guys', 'rockabye baby', 'string quartet',
+            'karaoke', 'tribute band', 'cover band', 'feat.', 'featuring', 'tribute to', ' tribute ', ' cover ', ' karaoke ',
+            'hit crew', 'kids bop', 'kidz bop', 'various artists', 'sounds of', 'lullaby', 'lullabies', 'rendition',
+            'instrumental', 'acoustic version', 'piano version', 'orchestra version', 'reimagined', 'reimagining',
+            'as made famous', 'made famous by', 'in the style of', 'style of ', 'tribute to ', 'cover of ', 'cover by ',
+            'postmodern jukebox', 'scott bradlee', 'smooth jazz', 'easy listening', 'lounge '
+        ];
+        const BLOCKLIST_SONG = ['(feat.', '(remix)', '(remaster)', '(live)', ' feat.', ' featuring', '(cover)', '(tribute)', ' - cover', ' - tribute'];
+        function isOriginalSuggestion(x) {
+            if (!x || !x.artist || !x.song) return false;
+            const a = (x.artist || '').toLowerCase();
+            const t = (x.song || '').toLowerCase();
+            if (BLOCKLIST_ARTIST.some((b) => a.includes(b))) return false;
+            if (BLOCKLIST_SONG.some((b) => t.includes(b))) return false;
+            return true;
+        }
+        /** Prüft, ob der vorgeschlagene Künstler der HAUPTKÜNSTLER im iTunes-Ergebnis ist (nur dann Original, nie Cover).
+         * KRITISCH: "Nirvana Tribute Band" darf NICHT akzeptiert werden, wenn "Nirvana" gewünscht ist!
+         */
+        function resultArtistIsPrimary(resultArtist, wantArtist) {
+            const r = (resultArtist || '').toLowerCase().trim();
+            const w = (wantArtist || '').toLowerCase().trim();
+            if (!w) return false;
+
+            // Exakter Match
+            if (r === w) return true;
+
+            // Match mit "The " Präfix (z.B. "The Beatles" vs "Beatles")
+            if (r === 'the ' + w || w === 'the ' + r) return true;
+
+            // Verdächtige Suffixe, die auf Cover/Tribute hinweisen
+            const suspiciousSuffixes = [
+                'tribute', 'cover', 'karaoke', 'string quartet', 'orchestra',
+                'ensemble', 'singers', 'choir', 'band tribute', 'tribute band',
+                'project', 'experience', 'revisited', 'reimagined', 'salute',
+                'celebration', 'legacy', 'memorial', 'homage'
+            ];
+
+            // Prüfe ob r mit w beginnt (z. B. "dave" aus Fallback-Phrase → "Dave Brubeck" ist ok)
+            if (r.startsWith(w)) {
+                const suffix = r.slice(w.length).trim();
+                if (suffix === '') return true;
+                // Verdächtige Suffixe (Tribute, Cover etc.) ablehnen
+                if (suspiciousSuffixes.some(s => suffix.includes(s))) return false;
+                // Erlaubt: "& The Heartbreakers", "feat. Someone", ", Jr." ODER weitere Künstlernamen-Teile (z. B. "Brubeck", "Brubeck Quartet")
+                if (suffix.startsWith('&') || suffix.startsWith(',') ||
+                    suffix.startsWith('feat') || suffix.startsWith('ft.') ||
+                    suffix.startsWith('with ') || suffix.startsWith('and ')) return true;
+                // Kein verdächtiges Wort im Suffix → akzeptieren (z. B. "dave" → "dave brubeck")
+                return true;
+            }
+
+            // Prüfe auch "The X" Variante (z. B. "the" → "The Dave Brubeck Quartet")
+            if (r.startsWith('the ' + w)) {
+                const suffix = r.slice(('the ' + w).length).trim();
+                if (suffix === '') return true;
+                if (suspiciousSuffixes.some(s => suffix.includes(s))) return false;
+                if (suffix.startsWith('&') || suffix.startsWith(',') ||
+                    suffix.startsWith('feat') || suffix.startsWith('ft.')) return true;
+                return true;
+            }
+
+            return false;
+        }
+
+        /** Fetch mit Timeout (vermeidet minutenlanges Warten auf Mobil). */
+        const SEARCH_REQUEST_TIMEOUT_MS = 10000;
+        function fetchWithTimeout(url, options, timeoutMs) {
+            const t = timeoutMs ?? SEARCH_REQUEST_TIMEOUT_MS;
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), t));
+            return Promise.race([fetch(url, options), timeoutPromise]);
+        }
+
+        /**
+         * Sucht bei der Spotify Search API (über Server-Proxy). Gibt Metadaten (artistName, trackName, releaseDate)
+         * zurück; previewUrl kommt von iTunes (siehe findViaSpotifyPlayViaItunes).
+         */
+        async function searchSpotifyForOriginal(originalArtist, songTitle, yearMinVal, yearMaxVal) {
+            const url = (SPOTIFY_SEARCH_URL || '').trim();
+            if (!url) return null;
+            const artist = (originalArtist || '').trim();
+            const title = (songTitle || '').trim();
+            if (!artist || !title) return null;
+            try {
+                const res = await fetchWithTimeout(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        artist,
+                        song: title,
+                        yearMin: yearMinVal,
+                        yearMax: yearMaxVal
+                    })
+                }, SEARCH_REQUEST_TIMEOUT_MS);
+                const data = await res.json();
+                const t = data.track;
+                if (!t || !t.trackName || !t.artistName) return null;
+                return {
+                    artistName: t.artistName,
+                    trackName: t.trackName,
+                    releaseDate: t.releaseDate || '',
+                    previewUrl: t.previewUrl || null
+                };
+            } catch (e) {
+                console.error('searchSpotifyForOriginal:', e);
+                return null;
+            }
+        }
+
+        /**
+         * Findet den Song via Spotify, holt die Preview-URL von iTunes. Abspielen = iTunes-Preview.
+         * WICHTIG: Anzeige und Wertung nutzen immer das Original-Erscheinungsjahr von Spotify (z. B. Kind of Blue 1959).
+         * Wenn iTunes dieselbe Aufnahme als 2005 (Remaster) führt, ist das egal – es zählt das Datum der Aufnahme (Spotify).
+         */
+        async function findViaSpotifyPlayViaItunes(artist, songTitle, yearMinVal, yearMaxVal) {
+            const spotify = await searchSpotifyForOriginal(artist, songTitle, yearMinVal, yearMaxVal);
+            if (!spotify) return null;
+            const itunes = await searchItunesForOriginal(spotify.artistName, spotify.trackName, null, null);
+            const previewUrl = itunes?.previewUrl || spotify.previewUrl;
+            if (!previewUrl) return null;
+            return {
+                artistName: spotify.artistName,
+                trackName: spotify.trackName,
+                releaseDate: spotify.releaseDate,
+                previewUrl
+            };
+        }
+
+        /**
+         * Suchregel: Es wird NUR mit Original-Artist + Songtitel gesucht.
+         * Es wird IMMER die FRÜHESTE Version (Original-Release) gewählt – nie Remaster/Re-Release (z. B. Stairway to Heaven = 1971, nicht 2005).
+         * Jahr-Filter gilt nur für die Song-Vorschläge der API, nicht für die Version.
+         */
+        async function searchItunesForOriginal(originalArtist, songTitle, yearMinVal, yearMaxVal) {
+            const artist = (originalArtist || '').trim();
+            const title = (songTitle || '').trim();
+            if (!artist || !title) return null;
+            const searchTerm = artist + ' ' + title;
+            const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
+            try {
+                const res = await fetchWithTimeout(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&media=music&entity=song&limit=50`, {}, SEARCH_REQUEST_TIMEOUT_MS);
+                const data = await res.json();
+
+                if (debug) {
+                    console.log('iTunes-Suche:', { searchTerm, resultsCount: data.results?.length });
+                }
+
+                const valid = (data.results || []).filter(s => {
+                    if (!s.previewUrl) {
+                        if (debug) console.log('  ❌ Keine Preview:', s.artistName, '-', s.trackName);
+                        return false;
+                    }
+                    if (!isNoCover(s)) {
+                        if (debug) console.log('  ❌ isNoCover failed:', s.artistName, '-', s.trackName, '| Genre:', s.primaryGenreName, '| Album:', s.collectionName);
+                        return false;
+                    }
+                    if (!resultArtistIsPrimary(s.artistName, artist)) {
+                        if (debug) console.log('  ❌ Artist mismatch:', s.artistName, '≠', artist);
+                        return false;
+                    }
+                    return true;
+                });
+
+                if (debug) {
+                    console.log('iTunes gefiltert:', valid.length, 'von', data.results?.length);
+                    if (valid.length > 0) {
+                        console.log('  Gültige Ergebnisse:', valid.slice(0, 5).map(s => ({
+                            artist: s.artistName,
+                            track: s.trackName,
+                            year: new Date(s.releaseDate).getFullYear(),
+                            genre: s.primaryGenreName
+                        })));
+                    }
+                }
+
+                if (valid.length === 0) return null;
+                valid.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
+                const original = valid[0];
+                const year = new Date(original.releaseDate).getFullYear();
+
+                if (yearMinVal != null && yearMaxVal != null && (year < yearMinVal || year > yearMaxVal)) {
+                    if (debug) console.log('  ❌ Jahr außerhalb:', year, 'nicht in', yearMinVal, '-', yearMaxVal);
+                    return null;
+                }
+
+                if (debug) console.log('  ✅ Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
+                return original;
+            } catch (e) {
+                console.error('searchItunesForOriginal:', e);
+                return null;
+            }
+        }
+
+        /** Parst eine Suchphrase "OriginalArtist SongTitel" (z. B. "radiohead creep" oder "the beatles yesterday") in { originalArtist, songTitle }. */
+        function parseArtistAndTitle(phrase) {
+            const t = (phrase || '').trim();
+            const parts = t.split(/\s+/).filter(Boolean);
+            if (parts.length < 2) return { originalArtist: '', songTitle: '' };
+            if (parts[0].toLowerCase() === 'the' && parts.length >= 3)
+                return { originalArtist: parts[0] + ' ' + parts[1], songTitle: parts.slice(2).join(' ') };
+            return { originalArtist: parts[0], songTitle: parts.slice(1).join(' ') };
+        }
+
+        /** Prüft: Nur ORIGINAL – kein Cover, Tribute, Karaoke, Remix, Live, feat. usw.
+         * Prüft: Artist, Track, Album UND iTunes-spezifische Metadaten (primaryGenreName, collectionType, kind).
+         */
+        function isNoCover(s) {
+            const trackLower = (s.trackName || '').toLowerCase();
+            const albumLower = (s.collectionName || '').toLowerCase();
+            const artistLower = (s.artistName || '').toLowerCase();
+            const combined = trackLower + ' ' + albumLower + ' ' + artistLower;
+
+            // NEU: iTunes-spezifische Metadaten prüfen
+            const genre = (s.primaryGenreName || '').toLowerCase();
+            const badGenres = ['karaoke', 'tribute', "children's music", 'children', 'lullaby',
+                'lullabies', 'easy listening', 'spoken word', 'audiobook', 'podcast'];
+            if (badGenres.some(g => genre.includes(g))) return false;
+
+            // Compilation-Alben sind oft Tribute/Cover-Sammlungen
+            if (s.collectionType === 'Compilation') return false;
+
+            // Nur echte Songs, keine Videos oder andere Medientypen
+            if (s.kind && s.kind !== 'song') return false;
+
+            // Bekannte Cover-Interpreten und verdächtige Artist-Namen
+            const coverArtistTerms = [
+                'chant masters', 'vitamin string quartet', 'vitamin string', 'piano guys',
+                'rockabye baby', 'string quartet', 'karaoke', 'tribute band', 'cover band',
+                ' tribute ', ' cover ', ' karaoke ', 'hit crew', 'kids bop', 'kidz bop',
+                'various artists', 'sounds of', 'lullaby', 'lullabies', 'rendition',
+                'instrumental', 'acoustic version', 'piano version', 'orchestra version',
+                'reimagined', 'reimagining', 'as made famous', 'made famous by',
+                'in the style of', 'style of ', 'tribute to ', 'cover of ', 'cover by ',
+                ' feat.', 'featuring', 'postmodern jukebox', 'scott bradlee', 'smooth jazz',
+                'easy listening', 'lounge ', 'midnite string', 'london symphony tribute',
+                'punk rock factory', 'gregorian', 'scala ', 'northern kings',
+                'symphonic rock', 'metal tribute', 'rock tribute'
+            ];
+            if (coverArtistTerms.some((t) => artistLower.includes(t))) return false;
+
+            // NEU: Artist-Name enthält verdächtige Wörter (z.B. "Nirvana Tribute Band")
+            // ACHTUNG: "experience" NICHT blocken - "Jimi Hendrix Experience" ist legitim!
+            const artistSuspiciousWords = ['tribute', 'karaoke', ' cover ', 'salute to', 'revisited',
+                'reimagined', ' legacy', 'celebration of', 'memorial'];
+            if (artistSuspiciousWords.some(w => artistLower.includes(w))) return false;
+
+            // Live, Remaster, Remix, Extended etc.
+            // ACHTUNG: "live" als Wort, nicht als Substring (sonst "Alive", "Oliver" etc. geblockt)
+            // Remaster/Reissue nur im TRACK ablehnen – Album darf "(Remastered)" haben (Jazz/Klassik oft nur so bei iTunes)
+            if (combined.includes(' live ') || combined.includes('(live)') || combined.includes('(live ') ||
+                combined.includes(' - live') || combined.includes(' live)') ||
+                trackLower.startsWith('live ') || trackLower.endsWith(' live') ||
+                combined.includes('live at ') || combined.includes('live in ') ||
+                combined.includes('concert') || combined.includes('wembley') || combined.includes('woodstock') ||
+                combined.includes('unplugged') ||
+                trackLower.includes('remaster') || combined.includes('remix') ||
+                combined.includes(' mix)') || combined.includes(' (mix)') || combined.includes(' mix ') ||
+                trackLower.endsWith(' mix') || trackLower.includes('(feat.') || trackLower.includes(' feat.') ||
+                trackLower.includes('(featuring') || trackLower.includes(' featuring') ||
+                trackLower.includes('deluxe edition') || trackLower.includes('anniversary edition') ||
+                trackLower.includes('reissue') || trackLower.includes('re-record')) return false;
+
+            if (/\d{2,4}\s*th\s*(anniversary|year)/.test(combined) || /take\s*\d+/.test(combined)) return false;
+
+            // Demos, Outtakes, Sessions
+            if (combined.includes('outtake') || combined.includes(' demo') || combined.includes('(demo)') ||
+                combined.includes('alternate') || combined.includes('session') ||
+                combined.includes('previously unreleased') || combined.includes('unreleased')) return false;
+
+            // Cover-Indikatoren
+            if (combined.includes('(cover)') || combined.includes('cover version') ||
+                combined.includes('cover of') || combined.includes('cover by') ||
+                combined.includes('covered by') || combined.includes(' - cover') ||
+                combined.includes(' - tribute') || combined.includes('reimagined') ||
+                combined.includes('reimagining') || combined.includes('in the style of') ||
+                combined.includes('as made famous') || combined.includes('made famous by')) return false;
+
+            // Album-spezifische Prüfungen (NICHT "greatest hits", "best of" - Originale sind oft auf Best-Of-Alben!)
+            // "instrumental" weggelassen – Jazz-Alben heißen oft "… Instrumental" und sind Originale
+            if (albumLower.includes(' covers') || albumLower.includes('covers ') ||
+                albumLower.includes('tribute') || albumLower.includes('karaoke') ||
+                albumLower.includes('lullaby')) return false;
+
+            // Soundtrack/Film (oft Re-Recordings oder Covers)
+            if (combined.includes('movie') || combined.includes('motion picture') ||
+                combined.includes('from the film') || combined.includes('from the motion picture') ||
+                trackLower.includes(' clip') || combined.includes('soundtrack')) return false;
+
+            return true;
+        }
+
+        /** Entfernt Dubletten aus einer Liste von { artist, song } (gleicher Artist + Titel nur einmal). */
+        function dedupeSongList(list) {
+            const seen = new Set();
+            return (list || []).filter((x) => {
+                if (!x || !x.artist || !x.song) return false;
+                const key = songKey(x.artist, x.song);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        /** Mischt ein Array zufällig (Fisher-Yates), damit nicht bei jedem Spiel dieselbe Reihenfolge kommt. */
+        function shuffleArray(arr) {
+            const a = (arr || []).slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        /** Lade-Meldungen: Satz für Satz mit 2 Sekunden Pause. */
+        const LOADING_MESSAGES = [
+            'Am Anfang dauert es einen kleinen Moment.',
+            'Wir bereiten alles für euch vor.',
+            'Die Songs werden ausgewählt.',
+            'Die passenden Ausschnitte werden geladen.',
+            'Ein paar Dinge sortieren sich im Hintergrund.',
+            'Das passiert nur einmal.',
+            'Danach geht es schnell.',
+            'Sehr schnell.',
+            'Ab dann kommt ein Song nach dem anderen.',
+            'Ohne lange Pausen.',
+            'Versprochen.',
+            'Gleich geht\'s los.'
+        ];
+        const SENTENCE_PAUSE_MS = 2000;
+        function isMobileOrReducedMotion() {
+            return typeof window !== 'undefined' && (
+                window.matchMedia('(max-width: 768px)').matches ||
+                window.matchMedia('(hover: none)').matches ||
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            );
+        }
+        /** isFirstLoad: true = lange „Am Anfang dauert es…“-Reihe, false = nur „Weiter geht's“. Auf Mobil nur statische Meldung, keine Animation. */
+        function startLoadingStatus(statusEl, isFirstLoad = true) {
+            if (!statusEl) return null;
+            const isMobile = isMobileOrReducedMotion();
+            statusEl.classList.add('status-loading');
+            const handle = { intervalId: null };
+            if (!isFirstLoad) {
+                statusEl.textContent = 'Weiter geht\'s';
+                statusEl.classList.add('fade-in');
+                return handle;
+            }
+            statusEl.textContent = LOADING_MESSAGES[0];
+            statusEl.classList.add('fade-in');
+            let index = 0;
+            handle.intervalId = setInterval(() => {
+                if (!statusEl.classList.contains('status-loading')) return;
+                index += 1;
+                if (index >= LOADING_MESSAGES.length) {
+                    clearInterval(handle.intervalId);
+                    handle.intervalId = null;
+                    return;
+                }
+                statusEl.classList.remove('fade-in');
+                statusEl.textContent = LOADING_MESSAGES[index];
+                statusEl.classList.add('fade-in');
+            }, SENTENCE_PAUSE_MS);
+            return handle;
+        }
+        function stopLoadingStatus(statusEl, handle) {
+            if (handle != null && handle.intervalId != null) {
+                clearInterval(handle.intervalId);
+            }
+            if (statusEl) {
+                statusEl.classList.remove('status-loading', 'fade-in');
+            }
+        }
+        /** Debug: In der Konsole `window.DEBUG_SUGGEST = true` setzen, dann „Spiel starten“ – Request/Response erscheinen in der Konsole. */
+        /** Holt eine Liste von Song-Vorschlägen von der API (Kuratoren-Prompt). Gibt Array von { artist, song } oder []. */
+        async function fetchSuggestSongList(genreNames, difficulty, yearMinVal, yearMaxVal, count = 12) {
+            const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
+            const url = (OPENAI_SUGGEST_URL || '').trim();
+            if (!url) {
+                if (debug) console.warn('Suggest-Song: Keine OPENAI_SUGGEST_URL gesetzt.');
+                return [];
+            }
+            const body = { genres: genreNames, difficulty, yearMin: yearMinVal, yearMax: yearMaxVal, count };
+            if (debug) console.log('Suggest-Song Request:', { url, body });
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (debug) console.log('Suggest-Song Response:', { ok: res.ok, status: res.status, data });
+                if (!res.ok) return [];
+                const list = Array.isArray(data.songs) ? data.songs : [];
+                const normalized = list.filter((x) => x && x.artist && x.song).map((x) => ({ artist: String(x.artist).trim(), song: String(x.song).trim() }));
+                const originalsOnly = normalized.filter(isOriginalSuggestion);
+                const out = dedupeSongList(originalsOnly);
+                if (debug) console.log('Suggest-Song nach Filter/Dedup:', out.length, out);
+                return out;
+            } catch (e) {
+                console.error('Suggest-SongList:', e);
+                return [];
+            }
+        }
+
+        /** Holt Song-Erklärung von OpenAI über Proxy (GPT-4.1 mini). Gibt null bei Fehler oder fehlendem Proxy. */
+        async function fetchSongInfoFromOpenAI(artistName, trackName, releaseYear) {
+            const proxyUrl = (OPENAI_PROXY_URL || '').trim();
+            if (!proxyUrl) return null;
+
+            const userContent = `${SONG_INFO_PROMPT}
+
+(Kontext für dich: Song „${trackName}" von ${artistName}, Erscheinungsjahr ${releaseYear})
+
+Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Songtitel oder Jahr – das steht schon darüber.`;
+
+            try {
+                const res = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        artistName,
+                        trackName,
+                        releaseYear,
+                        prompt: SONG_INFO_PROMPT,
+                        userContent
+                    })
+                });
+                if (!res.ok) throw new Error(res.statusText);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                return (data.text || data.content || '').trim();
+            } catch (e) {
+                console.warn('Song-Erklärung: API nicht erreichbar (Server läuft? OPENAI_PROXY_URL?) – Fallback-Erklärung wird angezeigt.', e.message || e);
+                return null;
+            }
+        }
+
+        /** Erklärung mit Timeout laden (z. B. für ersten Song / Preload). Gibt Text oder null. */
+        async function fetchSongInfoWithTimeout(artistName, trackName, releaseYear, timeoutMs = 35000) {
+            try {
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
+                const text = await Promise.race([fetchSongInfoFromOpenAI(artistName, trackName, releaseYear), timeoutPromise]);
+                return (text && String(text).trim()) ? text.trim() : null;
+            } catch (e) {
+                if (e.message === 'Timeout') console.warn('Song-Erklärung: Timeout nach', timeoutMs, 'ms');
+                return null;
+            }
+        }
+
+        /** Fallback-Erklärungstext (Epoche/Kurzfassung), wenn API fehlschlägt. */
+        function getFallbackExplanationText(artistName, trackName, releaseYear) {
+            const fb = getSongInfoForDifficulty(artistName, trackName, releaseYear, selectedDifficulty);
+            return (fb && fb.text) ? fb.text : 'Der Drum-Sound und der Mix verraten die Epoche – typisch für die Zeit.';
+        }
+
+        const currentYear = new Date().getFullYear();
+        let playerCount = 2;
+        let players = [];
+        let selectedGenres = new Set(['rock', 'pop', 'indie']);
+        let selectedDifficulty = 'beginner';
+        let yearMin = 1940;
+        let yearMax = currentYear;
+        let currentSong = null;
+        /** Promise für die Song-Erklärung – wird beim Laden des Songs gestartet, damit sie beim Abgeben der Tipps oft schon da ist. */
+        let songInfoPromise = null;
+
+        /** Bekannte falsche Release-Jahre (Spotify/iTunes) → korrektes Jahr. Key: "artist|titel" normalisiert (klein, Leerzeichen 1). */
+        const RELEASE_YEAR_OVERRIDES = {
+            'pharoah sanders|the creator has a master plan': 1969
+        };
+        function applyReleaseYearOverride(song) {
+            if (!song || !song.artistName || !song.trackName) return;
+            const key = (song.artistName + '|' + song.trackName).toLowerCase().replace(/\s+/g, ' ').trim();
+            const year = RELEASE_YEAR_OVERRIDES[key];
+            if (year != null) song.releaseDate = year + '-01-01';
+        }
+        let guessSubmitted = false;
+        let roundNumber = 0;
+        let songQueue = [];
+        /** Bereits in dieser Runde gespielte Songs (Keys), damit beim Nachladen keine Dubletten kommen. */
+        let playedSongKeys = new Set();
+        /** Vor geladene Songs inkl. Erklärung: [{ song, explanation }], max 3. */
+        let preloadedSongs = [];
+        let preloadInProgress = false;
+
+        const PREVIEW_DURATION_SEC = 30;
+        const PLAY_COUNTDOWN_CIRCUMFERENCE = 2 * Math.PI * 47;
+        let playCountdownIntervalId = null;
+
+        function setPlayButtonDisplay(iconChar) {
+            const playBtn = document.getElementById('playBtn');
+            const icon = playBtn?.querySelector('.play-btn-icon');
+            const countdown = document.getElementById('playBtnCountdown');
+            if (icon) icon.textContent = iconChar;
+            if (countdown) countdown.textContent = '';
+        }
+        function resetPlayCountdown() {
+            if (playCountdownIntervalId) {
+                clearInterval(playCountdownIntervalId);
+                playCountdownIntervalId = null;
+            }
+            const ring = document.getElementById('playCountdownRing');
+            if (ring) ring.setAttribute('stroke-dashoffset', '0');
+            const playBtn = document.getElementById('playBtn');
+            if (playBtn) playBtn.classList.remove('playing');
+        }
+        function updatePlayCountdown() {
+            const audio = document.getElementById('audioPlayer');
+            if (!audio || audio.paused) return;
+            const elapsed = Math.min(audio.currentTime, PREVIEW_DURATION_SEC);
+            const ring = document.getElementById('playCountdownRing');
+            if (ring) ring.setAttribute('stroke-dashoffset', -((elapsed / PREVIEW_DURATION_SEC) * PLAY_COUNTDOWN_CIRCUMFERENCE) + '');
+            const countdownEl = document.getElementById('playBtnCountdown');
+            if (countdownEl) countdownEl.textContent = Math.max(0, Math.ceil(PREVIEW_DURATION_SEC - elapsed));
+        }
+
+        function init() {
+            renderPlayerCount();
+            renderPlayerInputs();
+            renderGenres();
+            renderDifficulty();
+            setupRangeSlider();
+            updateStartButton();
+        }
+
+        function renderPlayerCount() {
+            const container = document.getElementById('playerCount');
+            container.innerHTML = [1,2,3,4,5,6].map(n => `
+                <button class="player-count-btn ${n === playerCount ? 'selected' : ''}" onclick="setPlayerCount(${n})">${n}</button>
+            `).join('');
+        }
+
+        function setPlayerCount(n) {
+            playerCount = n;
+            renderPlayerCount();
+            renderPlayerInputs();
+            updateStartButton();
+        }
+
+        function renderPlayerInputs() {
+            const container = document.getElementById('playerInputs');
+            container.innerHTML = Array.from({length: playerCount}, (_, i) => `
+                <input type="text" class="player-name-input" placeholder="Spieler ${i+1}" data-index="${i}" maxlength="20">
+            `).join('');
+        }
+
+        function renderGenres() {
+            const grid = document.getElementById('genreGrid');
+            grid.innerHTML = genres.map(g => `
+                <div class="genre-item ${selectedGenres.has(g.id) ? 'selected' : ''}" data-genre="${g.id}">
+                    <span class="genre-checkbox"></span>
+                    <span class="genre-name">${g.name}</span>
+                </div>
+            `).join('');
+
+            grid.querySelectorAll('.genre-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.dataset.genre;
+                    if (selectedGenres.has(id)) {
+                        selectedGenres.delete(id);
+                        item.classList.remove('selected');
+                    } else {
+                        selectedGenres.add(id);
+                        item.classList.add('selected');
+                    }
+                    updateStartButton();
+                });
+            });
+        }
+
+        function renderDifficulty() {
+            const container = document.getElementById('difficultyButtons');
+            container.innerHTML = difficulties.map(d => `
+                <button class="difficulty-btn ${d.id === selectedDifficulty ? 'selected' : ''}" onclick="setDifficulty('${d.id}')">${d.name}</button>
+            `).join('');
+        }
+
+        function setDifficulty(id) {
+            selectedDifficulty = id;
+            renderDifficulty();
+        }
+
+        function setupRangeSlider() {
+            const rangeMin = document.getElementById('rangeMin');
+            const rangeMax = document.getElementById('rangeMax');
+            rangeMin.max = rangeMax.max = currentYear;
+            rangeMax.value = currentYear;
+            document.getElementById('yearMax').textContent = currentYear;
+
+            function update() {
+                let min = parseInt(rangeMin.value);
+                let max = parseInt(rangeMax.value);
+                if (min > max - 5) {
+                    if (this === rangeMin) { min = max - 5; rangeMin.value = min; }
+                    else { max = min + 5; rangeMax.value = max; }
+                }
+                yearMin = min; yearMax = max;
+                document.getElementById('yearMin').textContent = min;
+                document.getElementById('yearMax').textContent = max;
+                const minP = ((min - 1940) / (currentYear - 1940)) * 100;
+                const maxP = ((max - 1940) / (currentYear - 1940)) * 100;
+                document.getElementById('sliderRange').style.left = minP + '%';
+                document.getElementById('sliderRange').style.width = (maxP - minP) + '%';
+            }
+            rangeMin.addEventListener('input', update);
+            rangeMax.addEventListener('input', update);
+            update.call(rangeMin);
+        }
+
+        function updateStartButton() {
+            // Button bleibt klickbar; bei 0 Genres zeigt startGame() das Popup "Bitte Genre auswählen"
+        }
+
+        /** Flag: Hintergrund-Ladevorgang für Songliste aktiv */
+        let backgroundFetchInProgress = false;
+
+        function showGenrePopup() {
+            document.getElementById('genrePopupOverlay').classList.add('visible');
+        }
+        function hideGenrePopup() {
+            document.getElementById('genrePopupOverlay').classList.remove('visible');
+        }
+
+        /** Genre-ID → Skriptdateiname (ohne Pfad/Endung) für Fallback-Daten. Nur bei Bedarf laden. */
+        const FALLBACK_SCRIPT_BY_GENRE = {
+            rock: 'rock', pop: 'pop', hiphop: 'hiphop', electronic: 'electronic',
+            rnb: 'rnb-soul', country: 'country', klassik: 'klassik', punk: 'punk',
+            indie: 'indie', jazz: 'jazz', techno: 'techno', metal: 'metal'
+        };
+        const loadedFallbackGenres = new Set();
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = src;
+                s.onload = () => resolve();
+                s.onerror = () => reject(new Error('Fallback-Skript fehlgeschlagen: ' + src));
+                document.head.appendChild(s);
+            });
+        }
+        async function loadFallbackScripts(genreIds) {
+            const toLoad = genreIds
+                .map(id => FALLBACK_SCRIPT_BY_GENRE[id])
+                .filter(Boolean)
+                .filter(file => !loadedFallbackGenres.has(file));
+            for (const f of toLoad) {
+                try {
+                    await loadScript('fallback-genres/' + f + '.js');
+                    loadedFallbackGenres.add(f);
+                } catch (e) {
+                    console.warn('Fallback-Skript nicht geladen:', f, e.message);
+                }
+                await new Promise(r => setTimeout(r, 0));
+            }
+        }
+
+        /** Kurz dem Browser Zeit geben, die UI zu zeichnen (vermeidet Hänger auf Mobil). */
+        function yieldToPaint() {
+            return new Promise(resolve => setTimeout(resolve, 150));
+        }
+
+        async function startGame() {
+            if (selectedGenres.size === 0) {
+                showGenrePopup();
+                return;
+            }
+            const statusEl = document.getElementById('status');
+            const playBtnStart = document.getElementById('playBtn');
+            let loadingId = null;
+            try {
+                players = [];
+                document.querySelectorAll('.player-name-input').forEach((input, i) => {
+                    players.push({ name: input.value.trim() || `Spieler ${i+1}`, guess: null, totalDiff: 0 });
+                });
+                roundNumber = 0;
+                songQueue = [];
+                playedSongKeys = new Set();
+                preloadedSongs = [];
+
+                document.getElementById('setupOptions').style.display = 'none';
+                document.getElementById('gameScreen').classList.add('visible');
+                renderPlayerGuessRows();
+
+                playBtnStart.disabled = true;
+                setPlayButtonDisplay('');
+                playBtnStart.classList.add('loading');
+                resetPlayCountdown();
+                loadingId = startLoadingStatus(statusEl);
+
+                await yieldToPaint();
+
+                await loadFallbackScripts(Array.from(selectedGenres));
+
+                const genreNames = genres.filter((g) => selectedGenres.has(g.id)).map((g) => g.name);
+                if (genreNames.length && OPENAI_SUGGEST_URL) {
+                    try {
+                        const apiPromise = fetchSuggestSongList(genreNames, selectedDifficulty, yearMin, yearMax, 12);
+                        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 30000));
+                        const list = await Promise.race([apiPromise, timeoutPromise]);
+                        if (list.length) {
+                            songQueue = shuffleArray(dedupeSongList(list));
+                            if (window.DEBUG_SUGGEST) console.log('API-Songliste geladen:', songQueue.length, 'Songs');
+                        }
+                    } catch (e) {
+                        console.warn('API-Fetch fehlgeschlagen oder Timeout, nutze Fallback:', e.message);
+                    } finally {
+                        stopLoadingStatus(statusEl, loadingId);
+                        loadingId = null;
+                    }
+                } else {
+                    stopLoadingStatus(statusEl, loadingId);
+                    loadingId = null;
+                }
+
+                statusEl.textContent = '';
+                await loadNewSong(true);
+            } catch (e) {
+                console.error('startGame:', e);
+                if (loadingId) stopLoadingStatus(statusEl, loadingId);
+                playBtnStart.disabled = false;
+                playBtnStart.classList.remove('loading');
+                setPlayButtonDisplay('▶');
+                resetPlayCountdown();
+                statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
+            }
+        }
+
+        function renderPlayerGuessRows() {
+            const container = document.getElementById('playerGuessRows');
+            container.innerHTML = players.map((p, i) => `
+                <div class="player-guess-row">
+                    <span class="player-guess-name">${p.name}</span>
+                    <input type="text" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric">
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.player-guess-input').forEach(input => {
+                input.addEventListener('input', e => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                });
+            });
+        }
+
+        function backToSetup() {
+            document.getElementById('audioPlayer').pause();
+            document.getElementById('gameScreen').classList.remove('visible');
+            document.getElementById('setupOptions').style.display = 'block';
+            document.getElementById('result').classList.remove('visible');
+            document.getElementById('playersGuessSection').classList.remove('visible');
+        }
+
+        /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
+        async function preloadNextSongs() {
+            if (preloadInProgress || preloadedSongs.length >= 3 || songQueue.length === 0) return;
+            preloadInProgress = true;
+            const targetCount = 3;
+            try {
+                while (preloadedSongs.length < targetCount && songQueue.length > 0) {
+                    const suggestion = songQueue[0];
+                    const wantArtist = (suggestion?.artist || '').trim();
+                    const wantSong = (suggestion?.song || '').trim();
+                    if (!wantArtist || !wantSong) {
+                        songQueue.splice(0, 1);
+                        continue;
+                    }
+                    let found = await findViaSpotifyPlayViaItunes(wantArtist, wantSong, yearMin, yearMax);
+                    if (!found) found = await searchItunesForOriginal(wantArtist, wantSong, yearMin, yearMax);
+                    if (!found) {
+                        songQueue.splice(0, 1);
+                        continue;
+                    }
+                    applyReleaseYearOverride(found);
+                    const year = new Date(found.releaseDate).getFullYear();
+                    const explanation = await fetchSongInfoWithTimeout(found.artistName, found.trackName, year, 35000);
+                    const text = (explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(found.artistName, found.trackName, year);
+                    preloadedSongs.push({ song: found, explanation: text });
+                    songQueue.splice(0, 1);
+                }
+            } catch (e) {
+                console.warn('Preload fehlgeschlagen:', e);
+            } finally {
+                preloadInProgress = false;
+            }
+        }
+
+        async function loadNewSong(waitForFirstExplanation = false) {
+            guessSubmitted = false;
+            currentSong = null;
+            songInfoPromise = null;
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+            playBtn.disabled = true;
+            setPlayButtonDisplay('');
+            playBtn.classList.add('loading');
+            resetPlayCountdown();
+            document.getElementById('playersGuessSection').classList.remove('visible');
+            document.getElementById('result').classList.remove('visible');
+            document.getElementById('submitAllBtn').disabled = false;
+            const loadingId = startLoadingStatus(status, waitForFirstExplanation);
+            document.getElementById('audioPlayer').pause();
+
+            // Reset inputs
+            document.querySelectorAll('.player-guess-input').forEach(input => {
+                input.value = '';
+                input.classList.remove('submitted');
+                input.disabled = false;
+            });
+            players.forEach(p => p.guess = null);
+
+            // Vor geladene Songs nutzen (Erklärung ist schon da)
+            if (!waitForFirstExplanation && preloadedSongs.length > 0) {
+                const entry = preloadedSongs.shift();
+                currentSong = entry.song;
+                applyReleaseYearOverride(currentSong);
+                songInfoPromise = Promise.resolve(entry.explanation);
+                playedSongKeys.add(songKey(currentSong.artistName, currentSong.trackName));
+                document.getElementById('audioPlayer').src = currentSong.previewUrl;
+                playBtn.disabled = false;
+                playBtn.classList.remove('loading');
+                setPlayButtonDisplay('▶');
+                resetPlayCountdown();
+                stopLoadingStatus(status, loadingId);
+                status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                preloadNextSongs();
+                return;
+            }
+
+            // Nachladen im Hintergrund wenn Queue fast leer (nicht blockierend!)
+            if (songQueue.length < 3 && OPENAI_SUGGEST_URL && !backgroundFetchInProgress) {
+                const genreNames = genres.filter((g) => selectedGenres.has(g.id)).map((g) => g.name);
+                if (genreNames.length) {
+                    backgroundFetchInProgress = true;
+                    fetchSuggestSongList(genreNames, selectedDifficulty, yearMin, yearMax, 12)
+                        .then(list => {
+                            const withoutPlayed = list.filter((x) => !playedSongKeys.has(songKey(x.artist, x.song)));
+                            const newSongs = dedupeSongList(withoutPlayed);
+                            songQueue.push(...newSongs);
+                            songQueue = shuffleArray(songQueue);
+                            if (window.DEBUG_SUGGEST) console.log('Nachgeladen:', newSongs.length, 'Songs');
+                        })
+                        .catch(e => console.error('Nachladen fehlgeschlagen:', e))
+                        .finally(() => { backgroundFetchInProgress = false; });
+                }
+            }
+
+            for (let i = 0; i < songQueue.length; i++) {
+                const suggestion = songQueue[i];
+                const wantArtist = (suggestion?.artist || '').trim();
+                const wantSong = (suggestion?.song || '').trim();
+                if (!wantArtist || !wantSong) continue;
+                let found = await findViaSpotifyPlayViaItunes(wantArtist, wantSong, yearMin, yearMax);
+                if (!found) found = await searchItunesForOriginal(wantArtist, wantSong, yearMin, yearMax);
+                if (found) {
+                    currentSong = found;
+                    applyReleaseYearOverride(currentSong);
+                    const year = new Date(currentSong.releaseDate).getFullYear();
+                    if (waitForFirstExplanation) {
+                        const explanation = await fetchSongInfoWithTimeout(currentSong.artistName, currentSong.trackName, year, 35000);
+                        songInfoPromise = Promise.resolve((explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(currentSong.artistName, currentSong.trackName, year));
+                    } else {
+                        songInfoPromise = fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, year);
+                    }
+                    playedSongKeys.add(songKey(wantArtist, wantSong));
+                    songQueue.splice(i, 1);
+                    document.getElementById('audioPlayer').src = currentSong.previewUrl;
+                    playBtn.disabled = false;
+                    playBtn.classList.remove('loading');
+                    setPlayButtonDisplay('▶');
+                    resetPlayCountdown();
+                    stopLoadingStatus(status, loadingId);
+                    status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                    if (waitForFirstExplanation) preloadNextSongs();
+                    return;
+                }
+            }
+
+            try {
+                await yieldToPaint();
+            } catch (e) {
+                console.warn('yieldToPaint:', e);
+            }
+            const queries = [];
+            genres.forEach(g => {
+                if (!selectedGenres.has(g.id)) return;
+                const lists = window[g.listsKey];
+                if (lists && Array.isArray(lists[selectedDifficulty])) queries.push(...lists[selectedDifficulty]);
+            });
+            // Zusätzlich: Genre-Subgenres als Fallback (Daten aus fallback-genres/*.js, bei Bedarf geladen)
+            if (selectedGenres.has('rock') && typeof fallbackRockSubgenres === 'object') {
+                Object.values(fallbackRockSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('pop') && typeof fallbackPopSubgenres === 'object') {
+                Object.values(fallbackPopSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('hiphop') && typeof fallbackHiphopSubgenres === 'object') {
+                Object.values(fallbackHiphopSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('electronic') && typeof fallbackElectronicSubgenres === 'object') {
+                Object.values(fallbackElectronicSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('rnb') && typeof fallbackRnbSoulSubgenres === 'object') {
+                Object.values(fallbackRnbSoulSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('country') && typeof fallbackCountrySubgenres === 'object') {
+                Object.values(fallbackCountrySubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('klassik') && typeof fallbackKlassikSubgenres === 'object') {
+                Object.values(fallbackKlassikSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            if (selectedGenres.has('punk') && typeof fallbackPunkSubgenres === 'object') {
+                Object.values(fallbackPunkSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            // Zusätzlich: Indie-Subgenres als Fallback, wenn Indie gewählt ist
+            if (selectedGenres.has('indie') && typeof fallbackIndieSubgenres === 'object') {
+                Object.values(fallbackIndieSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            // Zusätzlich: Jazz-Subgenres als Fallback, wenn Jazz gewählt ist
+            if (selectedGenres.has('jazz') && typeof fallbackJazzSubgenres === 'object') {
+                Object.values(fallbackJazzSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            // Zusätzlich: Techno-Subgenres als Fallback, wenn Techno gewählt ist
+            if (selectedGenres.has('techno') && typeof fallbackTechnoSubgenres === 'object') {
+                Object.values(fallbackTechnoSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            // Zusätzlich: Metal-Subgenres als Fallback, wenn Metal gewählt ist
+            if (selectedGenres.has('metal') && typeof fallbackMetalSubgenres === 'object') {
+                Object.values(fallbackMetalSubgenres).forEach(arr => {
+                    if (Array.isArray(arr)) queries.push(...arr);
+                });
+            }
+            const MAX_FALLBACK_ATTEMPTS = 15;
+            const shuffledQueries = shuffleArray(queries);
+            let attempts = 0;
+            try {
+                for (let round = 0; round < 2 && attempts < MAX_FALLBACK_ATTEMPTS; round++) {
+                    for (let i = 0; i < shuffledQueries.length && attempts < MAX_FALLBACK_ATTEMPTS; i++) {
+                        attempts += 1;
+                        if (attempts % 5 === 1) status.textContent = 'Suche Song… (' + attempts + ')';
+                        const phrase = shuffledQueries[i];
+                        const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
+                        if (!originalArtist || !songTitle) continue;
+                        let found = null;
+                        if (isMobileOrReducedMotion()) {
+                            found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
+                            if (!found) found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
+                        } else {
+                            found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
+                            if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
+                        }
+                        if (found) {
+                            const key = songKey(found.artistName, found.trackName);
+                            if (playedSongKeys.has(key)) continue;
+                            playedSongKeys.add(key);
+                            currentSong = found;
+                            applyReleaseYearOverride(currentSong);
+                            const year = new Date(currentSong.releaseDate).getFullYear();
+                            if (waitForFirstExplanation) {
+                                const explanation = await fetchSongInfoWithTimeout(currentSong.artistName, currentSong.trackName, year, 35000);
+                                songInfoPromise = Promise.resolve((explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(currentSong.artistName, currentSong.trackName, year));
+                            } else {
+                                songInfoPromise = fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, year);
+                            }
+                            document.getElementById('audioPlayer').src = currentSong.previewUrl;
+                            playBtn.disabled = false;
+                            playBtn.classList.remove('loading');
+                            setPlayButtonDisplay('▶');
+                            resetPlayCountdown();
+                            stopLoadingStatus(status, loadingId);
+                            status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                            if (waitForFirstExplanation) preloadNextSongs();
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Fallback-Suche:', e);
+            }
+            stopLoadingStatus(status, loadingId);
+            status.textContent = 'Kein Song gefunden. Bitte Netz prüfen oder später erneut versuchen.';
+            playBtn.classList.remove('loading');
+            setPlayButtonDisplay('?');
+            resetPlayCountdown();
+        }
+
+        function playPreview() {
+            if (!currentSong) return;
+            const audio = document.getElementById('audioPlayer');
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('status');
+
+            if (audio.paused) {
+                audio.play();
+                setPlayButtonDisplay('⏸');
+                playBtn.classList.add('playing');
+                status.textContent = 'Hört genau hin...';
+                if (playCountdownIntervalId) clearInterval(playCountdownIntervalId);
+                updatePlayCountdown();
+                playCountdownIntervalId = setInterval(updatePlayCountdown, 100);
+                if (!guessSubmitted) {
+                    setTimeout(() => {
+                        document.getElementById('playersGuessSection').classList.add('visible');
+                        document.querySelector('.player-guess-input')?.focus();
+                    }, 2000);
+                }
+            } else {
+                audio.pause();
+                if (playCountdownIntervalId) {
+                    clearInterval(playCountdownIntervalId);
+                    playCountdownIntervalId = null;
+                }
+                setPlayButtonDisplay('▶');
+                playBtn.classList.remove('playing');
+                status.textContent = 'Pausiert';
+            }
+        }
+
+        document.getElementById('audioPlayer').addEventListener('ended', () => {
+            resetPlayCountdown();
+            setPlayButtonDisplay('▶');
+            document.getElementById('status').textContent = 'Gebt eure Tipps ab!';
+        });
+
+        function submitAllGuesses() {
+            if (guessSubmitted || !currentSong) return;
+
+            // Collect guesses
+            let allValid = true;
+            document.querySelectorAll('.player-guess-input').forEach((input, i) => {
+                const val = parseInt(input.value);
+                if (!val || val < 1900 || val > currentYear + 5) {
+                    input.style.outline = '2px solid var(--cherry-rose)';
+                    setTimeout(() => input.style.outline = '', 1000);
+                    allValid = false;
+                } else {
+                    players[i].guess = val;
+                    input.classList.add('submitted');
+                    input.disabled = true;
+                }
+            });
+
+            if (!allValid) return;
+
+            guessSubmitted = true;
+            document.getElementById('submitAllBtn').disabled = true;
+
+            const correctYear = new Date(currentSong.releaseDate).getFullYear();
+
+            document.getElementById('resultYear').textContent = correctYear;
+            const yearNoteEl = document.getElementById('resultYearNote');
+            if (currentSong.yearNote) {
+                yearNoteEl.textContent = currentSong.yearNote;
+                yearNoteEl.style.display = 'block';
+            } else {
+                yearNoteEl.textContent = '';
+                yearNoteEl.style.display = 'none';
+            }
+            document.getElementById('resultSongTitle').textContent = currentSong.trackName || '';
+            document.getElementById('resultArtistName').textContent = currentSong.artistName || '';
+
+            // Song-Info: Block immer anzeigen, dann API oder Fallback-Erklärung laden
+            const songInfoEl = document.getElementById('resultSongInfo');
+            const songInfoTextEl = document.getElementById('songInfoText');
+            if (songInfoEl) {
+                songInfoEl.style.display = 'block';
+                songInfoEl.style.visibility = 'visible';
+            }
+            const setExplanationText = (text) => {
+                if (songInfoTextEl && text != null) songInfoTextEl.textContent = String(text).trim() || 'Keine Erklärung verfügbar.';
+            };
+            setExplanationText('Erklärung wird geladen…');
+
+            (async () => {
+                try {
+                    const apiText = songInfoPromise ? await songInfoPromise : await fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, correctYear);
+                    if (apiText && apiText.trim()) {
+                        setExplanationText(apiText.trim());
+                    } else {
+                        setExplanationText(getFallbackExplanationText(currentSong.artistName, currentSong.trackName, correctYear));
+                        if (!apiText) console.warn('Song-Erklärung: API lieferte keinen Text – Fallback angezeigt.');
+                    }
+                } catch (e) {
+                    console.warn('Song-Info anzeigen:', e);
+                    setExplanationText(getFallbackExplanationText(currentSong.artistName, currentSong.trackName, correctYear));
+                }
+            })();
+
+            // Sort players by accuracy
+            const sorted = [...players].sort((a, b) => Math.abs(a.guess - correctYear) - Math.abs(b.guess - correctYear));
+
+            document.getElementById('playerResults').innerHTML = sorted.map(p => {
+                const diff = Math.abs(p.guess - correctYear);
+                let cls = 'far';
+                if (diff === 0) cls = 'perfect';
+                else if (diff <= 5) cls = 'close';
+
+                let diffText = diff === 0 ? 'Perfekt!' : `${diff} Jahr${diff > 1 ? 'e' : ''} daneben! (dein Tipp: ${p.guess})`;
+                return `
+                    <div class="player-result-row ${cls}">
+                        <span class="player-result-name">${p.name}</span>
+                        <span class="player-result-diff">${diffText}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const q = encodeURIComponent(`${currentSong.artistName} ${currentSong.trackName}`);
+            document.getElementById('streamingButtons').innerHTML = `
+                <a href="spotify:search:${q}" class="stream-link spotify">Spotify</a>
+                <a href="music://search?term=${q}" class="stream-link apple">Apple</a>
+                <a href="deezer://www.deezer.com/search/${q}" class="stream-link deezer">Deezer</a>
+                <a href="tidal://search/${q}" class="stream-link tidal">Tidal</a>
+            `;
+
+            // Update total scores for standings
+            players.forEach(p => {
+                const diff = Math.abs(p.guess - correctYear);
+                p.totalDiff += diff;
+            });
+            roundNumber++;
+
+            document.getElementById('playersGuessSection').classList.remove('visible');
+            document.getElementById('result').classList.add('visible');
+            document.getElementById('status').textContent = '';
+        }
+
+        function showStandings() {
+            const overlay = document.getElementById('standingsOverlay');
+            const roundText = document.getElementById('standingsRound');
+            const list = document.getElementById('standingsList');
+
+            roundText.textContent = `Nach ${roundNumber} Runde${roundNumber > 1 ? 'n' : ''}`;
+
+            // Sort by total difference (lowest is best)
+            const sorted = [...players].sort((a, b) => a.totalDiff - b.totalDiff);
+
+            list.innerHTML = sorted.map((p, i) => {
+                const avg = roundNumber > 0 ? (p.totalDiff / roundNumber).toFixed(1) : 0;
+                const scoreText = roundNumber > 0
+                    ? `${p.totalDiff} Jahre Abweichung, ø ${avg} Jahre`
+                    : `${p.totalDiff} Jahre Abweichung`;
+                return `
+                    <div class="standings-row">
+                        <span class="standings-rank">${i + 1}.</span>
+                        <span class="standings-name">${p.name}</span>
+                        <span class="standings-score">${scoreText}</span>
+                    </div>
+                `;
+            }).join('');
+
+            overlay.classList.add('visible');
+        }
+
+        function hideStandings() {
+            document.getElementById('standingsOverlay').classList.remove('visible');
+        }
+
+        init();
+    </script>
+</body>
+</html>

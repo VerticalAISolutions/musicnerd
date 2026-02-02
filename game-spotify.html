@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Jahr raten - Spotify Version</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .game-container {
+            width: 100%;
+            text-align: center;
+        }
+        .spotify-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #1DB954;
+            border: none;
+            cursor: pointer;
+            font-size: 50px;
+            color: white;
+            margin: 20px 0;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .spotify-btn:hover {
+            background: #1ed760;
+            transform: scale(1.05);
+        }
+        .spotify-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .spotify-btn.opened {
+            background: #0f3460;
+        }
+        .guess-section {
+            margin-top: 30px;
+            display: none;
+        }
+        .guess-section.visible {
+            display: block;
+        }
+        .guess-label {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        .guess-input {
+            width: 150px;
+            padding: 15px;
+            font-size: 32px;
+            text-align: center;
+            border: none;
+            border-radius: 12px;
+            background: #16213e;
+            color: #fff;
+            font-weight: bold;
+            letter-spacing: 4px;
+        }
+        .guess-input:focus {
+            outline: 2px solid #1DB954;
+        }
+        .submit-btn {
+            display: block;
+            width: 150px;
+            margin: 20px auto;
+            padding: 15px;
+            font-size: 18px;
+            background: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background: #1ed760;
+        }
+        .submit-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #16213e;
+            border-radius: 16px;
+            display: none;
+        }
+        .result.visible {
+            display: block;
+        }
+        .result-year {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1DB954;
+        }
+        .result-song {
+            font-size: 20px;
+            margin: 15px 0;
+        }
+        .result-artist {
+            color: #aaa;
+            font-size: 16px;
+        }
+        .result-diff {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        .result-diff.perfect {
+            background: #1b4332;
+            color: #95d5b2;
+        }
+        .result-diff.close {
+            background: #3d405b;
+            color: #f4f1de;
+        }
+        .result-diff.far {
+            background: #5c1a1a;
+            color: #ffb3b3;
+        }
+        .next-btn {
+            margin-top: 15px;
+            padding: 15px 30px;
+            font-size: 16px;
+            background: #0f3460;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .next-btn:hover {
+            background: #1a5090;
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #888;
+        }
+        .hint {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎵 In welchem Jahr?</h1>
+
+        <button class="spotify-btn" id="spotifyBtn" onclick="openInSpotify()">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="white">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+            </svg>
+        </button>
+        <div class="status" id="status">Klicke um den Song in Spotify zu öffnen</div>
+
+        <div class="guess-section" id="guessSection">
+            <div class="guess-label">Dein Tipp:</div>
+            <input type="text"
+                   class="guess-input"
+                   id="guessInput"
+                   maxlength="4"
+                   placeholder="1985"
+                   inputmode="numeric"
+                   pattern="[0-9]*">
+            <button class="submit-btn" id="submitBtn" onclick="submitGuess()">Raten!</button>
+        </div>
+
+        <div class="hint" id="hint" style="display: none;">
+            Hör dir den Song in Spotify an und komm zurück, um das Jahr zu raten!
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-year" id="resultYear"></div>
+            <div class="result-song" id="resultSong"></div>
+            <div class="result-artist" id="resultArtist"></div>
+            <div class="result-diff" id="resultDiff"></div>
+            <button class="next-btn" onclick="loadNewSong()">Nächster Song →</button>
+        </div>
+    </div>
+
+    <script>
+        // Songs mit Spotify-Track-IDs und Jahr (kuratierte Liste)
+        const songs = [
+            { artist: 'Queen', track: 'Bohemian Rhapsody', year: 1975, spotifyId: '7tFiyTwD0nx5a1eklYtX2J' },
+            { artist: 'Michael Jackson', track: 'Thriller', year: 1982, spotifyId: '2LlQb7Uoj1kKyGhlkBf9aC' },
+            { artist: 'Nirvana', track: 'Smells Like Teen Spirit', year: 1991, spotifyId: '5ghIJDpPoe3CfHMGu71E6T' },
+            { artist: 'Daft Punk', track: 'Get Lucky', year: 2013, spotifyId: '69kOkLUCkxIZYexIgSG8rq' },
+            { artist: 'Fleetwood Mac', track: 'Dreams', year: 1977, spotifyId: '0ofHAoxe9vBkTCp2UQIavz' },
+            { artist: 'Prince', track: 'Purple Rain', year: 1984, spotifyId: '54X78diSLoUDI3joC2bjMz' },
+            { artist: 'Radiohead', track: 'Creep', year: 1992, spotifyId: '70LcF31zb1H0PyJoS1Sx1r' },
+            { artist: 'Amy Winehouse', track: 'Rehab', year: 2006, spotifyId: '6xGruZOHLs39ZbVccQTuPZ' },
+            { artist: 'Led Zeppelin', track: 'Stairway to Heaven', year: 1971, spotifyId: '5CQ30WqJwcep0pYcV4AMNc' },
+            { artist: 'David Bowie', track: 'Heroes', year: 1977, spotifyId: '7Jh1bpe76CNTCgdgAdBw4Z' },
+            { artist: 'The Police', track: 'Every Breath You Take', year: 1983, spotifyId: '1JSTJqkT5qHq8MDJnJbRE1' },
+            { artist: 'U2', track: 'With or Without You', year: 1987, spotifyId: '6ADSaE87h8Y3lccZlBJdXH' },
+            { artist: 'Oasis', track: 'Wonderwall', year: 1995, spotifyId: '1qPbGZqppFwLwcBC1JQ6Vr' },
+            { artist: 'Coldplay', track: 'Yellow', year: 2000, spotifyId: '3AJwUDP919kvQ9QcozQPxg' },
+            { artist: 'Adele', track: 'Rolling in the Deep', year: 2010, spotifyId: '1c8gk2PeTE04A1pIDH9YMk' },
+            { artist: 'ABBA', track: 'Dancing Queen', year: 1976, spotifyId: '0GjEhVFGZW8afUYGChu3Rr' },
+            { artist: 'Eagles', track: 'Hotel California', year: 1977, spotifyId: '40riOy7x9W7GXjyGp4pjAv' },
+            { artist: 'Pink Floyd', track: 'Another Brick in the Wall', year: 1979, spotifyId: '4gMgiXfqyzZLMhsksGmbQV' },
+            { artist: "Guns N' Roses", track: 'Sweet Child O\' Mine', year: 1987, spotifyId: '7o2CTH4ctstm8TNelqjb51' },
+            { artist: 'Bob Marley', track: 'No Woman, No Cry', year: 1974, spotifyId: '4VTPY9MemLJqoAT3eJTjAv' },
+            { artist: 'Stevie Wonder', track: 'Superstition', year: 1972, spotifyId: '1h2xVEoJORqrg71HocgqXd' },
+            { artist: 'Bee Gees', track: 'Stayin\' Alive', year: 1977, spotifyId: '3mRM4NM8iO7UBqrSigCQFH' },
+            { artist: 'Blondie', track: 'Heart of Glass', year: 1978, spotifyId: '0LiSMYPgNpOE7yzZu4nTPG' },
+            { artist: 'Talking Heads', track: 'Psycho Killer', year: 1977, spotifyId: '1JvKfv6bz8U2Xj7Bhcp4R7' },
+            { artist: 'The Cure', track: 'Friday I\'m in Love', year: 1992, spotifyId: '4QlzkaRHtU8bPijDIFzUMT' },
+            { artist: 'Depeche Mode', track: 'Enjoy the Silence', year: 1990, spotifyId: '1V4jC0vJ5525lEF1bFgPX2' },
+            { artist: 'R.E.M.', track: 'Losing My Religion', year: 1991, spotifyId: '31AOj9sFz2gM0O3hMARRBx' },
+            { artist: 'Pearl Jam', track: 'Alive', year: 1991, spotifyId: '1L94M3KIu7QluZe63g64rv' },
+            { artist: 'Green Day', track: 'Basket Case', year: 1994, spotifyId: '6L3dWcLM0wHKeUd9X2DGQT' },
+            { artist: 'Foo Fighters', track: 'Everlong', year: 1997, spotifyId: '5UWwZ5lm5PKu6eKsHAGxOk' },
+            { artist: 'Arctic Monkeys', track: 'Do I Wanna Know?', year: 2013, spotifyId: '5FVd6KXrgO9B3JPmC8OPst' },
+            { artist: 'The Strokes', track: 'Last Nite', year: 2001, spotifyId: '60jFaQV7Z4boGC4ob5B5c6' },
+            { artist: 'Tame Impala', track: 'The Less I Know the Better', year: 2015, spotifyId: '6K4t31amVTZDgR3sKmwUJJ' },
+            { artist: 'Billie Eilish', track: 'bad guy', year: 2019, spotifyId: '2Fxmhks0bxGSBdJ92vM42m' },
+            { artist: 'Kraftwerk', track: 'The Robots', year: 1978, spotifyId: '0eUeNkrqGFgMgTtrz67iNJ' },
+            { artist: 'Joy Division', track: 'Love Will Tear Us Apart', year: 1980, spotifyId: '5MqyhhHbT13zsloD3uHhlQ' },
+            { artist: 'The Beatles', track: 'Let It Be', year: 1970, spotifyId: '7iN1s7xHE4ifF5povM6A48' },
+            { artist: 'The Rolling Stones', track: 'Paint It Black', year: 1966, spotifyId: '63T7DJ1AFDD6Bn8VzG6JE8' },
+            { artist: 'The Smiths', track: 'There Is a Light That Never Goes Out', year: 1986, spotifyId: '0WQiDwKJclirSYG9v5rCX5' },
+            { artist: 'New Order', track: 'Blue Monday', year: 1983, spotifyId: '7J9BKLWPIR1ymzVTKlfLcs' }
+        ];
+
+        let currentSong = null;
+        let guessSubmitted = false;
+        let spotifyOpened = false;
+
+        const spotifyBtn = document.getElementById('spotifyBtn');
+        const guessSection = document.getElementById('guessSection');
+        const guessInput = document.getElementById('guessInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const result = document.getElementById('result');
+        const status = document.getElementById('status');
+        const hint = document.getElementById('hint');
+
+        // Enter-Taste zum Absenden
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitGuess();
+        });
+
+        // Nur Zahlen erlauben
+        guessInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // Beim Laden einen Song wählen
+        window.addEventListener('load', loadNewSong);
+
+        function loadNewSong() {
+            // Reset UI
+            guessSubmitted = false;
+            spotifyOpened = false;
+            spotifyBtn.disabled = false;
+            spotifyBtn.classList.remove('opened');
+            guessSection.classList.remove('visible');
+            result.classList.remove('visible');
+            hint.style.display = 'none';
+            guessInput.value = '';
+            submitBtn.disabled = false;
+            status.textContent = 'Klicke um den Song in Spotify zu öffnen';
+
+            // Zufälligen Song wählen
+            currentSong = songs[Math.floor(Math.random() * songs.length)];
+        }
+
+        function openInSpotify() {
+            if (!currentSong || guessSubmitted) return;
+
+            // Spotify URI öffnen - startet Song direkt in der Spotify App
+            const spotifyUri = `spotify:track:${currentSong.spotifyId}`;
+            window.location.href = spotifyUri;
+
+            spotifyOpened = true;
+            spotifyBtn.classList.add('opened');
+            status.textContent = 'Spotify geöffnet - hör zu und rate das Jahr!';
+            hint.style.display = 'block';
+
+            // Ratefeld sofort einblenden
+            guessSection.classList.add('visible');
+            guessInput.focus();
+        }
+
+        function submitGuess() {
+            if (guessSubmitted || !currentSong) return;
+
+            const guess = parseInt(guessInput.value);
+
+            if (!guess || guess < 1900 || guess > 2030) {
+                guessInput.style.outline = '2px solid #ff6b6b';
+                setTimeout(() => guessInput.style.outline = '', 1000);
+                return;
+            }
+
+            guessSubmitted = true;
+            spotifyBtn.disabled = true;
+            submitBtn.disabled = true;
+
+            const correctYear = currentSong.year;
+            const diff = Math.abs(correctYear - guess);
+
+            // Ergebnis anzeigen
+            document.getElementById('resultYear').textContent = correctYear;
+            document.getElementById('resultSong').textContent = currentSong.track;
+            document.getElementById('resultArtist').textContent = currentSong.artist;
+
+            const diffEl = document.getElementById('resultDiff');
+
+            if (diff === 0) {
+                diffEl.textContent = '🎯 Perfekt! Genau richtig!';
+                diffEl.className = 'result-diff perfect';
+            } else if (diff <= 3) {
+                diffEl.textContent = `👏 Sehr gut! Nur ${diff} Jahr${diff > 1 ? 'e' : ''} daneben. (Du: ${guess})`;
+                diffEl.className = 'result-diff close';
+            } else if (diff <= 10) {
+                diffEl.textContent = `📅 ${diff} Jahre daneben. (Du: ${guess})`;
+                diffEl.className = 'result-diff close';
+            } else {
+                diffEl.textContent = `😅 ${diff} Jahre daneben. (Du: ${guess})`;
+                diffEl.className = 'result-diff far';
+            }
+
+            guessSection.classList.remove('visible');
+            hint.style.display = 'none';
+            result.classList.add('visible');
+            status.textContent = '';
+        }
+    </script>
+</body>
+</html>

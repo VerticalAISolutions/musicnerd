@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iTunes API Test</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        h1 {
+            color: #fff;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #16213e;
+            color: #fff;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #ff6b6b;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #16213e;
+        }
+        .status.success {
+            background: #1b4332;
+            color: #95d5b2;
+        }
+        .status.error {
+            background: #5c1a1a;
+            color: #ffb3b3;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .song-card {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #16213e;
+            border-radius: 12px;
+            align-items: center;
+        }
+        .song-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+        .song-info {
+            flex: 1;
+        }
+        .song-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .song-artist {
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .song-year {
+            color: #e94560;
+            font-weight: bold;
+        }
+        .song-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .play-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            background: #0f3460;
+        }
+        .play-btn:hover {
+            background: #1a5090;
+        }
+        .test-info {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-info h3 {
+            margin-top: 0;
+        }
+        code {
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 iTunes Search API Test</h1>
+
+    <div class="test-info">
+        <h3>API-Endpunkt</h3>
+        <p><code>https://itunes.apple.com/search</code></p>
+        <p>Dieser Test prüft:</p>
+        <ul>
+            <li>API-Erreichbarkeit</li>
+            <li>CORS-Unterstützung (direkter Browser-Zugriff)</li>
+            <li>Preview-URL Verfügbarkeit</li>
+            <li>Audio-Wiedergabe der 30-Sekunden-Previews</li>
+            <li>Metadaten (Jahr, Artist, Album)</li>
+        </ul>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Artist oder Song eingeben..." value="Queen Bohemian Rhapsody">
+        <button id="searchBtn" onclick="searchSongs()">Suchen</button>
+    </div>
+
+    <div id="status" class="status" style="display: none;"></div>
+
+    <div id="results" class="results"></div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+
+        // Enter-Taste zum Suchen
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchSongs();
+        });
+
+        async function searchSongs() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                showStatus('Bitte einen Suchbegriff eingeben.', 'error');
+                return;
+            }
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Suche...';
+            showStatus('Verbinde mit iTunes API...', '');
+
+            try {
+                const startTime = performance.now();
+
+                // iTunes Search API aufrufen
+                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=10`;
+
+                console.log('API URL:', url);
+
+                const response = await fetch(url);
+                const endTime = performance.now();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                console.log('API Response:', data);
+
+                const duration = Math.round(endTime - startTime);
+
+                if (data.resultCount === 0) {
+                    showStatus(`Keine Ergebnisse gefunden. (${duration}ms)`, 'error');
+                    resultsDiv.innerHTML = '';
+                    return;
+                }
+
+                showStatus(
+                    `✅ API-Verbindung erfolgreich! ${data.resultCount} Ergebnisse in ${duration}ms`,
+                    'success'
+                );
+
+                displayResults(data.results);
+
+            } catch (error) {
+                console.error('API Error:', error);
+                showStatus(`❌ Fehler: ${error.message}`, 'error');
+                resultsDiv.innerHTML = '';
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Suchen';
+            }
+        }
+
+        function showStatus(message, type) {
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+        }
+
+        function displayResults(songs) {
+            resultsDiv.innerHTML = songs.map((song, index) => {
+                const releaseYear = song.releaseDate ? new Date(song.releaseDate).getFullYear() : 'Unbekannt';
+                const hasPreview = !!song.previewUrl;
+
+                return `
+                    <div class="song-card">
+                        <img src="${song.artworkUrl100 || ''}" alt="Cover" onerror="this.style.display='none'">
+                        <div class="song-info">
+                            <div class="song-title">${escapeHtml(song.trackName)}</div>
+                            <div class="song-artist">${escapeHtml(song.artistName)}</div>
+                            <div class="song-year">📅 ${releaseYear}</div>
+                            <div class="song-meta">
+                                Album: ${escapeHtml(song.collectionName || 'Single')} |
+                                Genre: ${escapeHtml(song.primaryGenreName || 'Unbekannt')}
+                            </div>
+                            ${hasPreview ? `
+                                <audio controls preload="none">
+                                    <source src="${song.previewUrl}" type="audio/mpeg">
+                                    Audio nicht unterstützt
+                                </audio>
+                                <div class="song-meta">Preview: ${song.previewUrl ? '✅ Verfügbar' : '❌ Nicht verfügbar'}</div>
+                            ` : `
+                                <div class="song-meta" style="color: #ff6b6b;">❌ Keine Preview verfügbar</div>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Automatisch beim Laden testen
+        window.addEventListener('load', () => {
+            searchSongs();
+        });
+    </script>
+</body>
+</html>

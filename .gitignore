@@ -1,0 +1,8 @@
+# Env mit echten Keys – nicht committen
+.env
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
