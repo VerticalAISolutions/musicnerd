@@ -28,6 +28,16 @@
             z-index: -1;
             pointer-events: none;
         }
+        /* Mobile: Wavy Background nur während initialem Laden sichtbar */
+        @media (max-width: 768px), (hover: none) {
+            #wavyBackground {
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
+            #wavyBackground.wavy-loading {
+                opacity: 1;
+            }
+        }
         * {
             box-sizing: border-box;
         }
