@@ -19,7 +19,7 @@
             --dark-walnut: #582B11;
             --dark-blue: #0f1a2e;
         }
-        #wavyBackground {
+        #wavyWrapper {
             position: fixed;
             top: 0;
             left: 0;
@@ -27,7 +27,34 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
+        }
+        #wavyBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: block;
+        }
+        /* Mobile: Animation nur im unteren Drittel; ausblenden bei Setup-Screens */
+        @media (max-width: 768px), (hover: none) {
+            #wavyWrapper {
+                top: auto;
+                bottom: 0;
+                height: 33.333vh;
+                overflow: hidden;
+                transition: opacity 0.4s ease;
+            }
+            #wavyWrapper.wavy-hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            #wavyBackground {
+                position: absolute;
+                top: auto;
+                bottom: 0;
+                height: 100vh;
+            }
         }
         * {
             box-sizing: border-box;
@@ -390,14 +417,18 @@
             width: 100%;
             text-align: center;
         }
-        /* Mobile: Inhalt zentriert */
+        /* Mobile: Inhalt zentriert, halbtransparenter Hintergrund */
         @media (max-width: 768px), (hover: none) {
             .setup-screen {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                width: 100%;
+                width: calc(100% + 40px);
+                margin-left: -20px;
+                margin-right: -20px;
+                padding: 20px;
                 box-sizing: border-box;
+                background: rgba(15, 26, 46, 0.92);
             }
             /* Alle direkten Kinder zentriert, einheitliche Breite */
             .setup-screen > * {
@@ -412,7 +443,7 @@
             }
             /* Game-Screen: kein Fill/Hintergrund */
             .game-screen {
-                background: none;
+                background: none !important;
             }
         }
         .setup-section {
@@ -513,7 +544,7 @@
             outline: 2px solid var(--electric-aqua);
         }
 
-        /* Genre Grid: Mobil 2 Spalten, Desktop immer eine Zeile */
+        /* Genre Grid: Mobil 2 Spalten, Desktop 4 Spalten */
         .genre-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -521,8 +552,8 @@
         }
         @media (min-width: 769px) {
             .genre-grid {
-                grid-template-columns: repeat(12, minmax(70px, 1fr));
-                gap: 6px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
             }
         }
         .genre-item {
@@ -1377,7 +1408,9 @@
     </style>
 </head>
 <body>
-    <canvas id="wavyBackground"></canvas>
+    <div id="wavyWrapper">
+        <canvas id="wavyBackground"></canvas>
+    </div>
     <div class="container">
         <!-- Intro Screen -->
         <div class="intro-screen" id="introScreen">
@@ -2439,7 +2472,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 await loadNewSong(true);
 
                 // Wavy Background nach Laden ausblenden (Mobile)
-                wavyCanvas.classList.remove('wavy-loading');
+                document.getElementById('wavyWrapper').classList.add('wavy-hidden');
             } catch (e) {
                 console.error('startGame:', e);
                 if (loadingId) stopLoadingStatus(statusEl, loadingId);
@@ -2449,7 +2482,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
                 // Wavy Background auch bei Fehler ausblenden
-                document.getElementById('wavyWrapper').classList.remove('wavy-loading');
+                document.getElementById('wavyWrapper').classList.add('wavy-hidden');
             }
         }
 
