@@ -28,14 +28,18 @@
             z-index: -1;
             pointer-events: none;
         }
-        /* Mobile: Wavy Background nur während initialem Laden sichtbar */
+        /* Mobile: Animation nur im unteren Drittel (Intro + Game); aus bei Wer spielt mit / Spieloptionen */
         @media (max-width: 768px), (hover: none) {
             #wavyBackground {
-                opacity: 0;
+                opacity: 1;
                 transition: opacity 0.5s ease;
             }
-            #wavyBackground.wavy-loading {
-                opacity: 1;
+            #wavyBackground:not(.wavy-hidden) {
+                clip-path: inset(66% 0 0 0);
+                -webkit-clip-path: inset(66% 0 0 0);
+            }
+            #wavyBackground.wavy-hidden {
+                opacity: 0;
             }
         }
         * {
@@ -72,11 +76,20 @@
             color: var(--icy-aqua);
             opacity: 1;
         }
-        /* Mobile: Footer scrollt mit der Seite */
+        /* Mobile: Footer immer am Bottom, scrollt mit bei langem Inhalt */
         @media (max-width: 768px), (hover: none) {
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            body .container {
+                flex: 1 1 auto;
+            }
             .footer {
                 position: relative;
-                margin-top: 40px;
+                margin-top: auto;
+                padding-top: 24px;
             }
         }
 
@@ -680,16 +693,20 @@
         @keyframes play-loading-spin-head {
             to { transform: rotate(270deg); }
         }
-        /* Auf Mobil: Einfacher pulsierender Kreis statt komplexem Spinner */
+        /* Mobil: Ladeanimation ohne BG (nur Wavy im unteren Drittel), pulsierender Ring */
         @media (max-width: 768px), (hover: none) {
+            .game-screen .play-btn-wrapper,
+            .game-screen .status {
+                background: none;
+            }
             .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail,
             .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc,
             .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
                 display: none !important;
             }
             .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
-                stroke-width: 3;
-                opacity: 1;
+                stroke-width: 2;
+                opacity: 0.5;
                 animation: pulse-ring 1.5s ease-in-out infinite;
             }
         }
@@ -1508,16 +1525,19 @@
         function showSetup() {
             document.getElementById('introScreen').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyBackground').classList.add('wavy-hidden');
         }
 
         function showSetupPlayers() {
             document.getElementById('setupOptions').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyBackground').classList.add('wavy-hidden');
         }
 
         function showSetupOptions() {
             document.getElementById('setupPlayers').style.display = 'none';
             document.getElementById('setupOptions').style.display = 'block';
+            document.getElementById('wavyBackground').classList.add('wavy-hidden');
         }
 
         // How-it-works Modal
@@ -2360,8 +2380,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 loadingId = startLoadingStatus(statusEl);
 
-                // Wavy Background auf Mobile während Laden zeigen
                 const wavyCanvas = document.getElementById('wavyBackground');
+                wavyCanvas.classList.remove('wavy-hidden');
                 wavyCanvas.classList.add('wavy-loading');
 
                 await yieldToPaint();
@@ -2429,6 +2449,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('setupOptions').style.display = 'block';
             document.getElementById('result').classList.remove('visible');
             document.getElementById('playersGuessSection').classList.remove('visible');
+            document.getElementById('wavyBackground').classList.add('wavy-hidden');
         }
 
         /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
