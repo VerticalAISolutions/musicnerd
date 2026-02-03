@@ -2089,6 +2089,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 loadingId = startLoadingStatus(statusEl);
 
+                // Wavy Background auf Mobile während Laden zeigen
+                const wavyCanvas = document.getElementById('wavyBackground');
+                wavyCanvas.classList.add('wavy-loading');
+
                 await yieldToPaint();
 
                 await loadFallbackScripts(Array.from(selectedGenres));
@@ -2116,6 +2120,9 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
                 statusEl.textContent = '';
                 await loadNewSong(true);
+
+                // Wavy Background nach Laden ausblenden (Mobile)
+                wavyCanvas.classList.remove('wavy-loading');
             } catch (e) {
                 console.error('startGame:', e);
                 if (loadingId) stopLoadingStatus(statusEl, loadingId);
@@ -2124,6 +2131,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 setPlayButtonDisplay('▶');
                 resetPlayCountdown();
                 statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
+                // Wavy Background auch bei Fehler ausblenden
+                document.getElementById('wavyBackground').classList.remove('wavy-loading');
             }
         }
 
