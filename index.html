@@ -2598,7 +2598,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             let animationId;
 
             // Blur-Effekt über CSS
-            canvas.style.filter = 'blur(15px)';
+            canvas.style.filter = 'blur(8px)';
 
             function resize() {
                 w = canvas.width = window.innerWidth;
@@ -2634,7 +2634,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 ctx.fillStyle = '#0f1a2e';
                 ctx.globalAlpha = 0.15;
                 ctx.fillRect(0, 0, w, h);
-                nt += 0.012; // Schnellere Bewegung
+                nt += 0.006; // Moderate Bewegung
                 drawWave(4);
                 animationId = requestAnimationFrame(render);
             }
