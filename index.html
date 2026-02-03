@@ -426,6 +426,19 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            /* Alle direkten Kinder zentriert, einheitliche Breite */
+            .setup-screen > * {
+                width: 100%;
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
+                box-sizing: border-box;
+            }
+            .setup-screen h1 {
+                text-align: center;
             }
         }
         .setup-section {
@@ -444,9 +457,6 @@
                 max-width: 360px;
                 margin-left: auto;
                 margin-right: auto;
-            }
-            .setup-screen h1 {
-                width: 100%;
             }
         }
         .setup-label {
@@ -2977,16 +2987,19 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             }, delay);
         })();
 
-        // WebGL Dithering Shader Background
+        // WebGL Dithering Shader Background (WebGL2 mit WebGL1-Fallback für Mobile)
         (function initDitheringShader() {
             const canvas = document.getElementById('wavyBackground');
-            const gl = canvas.getContext('webgl2');
+            const opts = { alpha: false, failIfMajorPerformanceCaveat: false };
+            let gl = canvas.getContext('webgl2', opts);
+            const isWebGL1 = !gl;
+            if (!gl) gl = canvas.getContext('webgl', opts) || canvas.getContext('experimental-webgl', opts);
             if (!gl) {
-                console.error('WebGL2 not supported');
+                console.warn('WebGL not supported');
                 return;
             }
 
-            // Shader sources
+            // Shader sources (WebGL2 / GLSL ES 3.0)
             const vertexShaderSource = `#version 300 es
 precision mediump float;
 layout(location = 0) in vec4 a_position;
@@ -3001,8 +3014,6 @@ uniform vec4 u_colorFront;
 uniform float u_pxSize;
 uniform float u_waveOffset;
 out vec4 fragColor;
-
-#define TWO_PI 6.28318530718
 
 const int bayer8x8[64] = int[64](
    0, 32,  8, 40,  2, 34, 10, 42,
@@ -3025,7 +3036,6 @@ void main() {
   float t = 0.5 * u_time;
   vec2 uv = gl_FragCoord.xy / u_resolution.xy;
   uv -= 0.5;
-
   float pxSize = u_pxSize;
   vec2 pxSizeUv = gl_FragCoord.xy;
   pxSizeUv -= 0.5 * u_resolution;
@@ -3033,26 +3043,86 @@ void main() {
   vec2 pixelizedUv = floor(pxSizeUv) * pxSize / u_resolution.xy;
   pixelizedUv += 0.5;
   pixelizedUv -= 0.5;
-
   vec2 shape_uv = pixelizedUv * 4.0;
   shape_uv.y += u_waveOffset;
   float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
   float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
-
   float dithering = getBayerValue(pxSizeUv) - 0.5;
   float res = step(0.5, shape + dithering);
-
   vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
   float fgOpacity = u_colorFront.a;
   vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
   float bgOpacity = u_colorBack.a;
-
   vec3 color = fgColor * res;
   float opacity = fgOpacity * res;
   color += bgColor * (1.0 - opacity);
   opacity += bgOpacity * (1.0 - opacity);
-
   fragColor = vec4(color, opacity);
+}`;
+
+            // WebGL1 / GLSL ES 1.0 (Fallback für viele Mobile-Browser)
+            const vertexShaderSourceWebGL1 = `attribute vec4 a_position;
+void main() { gl_Position = a_position; }`;
+
+            const fragmentShaderSourceWebGL1 = `precision mediump float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec4 u_colorBack;
+uniform vec4 u_colorFront;
+uniform float u_pxSize;
+uniform float u_waveOffset;
+
+float getBayerValue(vec2 uv) {
+  vec2 pos = mod(uv, 8.0);
+  int ix = int(pos.x);
+  int iy = int(pos.y);
+  int index = iy * 8 + ix;
+  float v = 0.0;
+  if (index == 0) v = 0.0; else if (index == 1) v = 32.0; else if (index == 2) v = 8.0; else if (index == 3) v = 40.0;
+  else if (index == 4) v = 2.0; else if (index == 5) v = 34.0; else if (index == 6) v = 10.0; else if (index == 7) v = 42.0;
+  else if (index == 8) v = 48.0; else if (index == 9) v = 16.0; else if (index == 10) v = 56.0; else if (index == 11) v = 24.0;
+  else if (index == 12) v = 50.0; else if (index == 13) v = 18.0; else if (index == 14) v = 58.0; else if (index == 15) v = 26.0;
+  else if (index == 16) v = 12.0; else if (index == 17) v = 44.0; else if (index == 18) v = 4.0; else if (index == 19) v = 36.0;
+  else if (index == 20) v = 14.0; else if (index == 21) v = 46.0; else if (index == 22) v = 6.0; else if (index == 23) v = 38.0;
+  else if (index == 24) v = 60.0; else if (index == 25) v = 28.0; else if (index == 26) v = 52.0; else if (index == 27) v = 20.0;
+  else if (index == 28) v = 62.0; else if (index == 29) v = 30.0; else if (index == 30) v = 54.0; else if (index == 31) v = 22.0;
+  else if (index == 32) v = 3.0; else if (index == 33) v = 35.0; else if (index == 34) v = 11.0; else if (index == 35) v = 43.0;
+  else if (index == 36) v = 1.0; else if (index == 37) v = 33.0; else if (index == 38) v = 9.0; else if (index == 39) v = 41.0;
+  else if (index == 40) v = 51.0; else if (index == 41) v = 19.0; else if (index == 42) v = 59.0; else if (index == 43) v = 27.0;
+  else if (index == 44) v = 49.0; else if (index == 45) v = 17.0; else if (index == 46) v = 57.0; else if (index == 47) v = 25.0;
+  else if (index == 48) v = 15.0; else if (index == 49) v = 47.0; else if (index == 50) v = 7.0; else if (index == 51) v = 39.0;
+  else if (index == 52) v = 13.0; else if (index == 53) v = 45.0; else if (index == 54) v = 5.0; else if (index == 55) v = 37.0;
+  else if (index == 56) v = 63.0; else if (index == 57) v = 31.0; else if (index == 58) v = 55.0; else if (index == 59) v = 23.0;
+  else if (index == 60) v = 61.0; else if (index == 61) v = 29.0; else if (index == 62) v = 53.0; else v = 21.0;
+  return v / 64.0;
+}
+
+void main() {
+  float t = 0.5 * u_time;
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  uv -= 0.5;
+  float pxSize = u_pxSize;
+  vec2 pxSizeUv = gl_FragCoord.xy;
+  pxSizeUv -= 0.5 * u_resolution;
+  pxSizeUv /= pxSize;
+  vec2 pixelizedUv = floor(pxSizeUv) * pxSize / u_resolution.xy;
+  pixelizedUv += 0.5;
+  pixelizedUv -= 0.5;
+  vec2 shape_uv = pixelizedUv * 4.0;
+  shape_uv.y += u_waveOffset;
+  float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
+  float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
+  float dithering = getBayerValue(pxSizeUv) - 0.5;
+  float res = step(0.5, shape + dithering);
+  vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
+  float fgOpacity = u_colorFront.a;
+  vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
+  float bgOpacity = u_colorBack.a;
+  vec3 color = fgColor * res;
+  float opacity = fgOpacity * res;
+  color += bgColor * (1.0 - opacity);
+  opacity += bgOpacity * (1.0 - opacity);
+  gl_FragColor = vec4(color, opacity);
 }`;
 
             function createShader(type, source) {
@@ -3067,8 +3137,10 @@ void main() {
                 return shader;
             }
 
-            const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource);
-            const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+            const vsSource = isWebGL1 ? vertexShaderSourceWebGL1 : vertexShaderSource;
+            const fsSource = isWebGL1 ? fragmentShaderSourceWebGL1 : fragmentShaderSource;
+            const vertexShader = createShader(gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = createShader(gl.FRAGMENT_SHADER, fsSource);
 
             const program = gl.createProgram();
             gl.attachShader(program, vertexShader);
@@ -3135,6 +3207,9 @@ void main() {
 
             resize();
             window.addEventListener('resize', resize);
+            window.addEventListener('orientationchange', function() { setTimeout(resize, 100); });
+            // Mobile: Nach erstem Paint nochmal dimensionieren (vermeidet leeres Canvas)
+            requestAnimationFrame(function() { requestAnimationFrame(resize); });
             render();
         })();
     </script>
