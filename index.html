@@ -36,24 +36,24 @@
             height: 100%;
             display: block;
         }
-        /* Mobile: Animation nur im unteren Drittel; ausblenden bei Setup-Screens */
+        /* Mobile: Animation nur im unteren Drittel */
         @media (max-width: 768px), (hover: none) {
             #wavyWrapper {
                 top: auto;
                 bottom: 0;
                 height: 33.333vh;
                 overflow: hidden;
-                transition: opacity 0.4s ease;
+                transition: opacity 0.5s ease;
             }
             #wavyWrapper.wavy-hidden {
                 opacity: 0;
                 pointer-events: none;
             }
             #wavyBackground {
-                position: absolute;
                 top: auto;
                 bottom: 0;
                 height: 100vh;
+                min-height: 100%;
             }
         }
         * {
