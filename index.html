@@ -409,28 +409,31 @@
             width: 100%;
         }
 
-        /* Setup Screen: bei Desktop UND Mobil zentriert */
+        /* Setup Screen */
         .setup-screen {
             width: 100%;
             text-align: center;
             box-sizing: border-box;
         }
+        /* Desktop: Innerer Wrapper volle Breite */
         .setup-screen-inner {
             width: 100%;
-            max-width: 360px;
-            margin-left: auto;
-            margin-right: auto;
             display: block;
             text-align: left;
             box-sizing: border-box;
         }
-        /* Mobile: Halbtransparenter Hintergrund */
+        /* Mobile: Halbtransparenter Hintergrund, Innerer Wrapper zentriert auf 360px */
         @media (max-width: 768px), (hover: none) {
             .setup-screen, .game-screen {
                 background: rgba(15, 26, 46, 0.85);
                 border-radius: 16px;
                 padding: 20px;
                 margin: -10px;
+            }
+            .setup-screen-inner {
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
             }
         }
         .setup-section {
