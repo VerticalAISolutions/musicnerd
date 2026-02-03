@@ -2402,9 +2402,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 loadingId = startLoadingStatus(statusEl);
 
-                const wavyCanvas = document.getElementById('wavyBackground');
-                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
-                wavyCanvas.classList.add('wavy-loading');
 
                 await yieldToPaint();
 
@@ -2434,8 +2431,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 statusEl.textContent = '';
                 await loadNewSong(true);
 
-                // Wavy Background nach Laden ausblenden (Mobile)
-                wavyCanvas.classList.remove('wavy-loading');
             } catch (e) {
                 console.error('startGame:', e);
                 if (loadingId) stopLoadingStatus(statusEl, loadingId);
@@ -2444,8 +2439,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 setPlayButtonDisplay('▶');
                 resetPlayCountdown();
                 statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
-                // Wavy Background auch bei Fehler ausblenden
-                document.getElementById('wavyWrapper').classList.remove('wavy-loading');
             }
         }
 
@@ -2471,7 +2464,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('setupOptions').style.display = 'block';
             document.getElementById('result').classList.remove('visible');
             document.getElementById('playersGuessSection').classList.remove('visible');
-            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
