@@ -1834,7 +1834,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         /** Bekannte falsche Release-Jahre (Spotify/iTunes) → korrektes Jahr. Key: "artist|titel" normalisiert (klein, Leerzeichen 1). */
         const RELEASE_YEAR_OVERRIDES = {
-            'pharoah sanders|the creator has a master plan': 1969
+            'pharoah sanders|the creator has a master plan': 1969,
+            'glenn miller|in the mood': 1940
         };
         function applyReleaseYearOverride(song) {
             if (!song || !song.artistName || !song.trackName) return;
