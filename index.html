@@ -135,6 +135,158 @@
         .intro-btn:hover {
             background: #c91a6a;
         }
+        .intro-subcopy {
+            font-size: 18px;
+            color: var(--icy-aqua);
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+        .intro-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .intro-chip {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--icy-aqua);
+            background: rgba(135, 241, 255, 0.1);
+            border: 1px solid rgba(135, 241, 255, 0.3);
+            border-radius: 50px;
+            white-space: nowrap;
+        }
+        .intro-secondary-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            color: var(--old-rose);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .intro-secondary-btn:hover {
+            color: var(--icy-aqua);
+        }
+
+        /* How-it-works Modal */
+        .hiw-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 26, 46, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .hiw-modal-overlay.visible {
+            display: flex;
+        }
+        .hiw-modal-box {
+            background: var(--dark-blue);
+            border: 2px solid var(--electric-aqua);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(135, 241, 255, 0.15);
+        }
+        .hiw-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: 1px solid var(--old-rose);
+            border-radius: 50%;
+            color: var(--old-rose);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .hiw-modal-close:hover {
+            border-color: var(--icy-aqua);
+            color: var(--icy-aqua);
+        }
+        .hiw-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--electric-aqua);
+            margin: 0 0 25px 0;
+            text-align: center;
+        }
+        .hiw-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+        .hiw-step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        .hiw-step:last-child {
+            margin-bottom: 0;
+        }
+        .hiw-step-number {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--cherry-rose);
+            border-radius: 50%;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hiw-step-text {
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--icy-aqua);
+        }
+        .hiw-step-text strong {
+            color: var(--electric-aqua);
+        }
+        .hiw-modal-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            background: var(--cherry-rose);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .hiw-modal-btn:hover {
+            background: #c91a6a;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
         .setup-nav {
             display: flex;
             gap: 10px;
@@ -1126,27 +1278,18 @@
         <div class="intro-screen" id="introScreen">
             <div class="intro-title">MusicNerd</div>
 
-            <div class="intro-lead">
-                Ihr hört gemeinsam einen 30-Sekunden-Ausschnitt eines Songs – ohne Titel, ohne Hinweise.
+            <div class="intro-subcopy">
+                30 Sekunden hören. Jahr tippen. Punkte kassieren.
             </div>
 
-            <div class="intro-section">
-                <div class="intro-section-title">Schätzt das Jahr.</div>
-                <div class="intro-section-text">Jede*r tippt, wann der Song erschienen ist.<br>Kein Googeln. Nur Gehör, Erfahrung und Gefühl.</div>
+            <div class="intro-chips">
+                <span class="intro-chip">30 Sekunden hören</span>
+                <span class="intro-chip">Jahr tippen</span>
+                <span class="intro-chip">Punkte kassieren</span>
             </div>
 
-            <div class="intro-section">
-                <div class="intro-section-title">Auflösung & Einordnung.</div>
-                <div class="intro-section-text">Nach der Auflösung seht ihr, wer am nächsten dran war – und warum der Song vielleicht täuscht.</div>
-            </div>
-
-            <div class="intro-section">
-                <div class="intro-section-title">Wer gewinnt?</div>
-                <div class="intro-section-text">Am Ende zählt, wer insgesamt die geringste Abweichung hat.</div>
-            </div>
-
-            <div class="intro-ready">Bereit?</div>
-            <button class="intro-btn" onclick="showSetup()">Los geht's!</button>
+            <button class="intro-btn" onclick="showSetup()">Spiel starten</button>
+            <button class="intro-secondary-btn" onclick="showHowItWorksModal()" id="hiwTrigger">So funktioniert's</button>
         </div>
 
         <!-- Setup Screen 1: Players -->
@@ -1262,6 +1405,33 @@
         </div>
     </div>
 
+    <!-- How-it-works Modal -->
+    <div class="hiw-modal-overlay" id="hiwModalOverlay" onclick="if (event.target === this) hideHowItWorksModal();">
+        <div class="hiw-modal-box" role="dialog" aria-modal="true" aria-labelledby="hiwModalTitle">
+            <button class="hiw-modal-close" onclick="hideHowItWorksModal()" aria-label="Schließen">X</button>
+            <h2 class="hiw-modal-title" id="hiwModalTitle">So funktioniert's</h2>
+            <ol class="hiw-steps">
+                <li class="hiw-step">
+                    <span class="hiw-step-number">1</span>
+                    <span class="hiw-step-text"><strong>Hören:</strong> 30 Sekunden Song-Ausschnitt – ohne Titel, ohne Hinweise.</span>
+                </li>
+                <li class="hiw-step">
+                    <span class="hiw-step-number">2</span>
+                    <span class="hiw-step-text"><strong>Tippen:</strong> Schätzt das Veröffentlichungsjahr.</span>
+                </li>
+                <li class="hiw-step">
+                    <span class="hiw-step-number">3</span>
+                    <span class="hiw-step-text"><strong>Auflösung:</strong> Seht, wer am nächsten dran war – und warum der Song täuschen kann.</span>
+                </li>
+                <li class="hiw-step">
+                    <span class="hiw-step-number">4</span>
+                    <span class="hiw-step-text"><strong>Gewinnen:</strong> Am Ende zählt die geringste Gesamtabweichung.</span>
+                </li>
+            </ol>
+            <button class="hiw-modal-btn" onclick="hideHowItWorksModal(); showSetup();">Spiel starten</button>
+        </div>
+    </div>
+
     <footer class="footer">
         powered by <a href="https://www.vais.one" target="_blank">Vertical AI Solutions</a>
     </footer>
@@ -1282,6 +1452,34 @@
         function showSetupOptions() {
             document.getElementById('setupPlayers').style.display = 'none';
             document.getElementById('setupOptions').style.display = 'block';
+        }
+
+        // How-it-works Modal
+        function showHowItWorksModal() {
+            const overlay = document.getElementById('hiwModalOverlay');
+            overlay.classList.add('visible');
+            document.body.classList.add('modal-open');
+            // Focus auf ersten Button im Modal
+            const closeBtn = overlay.querySelector('.hiw-modal-close');
+            if (closeBtn) closeBtn.focus();
+            // ESC-Listener
+            document.addEventListener('keydown', hiwModalEscHandler);
+        }
+
+        function hideHowItWorksModal() {
+            const overlay = document.getElementById('hiwModalOverlay');
+            overlay.classList.remove('visible');
+            document.body.classList.remove('modal-open');
+            document.removeEventListener('keydown', hiwModalEscHandler);
+            // Fokus zurück auf Trigger
+            const trigger = document.getElementById('hiwTrigger');
+            if (trigger) trigger.focus();
+        }
+
+        function hiwModalEscHandler(e) {
+            if (e.key === 'Escape') {
+                hideHowItWorksModal();
+            }
         }
 
         /* Genre-Metadaten für UI und API. Songlisten (beginner/intermediate/expert) kommen aus fallback-genres/*.js (listsKey). */
