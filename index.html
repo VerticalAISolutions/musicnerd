@@ -2594,16 +2594,18 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             const canvas = document.getElementById('wavyBackground');
             const ctx = canvas.getContext('2d');
             const waveColors = ['#87F1FF', '#C0F5FA', '#BD8B9C', '#AF125A'];
-            const blur = 10;
             let w, h, nt = 0;
             let animationId;
+
+            // Blur-Effekt über CSS
+            canvas.style.filter = 'blur(15px)';
 
             function resize() {
                 w = canvas.width = window.innerWidth;
                 h = canvas.height = window.innerHeight;
             }
 
-            // Simple noise function (no external library needed)
+            // Simple noise function
             function noise(x, y, t) {
                 return Math.sin(x * 0.01 + t) * Math.cos(y * 0.01 + t * 0.5) *
                        Math.sin((x + y) * 0.005 + t * 0.3);
@@ -2612,15 +2614,15 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             function drawWave(n) {
                 for (let i = 0; i < n; i++) {
                     ctx.beginPath();
-                    ctx.lineWidth = 50;
+                    ctx.lineWidth = 60;
                     ctx.strokeStyle = waveColors[i % waveColors.length];
-                    ctx.globalAlpha = 0.3;
+                    ctx.globalAlpha = 0.4;
                     for (let x = 0; x < w; x += 5) {
-                        const y = noise(x, i * 100, nt) * 100 + Math.sin(x * 0.01 + nt + i) * 50;
+                        const y = noise(x, i * 80, nt) * 80 + Math.sin(x * 0.008 + nt * 1.5 + i) * 40;
                         if (x === 0) {
-                            ctx.moveTo(x, y + h * 0.5);
+                            ctx.moveTo(x, y + h * 0.8); // Unteres Drittel
                         } else {
-                            ctx.lineTo(x, y + h * 0.5);
+                            ctx.lineTo(x, y + h * 0.8);
                         }
                     }
                     ctx.stroke();
@@ -2630,9 +2632,9 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
             function render() {
                 ctx.fillStyle = '#0f1a2e';
-                ctx.globalAlpha = 0.1;
+                ctx.globalAlpha = 0.15;
                 ctx.fillRect(0, 0, w, h);
-                nt += 0.003;
+                nt += 0.012; // Schnellere Bewegung
                 drawWave(4);
                 animationId = requestAnimationFrame(render);
             }
