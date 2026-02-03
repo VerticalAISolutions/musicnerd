@@ -2166,6 +2166,14 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         async function loadNewSong(waitForFirstExplanation = false) {
             if (DEBUG_MODE) console.log('loadNewSong gestartet, waitForFirstExplanation:', waitForFirstExplanation);
+
+            // "Letzte Runde!" Meldung anzeigen
+            if (roundNumber + 1 === totalRounds && roundNumber > 0) {
+                const status = document.getElementById('status');
+                status.textContent = 'Letzte Runde!';
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+
             guessSubmitted = false;
             currentSong = null;
             songInfoPromise = null;
