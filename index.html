@@ -346,7 +346,7 @@
             font-size: 16px;
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
-            background: transparent;
+            background: var(--dark-blue);
             color: var(--old-rose);
             border: 2px solid var(--old-rose);
             border-radius: 10px;
@@ -385,6 +385,15 @@
         .setup-screen {
             width: 100%;
         }
+        /* Mobile: Halbtransparenter Hintergrund für bessere Lesbarkeit */
+        @media (max-width: 768px), (hover: none) {
+            .setup-screen, .game-screen {
+                background: rgba(15, 26, 46, 0.85);
+                border-radius: 16px;
+                padding: 20px;
+                margin: -10px;
+            }
+        }
         .setup-section {
             margin-bottom: 25px;
             text-align: left;
@@ -409,7 +418,7 @@
             height: 44px;
             padding: 0 12px;
             border: 2px solid var(--old-rose);
-            background: transparent;
+            background: var(--dark-blue);
             color: var(--icy-aqua);
             border-radius: 8px;
             font-size: 18px;
@@ -429,7 +438,7 @@
             width: 44px;
             height: 44px;
             border: 2px solid var(--old-rose);
-            background: transparent;
+            background: var(--dark-blue);
             color: var(--icy-aqua);
             border-radius: 8px;
             font-size: 18px;
@@ -991,7 +1000,7 @@
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
             border: 2px solid var(--old-rose);
-            background: transparent;
+            background: var(--dark-blue);
             color: var(--icy-aqua);
             border-radius: 8px;
             cursor: pointer;
@@ -2917,6 +2926,7 @@ uniform vec2 u_resolution;
 uniform vec4 u_colorBack;
 uniform vec4 u_colorFront;
 uniform float u_pxSize;
+uniform float u_waveOffset;
 out vec4 fragColor;
 
 #define TWO_PI 6.28318530718
@@ -2952,6 +2962,7 @@ void main() {
   pixelizedUv -= 0.5;
 
   vec2 shape_uv = pixelizedUv * 4.0;
+  shape_uv.y += u_waveOffset;
   float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
   float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
 
@@ -3002,7 +3013,8 @@ void main() {
                 u_resolution: gl.getUniformLocation(program, 'u_resolution'),
                 u_colorBack: gl.getUniformLocation(program, 'u_colorBack'),
                 u_colorFront: gl.getUniformLocation(program, 'u_colorFront'),
-                u_pxSize: gl.getUniformLocation(program, 'u_pxSize')
+                u_pxSize: gl.getUniformLocation(program, 'u_pxSize'),
+                u_waveOffset: gl.getUniformLocation(program, 'u_waveOffset')
             };
 
             // Setup position buffer
@@ -3030,6 +3042,7 @@ void main() {
             function render() {
                 const isMobile = window.innerWidth <= 768;
                 const pxSize = isMobile ? 4 : 3;
+                const waveOffset = isMobile ? -1.5 : 0; // Mobile: unteres Drittel
                 const speed = 0.5;
                 const currentTime = (Date.now() - startTime) * 0.001 * speed;
 
@@ -3041,6 +3054,7 @@ void main() {
                 gl.uniform4fv(uniforms.u_colorBack, colorBack);
                 gl.uniform4fv(uniforms.u_colorFront, colorFront);
                 gl.uniform1f(uniforms.u_pxSize, pxSize);
+                gl.uniform1f(uniforms.u_waveOffset, waveOffset);
 
                 gl.drawArrays(gl.TRIANGLES, 0, 6);
                 animationId = requestAnimationFrame(render);
