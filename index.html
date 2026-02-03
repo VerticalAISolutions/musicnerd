@@ -32,6 +32,9 @@
         * {
             box-sizing: border-box;
         }
+        html, body {
+            overflow-x: hidden;
+        }
         body {
             font-family: 'DM Sans', sans-serif;
             max-width: 600px;
@@ -387,14 +390,8 @@
             width: 100%;
             text-align: center;
         }
-        /* Mobile: Halbtransparenter Hintergrund, Inhalt zentriert */
+        /* Mobile: Inhalt zentriert */
         @media (max-width: 768px), (hover: none) {
-            .setup-screen, .game-screen {
-                background: rgba(15, 26, 46, 0.85);
-                border-radius: 16px;
-                padding: 20px;
-                margin: -10px;
-            }
             .setup-screen {
                 display: flex;
                 flex-direction: column;
@@ -412,6 +409,10 @@
             }
             .setup-screen h1 {
                 text-align: center;
+            }
+            /* Game-Screen: kein Fill/Hintergrund */
+            .game-screen {
+                background: none;
             }
         }
         .setup-section {
@@ -1551,16 +1552,19 @@
         function showSetup() {
             document.getElementById('introScreen').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupPlayers() {
             document.getElementById('setupOptions').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupOptions() {
             document.getElementById('setupPlayers').style.display = 'none';
             document.getElementById('setupOptions').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         // How-it-works Modal
@@ -2396,6 +2400,9 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 document.getElementById('setupOptions').style.display = 'none';
                 document.getElementById('gameScreen').classList.add('visible');
                 renderPlayerGuessRows();
+                
+                // Animation einblenden (unteres Drittel auf Mobile)
+                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
 
                 playBtnStart.disabled = true;
                 setPlayButtonDisplay('');
