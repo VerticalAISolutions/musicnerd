@@ -482,9 +482,11 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        .round-count-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
+        @media (hover: hover) {
+            .round-count-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
         }
         .player-count-btn {
             width: 44px;
@@ -503,9 +505,11 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        .player-count-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
+        @media (hover: hover) {
+            .player-count-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
         }
         .player-inputs {
             display: flex;
@@ -558,8 +562,10 @@
                 background: #192336;
             }
         }
-        .genre-item:hover {
-            background: #1a2d4a;
+        @media (hover: hover) {
+            .genre-item:hover:not(.selected) {
+                background: #1a2d4a;
+            }
         }
         .genre-item.selected {
             background: var(--cherry-rose);
@@ -1085,9 +1091,11 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        .difficulty-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
+        @media (hover: hover) {
+            .difficulty-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
         }
         .standings-overlay {
             display: none;
