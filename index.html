@@ -432,10 +432,10 @@
             margin-bottom: 25px;
             text-align: left;
             width: 100%;
-            max-width: 360px;
         }
         @media (max-width: 768px), (hover: none) {
             .setup-section {
+                max-width: 360px;
                 margin-left: auto;
                 margin-right: auto;
             }
@@ -529,11 +529,17 @@
             outline: 2px solid var(--electric-aqua);
         }
 
-        /* Genre Grid */
+        /* Genre Grid: Mobil 2 Spalten, Desktop immer eine Zeile */
         .genre-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
+        }
+        @media (min-width: 769px) {
+            .genre-grid {
+                grid-template-columns: repeat(12, minmax(70px, 1fr));
+                gap: 6px;
+            }
         }
         .genre-item {
             display: flex;
@@ -1307,9 +1313,6 @@
             h1 {
                 font-size: 32px;
             }
-            .genre-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
             .genre-item {
                 padding: 12px 14px;
             }
@@ -1344,9 +1347,6 @@
 
         /* Desktop (>= 1024px) */
         @media (min-width: 1024px) {
-            .genre-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
             .intro-screen {
                 padding: 50px 0;
             }
