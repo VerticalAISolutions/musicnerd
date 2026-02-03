@@ -752,25 +752,6 @@
         .result-btn:hover {
             background: var(--icy-aqua);
         }
-        .settings-btn {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            padding: 12px;
-            font-size: 52px;
-            line-height: 1;
-            background: none;
-            color: var(--old-rose);
-            border: none;
-            cursor: pointer;
-            opacity: 0.5;
-            transition: opacity 0.2s;
-        }
-        .settings-btn:hover {
-            opacity: 1;
-            color: var(--icy-aqua);
-        }
-
         /* Difficulty Selection */
         .difficulty-buttons {
             display: flex;
@@ -1231,7 +1212,6 @@
                     <button class="result-btn" onclick="showStandings()">Zwischenstand</button>
                     <button class="result-btn" onclick="loadNewSong()">Nächster Song</button>
                 </div>
-                <button class="settings-btn" onclick="backToSetup()" title="Einstellungen">⚙</button>
             </div>
 
             <!-- Standings Overlay -->
@@ -1678,12 +1658,14 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
             'Die passenden Ausschnitte werden geladen.',
             'Ein paar Dinge sortieren sich im Hintergrund.',
             'Das passiert nur einmal.',
-            'Danach geht es schnell.',
-            'Sehr schnell.',
-            'Ab dann kommt ein Song nach dem anderen.',
+            'Danach geht es schneller.',
+            'Deutlich schneller.',
+            'Ein Song folgt dem nächsten.',
             'Ohne lange Pausen.',
-            'Versprochen.',
-            'Gleich geht\'s los.'
+            'Ihr müsst nichts weiter tun.',
+            'Nur kurz warten.',
+            'Dann geht es los.',
+            'Gleich.'
         ];
         const SENTENCE_PAUSE_MS = 2000;
 
