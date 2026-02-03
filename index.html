@@ -146,7 +146,7 @@
         .intro-title-wrapper {
             position: relative;
             display: inline-block;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
         }
         .intro-title-svg {
             position: absolute;
@@ -178,7 +178,7 @@
         .intro-text-loop {
             height: 50px;
             overflow: hidden;
-            margin-bottom: 55px;
+            margin-bottom: 70px;
             opacity: 0;
         }
         .intro-text-loop.active {
@@ -210,7 +210,7 @@
         }
         .intro-secondary-btn {
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 25px;
             padding: 10px 20px;
             font-size: 16px;
             font-family: 'DM Sans', sans-serif;
@@ -1341,6 +1341,7 @@
             </div>
 
             <button class="intro-btn" onclick="showSetup()">Spiel starten</button>
+            <br>
             <button class="intro-secondary-btn" onclick="showHowItWorksModal()" id="hiwTrigger">So funktioniert's</button>
         </div>
 
@@ -2894,68 +2895,159 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             }, 3000);
         })();
 
-        // Wavy Background Animation
-        (function initWavyBackground() {
+        // WebGL Dithering Shader Background
+        (function initDitheringShader() {
             const canvas = document.getElementById('wavyBackground');
-            const ctx = canvas.getContext('2d');
-            const waveColors = ['#87F1FF', '#C0F5FA', '#BD8B9C', '#AF125A'];
-            let w, h, nt = 0;
+            const gl = canvas.getContext('webgl2');
+            if (!gl) {
+                console.error('WebGL2 not supported');
+                return;
+            }
+
+            // Shader sources
+            const vertexShaderSource = `#version 300 es
+precision mediump float;
+layout(location = 0) in vec4 a_position;
+void main() { gl_Position = a_position; }`;
+
+            const fragmentShaderSource = `#version 300 es
+precision mediump float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec4 u_colorBack;
+uniform vec4 u_colorFront;
+uniform float u_pxSize;
+out vec4 fragColor;
+
+#define TWO_PI 6.28318530718
+
+const int bayer8x8[64] = int[64](
+   0, 32,  8, 40,  2, 34, 10, 42,
+  48, 16, 56, 24, 50, 18, 58, 26,
+  12, 44,  4, 36, 14, 46,  6, 38,
+  60, 28, 52, 20, 62, 30, 54, 22,
+   3, 35, 11, 43,  1, 33,  9, 41,
+  51, 19, 59, 27, 49, 17, 57, 25,
+  15, 47,  7, 39, 13, 45,  5, 37,
+  63, 31, 55, 23, 61, 29, 53, 21
+);
+
+float getBayerValue(vec2 uv) {
+  ivec2 pos = ivec2(mod(uv, 8.0));
+  int index = pos.y * 8 + pos.x;
+  return float(bayer8x8[index]) / 64.0;
+}
+
+void main() {
+  float t = 0.5 * u_time;
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  uv -= 0.5;
+
+  float pxSize = u_pxSize;
+  vec2 pxSizeUv = gl_FragCoord.xy;
+  pxSizeUv -= 0.5 * u_resolution;
+  pxSizeUv /= pxSize;
+  vec2 pixelizedUv = floor(pxSizeUv) * pxSize / u_resolution.xy;
+  pixelizedUv += 0.5;
+  pixelizedUv -= 0.5;
+
+  vec2 shape_uv = pixelizedUv * 4.0;
+  float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
+  float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
+
+  float dithering = getBayerValue(pxSizeUv) - 0.5;
+  float res = step(0.5, shape + dithering);
+
+  vec3 fgColor = u_colorFront.rgb * u_colorFront.a;
+  float fgOpacity = u_colorFront.a;
+  vec3 bgColor = u_colorBack.rgb * u_colorBack.a;
+  float bgOpacity = u_colorBack.a;
+
+  vec3 color = fgColor * res;
+  float opacity = fgOpacity * res;
+  color += bgColor * (1.0 - opacity);
+  opacity += bgOpacity * (1.0 - opacity);
+
+  fragColor = vec4(color, opacity);
+}`;
+
+            function createShader(type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Shader error:', gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            const vertexShader = createShader(gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                console.error('Program error:', gl.getProgramInfoLog(program));
+                return;
+            }
+
+            // Get uniform locations
+            const uniforms = {
+                u_time: gl.getUniformLocation(program, 'u_time'),
+                u_resolution: gl.getUniformLocation(program, 'u_resolution'),
+                u_colorBack: gl.getUniformLocation(program, 'u_colorBack'),
+                u_colorFront: gl.getUniformLocation(program, 'u_colorFront'),
+                u_pxSize: gl.getUniformLocation(program, 'u_pxSize')
+            };
+
+            // Setup position buffer
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+
+            const positionLocation = gl.getAttribLocation(program, 'a_position');
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+            // Colors: dark blue background, cherry rose front
+            const colorBack = [15/255, 26/255, 46/255, 1]; // #0f1a2e
+            const colorFront = [175/255, 18/255, 90/255, 0.6]; // #AF125A with opacity
+
+            const startTime = Date.now();
             let animationId;
 
-            // Blur-Effekt über CSS
-            canvas.style.filter = 'blur(8px)';
-
             function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-
-            // Simple noise function
-            function noise(x, y, t) {
-                return Math.sin(x * 0.01 + t) * Math.cos(y * 0.01 + t * 0.5) *
-                       Math.sin((x + y) * 0.005 + t * 0.3);
-            }
-
-            function drawWave(n) {
-                // Mobile: 20% höher (0.6 statt 0.8)
-                const isMobile = window.innerWidth <= 768;
-                const waveYPos = isMobile ? 0.6 : 0.8;
-
-                for (let i = 0; i < n; i++) {
-                    ctx.beginPath();
-                    ctx.lineWidth = 60;
-                    ctx.strokeStyle = waveColors[i % waveColors.length];
-                    ctx.globalAlpha = 0.4;
-                    for (let x = 0; x < w; x += 5) {
-                        const y = noise(x, i * 80, nt) * 80 + Math.sin(x * 0.008 + nt * 1.5 + i) * 40;
-                        if (x === 0) {
-                            ctx.moveTo(x, y + h * waveYPos);
-                        } else {
-                            ctx.lineTo(x, y + h * waveYPos);
-                        }
-                    }
-                    ctx.stroke();
-                    ctx.closePath();
-                }
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                gl.viewport(0, 0, canvas.width, canvas.height);
             }
 
             function render() {
-                ctx.fillStyle = '#0f1a2e';
-                ctx.globalAlpha = 0.15;
-                ctx.fillRect(0, 0, w, h);
-                nt += 0.006; // Moderate Bewegung
-                drawWave(4);
+                const isMobile = window.innerWidth <= 768;
+                const pxSize = isMobile ? 4 : 3;
+                const speed = 0.5;
+                const currentTime = (Date.now() - startTime) * 0.001 * speed;
+
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.useProgram(program);
+
+                gl.uniform1f(uniforms.u_time, currentTime);
+                gl.uniform2f(uniforms.u_resolution, canvas.width, canvas.height);
+                gl.uniform4fv(uniforms.u_colorBack, colorBack);
+                gl.uniform4fv(uniforms.u_colorFront, colorFront);
+                gl.uniform1f(uniforms.u_pxSize, pxSize);
+
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
                 animationId = requestAnimationFrame(render);
             }
 
             resize();
             window.addEventListener('resize', resize);
-
-            // Initial fill
-            ctx.fillStyle = '#0f1a2e';
-            ctx.globalAlpha = 1;
-            ctx.fillRect(0, 0, w, h);
-
             render();
         })();
     </script>
