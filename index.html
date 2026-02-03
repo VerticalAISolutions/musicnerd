@@ -539,7 +539,7 @@
             outline: 2px solid var(--electric-aqua);
         }
 
-        /* Genre Grid: Mobil 2 Spalten, Desktop immer eine Zeile */
+        /* Genre Grid: Mobil 2 Spalten, Desktop Grid mit mehreren Zeilen */
         .genre-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -547,8 +547,8 @@
         }
         @media (min-width: 769px) {
             .genre-grid {
-                grid-template-columns: repeat(12, minmax(70px, 1fr));
-                gap: 6px;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
             }
         }
         .genre-item {
@@ -560,6 +560,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s;
+            min-width: 0;
         }
         /* Desktop: Genre-Buttons ca. 4 % heller als Standard, weniger hell als Hover */
         @media (min-width: 769px) {
@@ -602,6 +603,10 @@
         .genre-name {
             font-size: 13px;
             color: var(--icy-aqua);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
 
         /* Year Range Slider */
