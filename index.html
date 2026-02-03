@@ -36,7 +36,7 @@
             height: 100%;
             display: block;
         }
-        /* Mobile: Animation nur im unteren Drittel; aus bei Wer spielt mit / Spieloptionen */
+        /* Mobile: Animation nur im unteren Drittel (Wrapper zeigt nur unten); aus bei Wer spielt mit / Spieloptionen */
         @media (max-width: 768px), (hover: none) {
             #wavyWrapper {
                 top: auto;
@@ -58,9 +58,6 @@
         }
         * {
             box-sizing: border-box;
-        }
-        html, body {
-            overflow-x: hidden;
         }
         body {
             font-family: 'DM Sans', sans-serif;
@@ -431,6 +428,7 @@
                 background: rgba(15, 26, 46, 0.85);
                 border-radius: 16px;
                 padding: 20px;
+                margin: -10px;
             }
             .setup-screen-inner {
                 max-width: 360px;
@@ -2438,14 +2436,15 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 document.getElementById('gameScreen').classList.add('visible');
                 renderPlayerGuessRows();
 
-                // Animation einblenden (unteres Drittel auf Mobile)
-                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
-
                 playBtnStart.disabled = true;
                 setPlayButtonDisplay('');
                 playBtnStart.classList.add('loading');
                 resetPlayCountdown();
                 loadingId = startLoadingStatus(statusEl);
+
+                const wavyCanvas = document.getElementById('wavyBackground');
+                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
+                wavyCanvas.classList.add('wavy-loading');
 
                 await yieldToPaint();
 
@@ -2475,6 +2474,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 statusEl.textContent = '';
                 await loadNewSong(true);
 
+                // Wavy Background nach Laden ausblenden (Mobile)
+                wavyCanvas.classList.remove('wavy-loading');
             } catch (e) {
                 console.error('startGame:', e);
                 if (loadingId) stopLoadingStatus(statusEl, loadingId);
@@ -2483,6 +2484,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 setPlayButtonDisplay('▶');
                 resetPlayCountdown();
                 statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
+                // Wavy Background auch bei Fehler ausblenden
+                document.getElementById('wavyWrapper').classList.remove('wavy-loading');
             }
         }
 
