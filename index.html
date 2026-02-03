@@ -19,7 +19,7 @@
             --dark-walnut: #582B11;
             --dark-blue: #0f1a2e;
         }
-        #wavyBackground {
+        #wavyWrapper {
             position: fixed;
             top: 0;
             left: 0;
@@ -27,7 +27,34 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
+        }
+        #wavyBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: block;
+        }
+        /* Mobile: Animation nur im unteren Drittel; aus bei Wer spielt mit / Spieloptionen */
+        @media (max-width: 768px), (hover: none) {
+            #wavyWrapper {
+                top: auto;
+                bottom: 0;
+                height: 33.333vh;
+                overflow: hidden;
+                transition: opacity 0.5s ease;
+            }
+            #wavyWrapper.wavy-hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+            #wavyBackground {
+                top: auto;
+                bottom: 0;
+                height: 100vh;
+                min-height: 100%;
+            }
         }
         * {
             box-sizing: border-box;
@@ -1371,7 +1398,9 @@
     </style>
 </head>
 <body>
-    <canvas id="wavyBackground"></canvas>
+    <div id="wavyWrapper">
+        <canvas id="wavyBackground"></canvas>
+    </div>
     <div class="container">
         <!-- Intro Screen -->
         <div class="intro-screen" id="introScreen">
@@ -1550,16 +1579,19 @@
         function showSetup() {
             document.getElementById('introScreen').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupPlayers() {
             document.getElementById('setupOptions').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupOptions() {
             document.getElementById('setupPlayers').style.display = 'none';
             document.getElementById('setupOptions').style.display = 'block';
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         // How-it-works Modal
@@ -2396,12 +2428,14 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 document.getElementById('gameScreen').classList.add('visible');
                 renderPlayerGuessRows();
 
+                // Animation einblenden (unteres Drittel auf Mobile)
+                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
+
                 playBtnStart.disabled = true;
                 setPlayButtonDisplay('');
                 playBtnStart.classList.add('loading');
                 resetPlayCountdown();
                 loadingId = startLoadingStatus(statusEl);
-
 
                 await yieldToPaint();
 
@@ -2464,6 +2498,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('setupOptions').style.display = 'block';
             document.getElementById('result').classList.remove('visible');
             document.getElementById('playersGuessSection').classList.remove('visible');
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
