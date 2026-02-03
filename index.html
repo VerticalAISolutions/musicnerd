@@ -171,11 +171,32 @@
         }
 
         /* Player Setup */
-        .player-count {
+        .player-count, .round-count {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             margin-bottom: 15px;
+        }
+        .round-count-btn {
+            min-width: 50px;
+            height: 44px;
+            padding: 0 12px;
+            border: 2px solid var(--old-rose);
+            background: transparent;
+            color: var(--icy-aqua);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .round-count-btn.selected {
+            background: var(--cherry-rose);
+            border-color: var(--cherry-rose);
+            color: white;
+        }
+        .round-count-btn:hover {
+            border-color: var(--electric-aqua);
         }
         .player-count-btn {
             width: 44px;
@@ -1130,6 +1151,10 @@
                 <label class="setup-label">Namen</label>
                 <div class="player-inputs" id="playerInputs"></div>
             </div>
+            <div class="setup-section">
+                <label class="setup-label">Anzahl Runden</label>
+                <div class="round-count" id="roundCount"></div>
+            </div>
             <div class="setup-nav">
                 <button class="next-btn" onclick="showSetupOptions()">Weiter</button>
             </div>
@@ -1212,10 +1237,10 @@
             <!-- Standings Overlay -->
             <div class="standings-overlay" id="standingsOverlay">
                 <div class="standings-content">
-                    <div class="standings-title">Zwischenstand</div>
+                    <div class="standings-title" id="standingsTitle">Zwischenstand</div>
                     <div class="standings-round" id="standingsRound"></div>
                     <div class="standings-list" id="standingsList"></div>
-                    <button class="close-standings-btn" onclick="hideStandings()">Weiter spielen</button>
+                    <button class="close-standings-btn" id="standingsBtn" onclick="hideStandings()">Weiter spielen</button>
                 </div>
             </div>
         </div>
@@ -1815,6 +1840,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         const currentYear = new Date().getFullYear();
         let playerCount = 2;
+        let totalRounds = 5;
         let players = [];
         let selectedGenres = new Set(['rock', 'pop', 'indie']);
         let selectedDifficulty = 'beginner';
@@ -1877,6 +1903,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         function init() {
             renderPlayerCount();
             renderPlayerInputs();
+            renderRoundCount();
             renderGenres();
             renderDifficulty();
             setupRangeSlider();
@@ -1902,6 +1929,18 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             container.innerHTML = Array.from({length: playerCount}, (_, i) => `
                 <input type="text" class="player-name-input" placeholder="Spieler ${i+1}" data-index="${i}" maxlength="20">
             `).join('');
+        }
+
+        function renderRoundCount() {
+            const container = document.getElementById('roundCount');
+            container.innerHTML = [5, 10, 15].map(n => `
+                <button class="round-count-btn ${n === totalRounds ? 'selected' : ''}" onclick="setRoundCount(${n})">${n}</button>
+            `).join('');
+        }
+
+        function setRoundCount(n) {
+            totalRounds = n;
+            renderRoundCount();
         }
 
         function renderGenres() {
@@ -2506,8 +2545,13 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             const overlay = document.getElementById('standingsOverlay');
             const roundText = document.getElementById('standingsRound');
             const list = document.getElementById('standingsList');
+            const title = document.getElementById('standingsTitle');
+            const btn = document.getElementById('standingsBtn');
 
-            roundText.textContent = `Nach ${roundNumber} Runde${roundNumber > 1 ? 'n' : ''}`;
+            const isGameOver = roundNumber >= totalRounds;
+            title.textContent = isGameOver ? 'Endergebnis' : 'Zwischenstand';
+            btn.textContent = isGameOver ? 'Neues Spiel' : 'Weiter spielen';
+            roundText.textContent = `Nach ${roundNumber} von ${totalRounds} Runde${roundNumber > 1 ? 'n' : ''}`;
 
             // Sort by total difference (lowest is best)
             const sorted = [...players].sort((a, b) => a.totalDiff - b.totalDiff);
@@ -2531,6 +2575,14 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         function hideStandings() {
             document.getElementById('standingsOverlay').classList.remove('visible');
+            // Bei Spielende zurück zum Setup
+            if (roundNumber >= totalRounds) {
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('introScreen').style.display = 'none';
+                document.getElementById('setupPlayers').style.display = 'block';
+                roundNumber = 0;
+                players.forEach(p => p.totalDiff = 0);
+            }
         }
 
         init();
