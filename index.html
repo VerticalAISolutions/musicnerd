@@ -72,6 +72,13 @@
             color: var(--icy-aqua);
             opacity: 1;
         }
+        /* Mobile: Footer scrollt mit der Seite */
+        @media (max-width: 768px), (hover: none) {
+            .footer {
+                position: relative;
+                margin-top: 40px;
+            }
+        }
 
         /* Intro Screen */
         .intro-screen {
@@ -2631,6 +2638,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             }
 
             function drawWave(n) {
+                // Mobile: 20% höher (0.6 statt 0.8)
+                const isMobile = window.innerWidth <= 768;
+                const waveYPos = isMobile ? 0.6 : 0.8;
+
                 for (let i = 0; i < n; i++) {
                     ctx.beginPath();
                     ctx.lineWidth = 60;
@@ -2639,9 +2650,9 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                     for (let x = 0; x < w; x += 5) {
                         const y = noise(x, i * 80, nt) * 80 + Math.sin(x * 0.008 + nt * 1.5 + i) * 40;
                         if (x === 0) {
-                            ctx.moveTo(x, y + h * 0.8); // Unteres Drittel
+                            ctx.moveTo(x, y + h * waveYPos);
                         } else {
-                            ctx.lineTo(x, y + h * 0.8);
+                            ctx.lineTo(x, y + h * waveYPos);
                         }
                     }
                     ctx.stroke();
