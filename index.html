@@ -2901,11 +2901,14 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 }
             }
 
-            // Warte bis Logo-Animation fertig ist (ca. 3s), dann starte Text-Loop
+            // Warte bis Logo-Animation fertig ist, dann starte Text-Loop
+            // Desktop: 1s, Mobile: 3s
+            const isMobile = window.innerWidth <= 768;
+            const delay = isMobile ? 3000 : 1000;
             setTimeout(() => {
                 container.classList.add('active');
                 setInterval(showNext, 2000);
-            }, 3000);
+            }, delay);
         })();
 
         // WebGL Dithering Shader Background
