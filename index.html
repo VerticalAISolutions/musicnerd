@@ -176,14 +176,19 @@
 
         /* Text loop animation for claims */
         .intro-text-loop {
-            height: 32px;
+            height: 50px;
             overflow: hidden;
             margin-bottom: 40px;
+            opacity: 0;
+        }
+        .intro-text-loop.active {
+            opacity: 1;
+            transition: opacity 0.5s ease;
         }
         .intro-text-loop-item {
-            font-size: 20px;
-            font-weight: 500;
-            color: var(--old-rose);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--icy-aqua);
             opacity: 0;
             transform: translateY(20px);
             animation: textLoopIn 0.4s ease-out forwards;
@@ -210,15 +215,13 @@
             font-size: 16px;
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
-            color: var(--old-rose);
+            color: var(--icy-aqua);
             background: transparent;
             border: none;
             cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 3px;
         }
         .intro-secondary-btn:hover {
-            color: var(--icy-aqua);
+            color: var(--electric-aqua);
         }
 
         /* How-it-works Modal */
@@ -2862,7 +2865,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         init();
 
-        // Text Loop Animation für Intro
+        // Text Loop Animation für Intro (startet nach Logo-Animation)
         (function initTextLoop() {
             const claims = [
                 '30 Sekunden hören.',
@@ -2884,7 +2887,11 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 }
             }
 
-            setInterval(showNext, 2000);
+            // Warte bis Logo-Animation fertig ist (ca. 3s), dann starte Text-Loop
+            setTimeout(() => {
+                container.classList.add('active');
+                setInterval(showNext, 2000);
+            }, 3000);
         })();
 
         // Wavy Background Animation
