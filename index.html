@@ -413,16 +413,8 @@
         .setup-screen {
             width: 100%;
             text-align: center;
-            box-sizing: border-box;
         }
-        /* Desktop: Innerer Wrapper volle Breite */
-        .setup-screen-inner {
-            width: 100%;
-            display: block;
-            text-align: left;
-            box-sizing: border-box;
-        }
-        /* Mobile: Halbtransparenter Hintergrund, Innerer Wrapper zentriert auf 360px */
+        /* Mobile: Halbtransparenter Hintergrund, Inhalt zentriert */
         @media (max-width: 768px), (hover: none) {
             .setup-screen, .game-screen {
                 background: rgba(15, 26, 46, 0.85);
@@ -430,10 +422,23 @@
                 padding: 20px;
                 margin: -10px;
             }
-            .setup-screen-inner {
+            .setup-screen {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            /* Alle direkten Kinder zentriert, einheitliche Breite */
+            .setup-screen > * {
+                width: 100%;
                 max-width: 360px;
                 margin-left: auto;
                 margin-right: auto;
+                box-sizing: border-box;
+            }
+            .setup-screen h1 {
+                text-align: center;
             }
         }
         .setup-section {
@@ -443,10 +448,15 @@
         }
         @media (max-width: 768px), (hover: none) {
             .setup-section {
-                max-width: 100%;
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
             }
             .setup-screen .setup-nav {
-                max-width: 100%;
+                width: 100%;
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
             }
         }
         .setup-label {
@@ -482,11 +492,9 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        @media (hover: hover) {
-            .round-count-btn:hover:not(.selected) {
-                background: rgba(255, 255, 255, 0.1);
-                border-color: var(--electric-aqua);
-            }
+        .round-count-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--electric-aqua);
         }
         .player-count-btn {
             width: 44px;
@@ -505,11 +513,9 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        @media (hover: hover) {
-            .player-count-btn:hover:not(.selected) {
-                background: rgba(255, 255, 255, 0.1);
-                border-color: var(--electric-aqua);
-            }
+        .player-count-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--electric-aqua);
         }
         .player-inputs {
             display: flex;
@@ -533,7 +539,7 @@
             outline: 2px solid var(--electric-aqua);
         }
 
-        /* Genre Grid: Mobil 2 Spalten, Desktop Grid mit mehreren Zeilen */
+        /* Genre Grid: Mobil 2 Spalten, Desktop immer eine Zeile */
         .genre-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -541,8 +547,8 @@
         }
         @media (min-width: 769px) {
             .genre-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-                gap: 8px;
+                grid-template-columns: repeat(12, minmax(70px, 1fr));
+                gap: 6px;
             }
         }
         .genre-item {
@@ -554,7 +560,6 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s;
-            min-width: 0;
         }
         /* Desktop: Genre-Buttons ca. 4 % heller als Standard, weniger hell als Hover */
         @media (min-width: 769px) {
@@ -562,10 +567,8 @@
                 background: #192336;
             }
         }
-        @media (hover: hover) {
-            .genre-item:hover:not(.selected) {
-                background: #1a2d4a;
-            }
+        .genre-item:hover {
+            background: #1a2d4a;
         }
         .genre-item.selected {
             background: var(--cherry-rose);
@@ -599,10 +602,6 @@
         .genre-name {
             font-size: 13px;
             color: var(--icy-aqua);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
         }
 
         /* Year Range Slider */
@@ -1091,11 +1090,9 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        @media (hover: hover) {
-            .difficulty-btn:hover:not(.selected) {
-                background: rgba(255, 255, 255, 0.1);
-                border-color: var(--electric-aqua);
-            }
+        .difficulty-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--electric-aqua);
         }
         .standings-overlay {
             display: none;
@@ -1435,61 +1432,57 @@
 
         <!-- Setup Screen 1: Players -->
         <div class="setup-screen" id="setupPlayers" style="display: none;">
-            <div class="setup-screen-inner">
-                <h1 style="margin-top: 0;">Wer spielt mit?</h1>
-                <div class="setup-section">
-                    <label class="setup-label">Anzahl Spieler</label>
-                    <div class="player-count" id="playerCount"></div>
-                </div>
-                <div class="setup-section">
-                    <label class="setup-label">Namen</label>
-                    <div class="player-inputs" id="playerInputs"></div>
-                </div>
-                <div class="setup-section">
-                    <label class="setup-label">Anzahl Runden</label>
-                    <div class="round-count" id="roundCount"></div>
-                </div>
-                <div class="setup-nav">
-                    <button class="next-btn" onclick="showSetupOptions()">Weiter</button>
-                </div>
+            <h1 style="margin-top: 0;">Wer spielt mit?</h1>
+            <div class="setup-section">
+                <label class="setup-label">Anzahl Spieler</label>
+                <div class="player-count" id="playerCount"></div>
+            </div>
+            <div class="setup-section">
+                <label class="setup-label">Namen</label>
+                <div class="player-inputs" id="playerInputs"></div>
+            </div>
+            <div class="setup-section">
+                <label class="setup-label">Anzahl Runden</label>
+                <div class="round-count" id="roundCount"></div>
+            </div>
+            <div class="setup-nav">
+                <button class="next-btn" onclick="showSetupOptions()">Weiter</button>
             </div>
         </div>
 
         <!-- Setup Screen 2: Options -->
         <div class="setup-screen" id="setupOptions" style="display: none;">
-            <div class="setup-screen-inner">
-                <h1 style="margin-top: 0;">Spieloptionen</h1>
-                <!-- Genres -->
-                <div class="setup-section">
-                    <label class="setup-label">Genres</label>
-                    <div class="genre-grid" id="genreGrid"></div>
-                </div>
+            <h1 style="margin-top: 0;">Spieloptionen</h1>
+            <!-- Genres -->
+            <div class="setup-section">
+                <label class="setup-label">Genres</label>
+                <div class="genre-grid" id="genreGrid"></div>
+            </div>
 
-                <!-- Year Range -->
-                <div class="setup-section">
-                    <label class="setup-label">Zeitraum</label>
-                    <div class="year-display">
-                        <span id="yearMin">1940</span>
-                        <span id="yearMax">2025</span>
-                    </div>
-                    <div class="range-slider">
-                        <div class="slider-track"></div>
-                        <div class="slider-range" id="sliderRange"></div>
-                        <input type="range" id="rangeMin" min="1940" max="2025" value="1940">
-                        <input type="range" id="rangeMax" min="1940" max="2025" value="2025">
-                    </div>
+            <!-- Year Range -->
+            <div class="setup-section">
+                <label class="setup-label">Zeitraum</label>
+                <div class="year-display">
+                    <span id="yearMin">1940</span>
+                    <span id="yearMax">2025</span>
                 </div>
+                <div class="range-slider">
+                    <div class="slider-track"></div>
+                    <div class="slider-range" id="sliderRange"></div>
+                    <input type="range" id="rangeMin" min="1940" max="2025" value="1940">
+                    <input type="range" id="rangeMax" min="1940" max="2025" value="2025">
+                </div>
+            </div>
 
-                <!-- Difficulty -->
-                <div class="setup-section">
-                    <label class="setup-label">Schwierigkeit</label>
-                    <div class="difficulty-buttons" id="difficultyButtons"></div>
-                </div>
+            <!-- Difficulty -->
+            <div class="setup-section">
+                <label class="setup-label">Schwierigkeit</label>
+                <div class="difficulty-buttons" id="difficultyButtons"></div>
+            </div>
 
-                <div class="setup-nav">
-                    <button class="back-btn" onclick="showSetupPlayers()">Zurück</button>
-                    <button class="next-btn" id="startBtn" onclick="startGame()">Spiel starten</button>
-                </div>
+            <div class="setup-nav">
+                <button class="back-btn" onclick="showSetupPlayers()">Zurück</button>
+                <button class="next-btn" id="startBtn" onclick="startGame()">Spiel starten</button>
             </div>
         </div>
 
@@ -3159,6 +3152,7 @@ void main() {
                 return;
             }
 
+            // Get uniform locations
             const uniforms = {
                 u_time: gl.getUniformLocation(program, 'u_time'),
                 u_resolution: gl.getUniformLocation(program, 'u_resolution'),
@@ -3168,6 +3162,7 @@ void main() {
                 u_waveOffset: gl.getUniformLocation(program, 'u_waveOffset')
             };
 
+            // Setup position buffer
             const positionBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
@@ -3176,8 +3171,9 @@ void main() {
             gl.enableVertexAttribArray(positionLocation);
             gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-            const colorBack = [15/255, 26/255, 46/255, 1];
-            const colorFront = [175/255, 18/255, 90/255, 0.6];
+            // Colors: dark blue background, cherry rose front
+            const colorBack = [15/255, 26/255, 46/255, 1]; // #0f1a2e
+            const colorFront = [175/255, 18/255, 90/255, 0.6]; // #AF125A with opacity
 
             const startTime = Date.now();
             let animationId;
@@ -3191,7 +3187,7 @@ void main() {
             function render() {
                 const isMobile = window.innerWidth <= 768;
                 const pxSize = isMobile ? 4 : 3;
-                const waveOffset = isMobile ? -1.5 : 0;
+                const waveOffset = isMobile ? -1.5 : 0; // Mobile: unteres Drittel
                 const speed = 0.5;
                 const currentTime = (Date.now() - startTime) * 0.001 * speed;
 
@@ -3212,6 +3208,7 @@ void main() {
             resize();
             window.addEventListener('resize', resize);
             window.addEventListener('orientationchange', function() { setTimeout(resize, 100); });
+            // Mobile: Nach erstem Paint nochmal dimensionieren (vermeidet leeres Canvas)
             requestAnimationFrame(function() { requestAnimationFrame(resize); });
             render();
         })();
