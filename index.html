@@ -19,7 +19,7 @@
             --dark-walnut: #582B11;
             --dark-blue: #0f1a2e;
         }
-        #wavyBackground {
+        #wavyWrapper {
             position: fixed;
             top: 0;
             left: 0;
@@ -28,18 +28,32 @@
             z-index: -1;
             pointer-events: none;
         }
-        /* Mobile: Animation nur im unteren Drittel (Intro + Game); aus bei Wer spielt mit / Spieloptionen */
+        #wavyBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* Mobile: Animation nur im unteren Drittel (Wrapper zeigt nur unten); aus bei Wer spielt mit / Spieloptionen */
         @media (max-width: 768px), (hover: none) {
-            #wavyBackground {
-                opacity: 1;
+            #wavyWrapper {
+                top: auto;
+                bottom: 0;
+                height: 33.333vh;
+                overflow: hidden;
                 transition: opacity 0.5s ease;
             }
-            #wavyBackground:not(.wavy-hidden) {
-                clip-path: inset(66% 0 0 0);
-                -webkit-clip-path: inset(66% 0 0 0);
-            }
-            #wavyBackground.wavy-hidden {
+            #wavyWrapper.wavy-hidden {
                 opacity: 0;
+                pointer-events: none;
+            }
+            #wavyBackground {
+                top: auto;
+                bottom: 0;
+                height: 100vh;
+                min-height: 100%;
             }
         }
         * {
@@ -398,8 +412,9 @@
         /* Setup Screen */
         .setup-screen {
             width: 100%;
+            text-align: center;
         }
-        /* Mobile: Halbtransparenter Hintergrund für bessere Lesbarkeit */
+        /* Mobile: Halbtransparenter Hintergrund, Inhalt zentriert */
         @media (max-width: 768px), (hover: none) {
             .setup-screen, .game-screen {
                 background: rgba(15, 26, 46, 0.85);
@@ -407,10 +422,32 @@
                 padding: 20px;
                 margin: -10px;
             }
+            .setup-screen {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
         }
         .setup-section {
             margin-bottom: 25px;
             text-align: left;
+            width: 100%;
+            max-width: 360px;
+        }
+        @media (max-width: 768px), (hover: none) {
+            .setup-section {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .setup-screen .setup-nav {
+                width: 100%;
+                max-width: 360px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .setup-screen h1 {
+                width: 100%;
+            }
         }
         .setup-label {
             font-size: 16px;
@@ -1350,7 +1387,9 @@
     </style>
 </head>
 <body>
-    <canvas id="wavyBackground"></canvas>
+    <div id="wavyWrapper">
+        <canvas id="wavyBackground"></canvas>
+    </div>
     <div class="container">
         <!-- Intro Screen -->
         <div class="intro-screen" id="introScreen">
@@ -1525,19 +1564,19 @@
         function showSetup() {
             document.getElementById('introScreen').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
-            document.getElementById('wavyBackground').classList.add('wavy-hidden');
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupPlayers() {
             document.getElementById('setupOptions').style.display = 'none';
             document.getElementById('setupPlayers').style.display = 'block';
-            document.getElementById('wavyBackground').classList.add('wavy-hidden');
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         function showSetupOptions() {
             document.getElementById('setupPlayers').style.display = 'none';
             document.getElementById('setupOptions').style.display = 'block';
-            document.getElementById('wavyBackground').classList.add('wavy-hidden');
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         // How-it-works Modal
@@ -2381,7 +2420,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 loadingId = startLoadingStatus(statusEl);
 
                 const wavyCanvas = document.getElementById('wavyBackground');
-                wavyCanvas.classList.remove('wavy-hidden');
+                document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
                 wavyCanvas.classList.add('wavy-loading');
 
                 await yieldToPaint();
@@ -2423,7 +2462,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
                 // Wavy Background auch bei Fehler ausblenden
-                document.getElementById('wavyBackground').classList.remove('wavy-loading');
+                document.getElementById('wavyWrapper').classList.remove('wavy-loading');
             }
         }
 
@@ -2449,7 +2488,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('setupOptions').style.display = 'block';
             document.getElementById('result').classList.remove('visible');
             document.getElementById('playersGuessSection').classList.remove('visible');
-            document.getElementById('wavyBackground').classList.add('wavy-hidden');
+            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
         }
 
         /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
