@@ -24,7 +24,7 @@ Die Animation funktioniert. Diese Dokumentation dient als Backup.
 
 ---
 
-## CSS für Mobile (unteres Drittel)
+## CSS
 ```css
 #wavyWrapper {
     position: fixed;
@@ -44,27 +44,19 @@ Die Animation funktioniert. Diese Dokumentation dient als Backup.
     display: block;
 }
 
-/* Mobile: Animation nur im unteren Drittel */
-@media (max-width: 768px), (hover: none) {
+/* Mobile: Animation ausblendbar */
+@media (max-width: 768px) {
     #wavyWrapper {
-        top: auto;
-        bottom: 0;
-        height: 33.333vh;
-        overflow: hidden;
         transition: opacity 0.5s ease;
     }
     #wavyWrapper.wavy-hidden {
         opacity: 0;
         pointer-events: none;
     }
-    #wavyBackground {
-        top: auto;
-        bottom: 0;
-        height: 100vh;
-        min-height: 100%;
-    }
 }
 ```
+
+**Hinweis:** Mobile zeigt die Welle im unteren Drittel durch den Shader (`waveOffset: 1.5`), nicht durch CSS-Clipping.
 
 ---
 
@@ -102,7 +94,7 @@ document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
 function render() {
     const isMobile = window.innerWidth <= 768;
     const pxSize = isMobile ? 4 : 3;
-    const waveOffset = isMobile ? -1.5 : 0; // Mobile: unteres Drittel
+    const waveOffset = isMobile ? 1.5 : 0; // Mobile: Welle im unteren Drittel
     const speed = 0.5;
     const currentTime = (Date.now() - startTime) * 0.001 * speed;
     
