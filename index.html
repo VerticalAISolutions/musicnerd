@@ -275,20 +275,21 @@
             width: 32px;
             height: 32px;
             background: transparent;
-            border: 1px solid var(--old-rose);
-            border-radius: 50%;
+            border: none;
             color: var(--old-rose);
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 300;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             line-height: 1;
+            transition: color 0.2s ease, transform 0.2s ease;
         }
         @media (hover: hover) {
             .hiw-modal-close:hover {
-                border-color: var(--icy-aqua);
                 color: var(--icy-aqua);
+                transform: scale(1.1);
             }
         }
         .hiw-modal-title {
