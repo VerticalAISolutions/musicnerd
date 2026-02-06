@@ -79,9 +79,11 @@
             color: var(--old-rose);
             text-decoration: none;
         }
-        .footer a:hover {
-            color: var(--icy-aqua);
-            opacity: 1;
+        @media (hover: hover) {
+            .footer a:hover {
+                color: var(--icy-aqua);
+                opacity: 1;
+            }
         }
         /* Mobile: Footer immer am Bottom, scrollt mit bei langem Inhalt */
         @media (max-width: 768px), (hover: none) {
@@ -158,9 +160,6 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-        }
-        .intro-btn:hover {
-            background: #c91a6a;
         }
         /* Hand-drawn circle animation */
         .intro-title-wrapper {
@@ -240,10 +239,6 @@
             border: none;
             cursor: pointer;
         }
-        .intro-secondary-btn:hover {
-            color: var(--electric-aqua);
-        }
-
         /* How-it-works Modal */
         .hiw-modal-overlay {
             display: none;
@@ -290,9 +285,11 @@
             justify-content: center;
             line-height: 1;
         }
-        .hiw-modal-close:hover {
-            border-color: var(--icy-aqua);
-            color: var(--icy-aqua);
+        @media (hover: hover) {
+            .hiw-modal-close:hover {
+                border-color: var(--icy-aqua);
+                color: var(--icy-aqua);
+            }
         }
         .hiw-modal-title {
             font-size: 24px;
@@ -349,9 +346,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .hiw-modal-btn:hover {
-            background: #c91a6a;
-        }
         body.modal-open {
             overflow: hidden;
         }
@@ -372,11 +366,6 @@
             border-radius: 10px;
             cursor: pointer;
         }
-        .setup-nav .back-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--icy-aqua);
-            color: var(--icy-aqua);
-        }
         .setup-nav .next-btn {
             flex: 2;
             padding: 14px;
@@ -388,9 +377,6 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-        }
-        .setup-nav .next-btn:hover {
-            background: #c91a6a;
         }
         h1 {
             color: var(--electric-aqua);
@@ -487,10 +473,6 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        .round-count-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
-        }
         .player-count-btn {
             width: 44px;
             height: 44px;
@@ -507,10 +489,6 @@
             background: var(--cherry-rose);
             border-color: var(--cherry-rose);
             color: white;
-        }
-        .player-count-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
         }
         .player-inputs {
             display: flex;
@@ -561,9 +539,6 @@
             .genre-item {
                 background: #192336;
             }
-        }
-        .genre-item:hover {
-            background: #1a2d4a;
         }
         .genre-item.selected {
             background: var(--cherry-rose);
@@ -661,8 +636,10 @@
             margin-top: 15px;
             transition: background 0.2s;
         }
-        .start-btn:hover {
-            background: #c91a6a;
+        @media (hover: hover) {
+            .start-btn:hover {
+                background: #c91a6a;
+            }
         }
         .start-btn:disabled {
             background: var(--old-rose);
@@ -791,8 +768,10 @@
             display: inline-block;
             transform: translateX(2px) rotate(-0.5deg);
         }
-        .play-btn:hover:not(:disabled) {
-            color: var(--icy-aqua);
+        @media (hover: hover) {
+            .play-btn:hover:not(:disabled) {
+                color: var(--icy-aqua);
+            }
         }
         .play-btn:active:not(:disabled) {
             opacity: 0.9;
@@ -905,8 +884,10 @@
             cursor: pointer;
             margin-top: 10px;
         }
-        .submit-all-btn:hover {
-            background: #c91a6a;
+        @media (hover: hover) {
+            .submit-all-btn:hover {
+                background: #c91a6a;
+            }
         }
         .submit-all-btn:disabled {
             background: var(--old-rose);
@@ -1059,8 +1040,10 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        .result-btn:hover {
-            background: var(--icy-aqua);
+        @media (hover: hover) {
+            .result-btn:hover {
+                background: var(--icy-aqua);
+            }
         }
         /* Difficulty Selection */
         .difficulty-buttons {
@@ -1085,9 +1068,11 @@
             border-color: var(--cherry-rose);
             color: white;
         }
-        .difficulty-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--electric-aqua);
+        @media (hover: hover) {
+            .difficulty-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
         }
         .standings-overlay {
             display: none;
@@ -1214,8 +1199,10 @@
             border-radius: 10px;
             cursor: pointer;
         }
-        .genre-popup-btn:hover {
-            background: #c91a6a;
+        @media (hover: hover) {
+            .genre-popup-btn:hover {
+                background: #c91a6a;
+            }
         }
 
         /* Mobile-first responsive adjustments */
@@ -1248,6 +1235,38 @@
         input[type="text"],
         input[type="number"] {
             font-size: 16px;
+        }
+
+        /* Hover-States nur für Geräte mit echtem Hover (Maus) */
+        @media (hover: hover) {
+            .intro-btn:hover {
+                background: #c91a6a;
+            }
+            .intro-secondary-btn:hover {
+                color: var(--electric-aqua);
+            }
+            .hiw-modal-btn:hover {
+                background: #c91a6a;
+            }
+            .setup-nav .back-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--icy-aqua);
+                color: var(--icy-aqua);
+            }
+            .setup-nav .next-btn:hover {
+                background: #c91a6a;
+            }
+            .round-count-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
+            .player-count-btn:hover:not(.selected) {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: var(--electric-aqua);
+            }
+            .genre-item:hover:not(.selected) {
+                background: #1a2d4a;
+            }
         }
 
         /* Better touch feedback */
@@ -1887,14 +1906,125 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 if (debug) console.log('  ✅ Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
                 return original;
             } catch (e) {
-                console.error('searchItunesForOriginal:', e.name, e.message, e.stack || '');
-                return null;
+                // Fallback: Direkte iTunes-Suche ohne Proxy (JSONP)
+                console.warn('searchItunesForOriginal: Proxy fehlgeschlagen, versuche JSONP...', e.message);
+                return await searchItunesDirectJSONP(artist, title, yearMinVal, yearMaxVal);
             }
         }
 
-        /** Parst eine Suchphrase "OriginalArtist SongTitel" (z. B. "radiohead creep" oder "the beatles yesterday") in { originalArtist, songTitle }. */
+        /** Direkte iTunes-Suche per JSONP (funktioniert ohne Server-Proxy). */
+        async function searchItunesDirectJSONP(artist, title, yearMinVal, yearMaxVal) {
+            const searchTerm = (artist + ' ' + title).trim();
+            if (!searchTerm) return null;
+            const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
+
+            return new Promise((resolve) => {
+                const callbackName = 'itunesCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+                const timeout = setTimeout(() => {
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                    if (debug) console.log('  ❌ JSONP Timeout');
+                    resolve(null);
+                }, 10000);
+
+                window[callbackName] = function(data) {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+
+                    const valid = (data.results || []).filter(s => {
+                        if (!s.previewUrl) return false;
+                        if (!isNoCover(s)) return false;
+                        if (!resultArtistIsPrimary(s.artistName, artist)) return false;
+                        return true;
+                    });
+
+                    if (valid.length === 0) {
+                        if (debug) console.log('  ❌ JSONP: Keine gültigen Ergebnisse');
+                        resolve(null);
+                        return;
+                    }
+
+                    valid.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
+                    const original = valid[0];
+                    const year = new Date(original.releaseDate).getFullYear();
+
+                    if (yearMinVal != null && yearMaxVal != null && (year < yearMinVal || year > yearMaxVal)) {
+                        if (debug) console.log('  ❌ JSONP Jahr außerhalb:', year);
+                        resolve(null);
+                        return;
+                    }
+
+                    if (debug) console.log('  ✅ JSONP Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
+                    resolve(original);
+                };
+
+                const script = document.createElement('script');
+                script.src = 'https://itunes.apple.com/search?term=' + encodeURIComponent(searchTerm) + '&media=music&entity=song&limit=50&callback=' + callbackName;
+                document.head.appendChild(script);
+            });
+        }
+
+        /** Parst eine Suchphrase in { originalArtist, songTitle }.
+         * Unterstützt:
+         * - Trennzeichen "|": "sex pistols | anarchy in the uk"
+         * - Bekannte mehrteilige Bandnamen: "sex pistols", "dead kennedys", etc.
+         * - "the X" Prefix: "the clash white riot"
+         */
         function parseArtistAndTitle(phrase) {
             const t = (phrase || '').trim();
+
+            // Format mit Trennzeichen: "artist | song"
+            if (t.includes('|')) {
+                const [artist, song] = t.split('|').map(s => s.trim());
+                return { originalArtist: artist, songTitle: song };
+            }
+
+            // Bekannte mehrteilige Bandnamen (lowercase für Matching)
+            const knownArtists = [
+                'sex pistols', 'dead kennedys', 'circle jerks', 'black flag', 'minor threat',
+                'bad brains', 'bad religion', 'green day', 'blink 182', 'rise against',
+                'at the drive in', 'taking back sunday', 'my chemical romance', 'fall out boy',
+                'joy division', 'new order', 'depeche mode', 'talking heads', 'public image ltd',
+                'gang of four', 'siouxsie and the banshees', 'echo and the bunnymen',
+                'the cure', 'the clash', 'the ramones', 'the damned', 'the saints',
+                'the stooges', 'the velvet underground', 'the seeds', 'the troggs', 'the sonics',
+                'the replacements', 'the smiths', 'the pixies', 'the strokes', 'the killers',
+                'the beatles', 'the rolling stones', 'the who', 'the doors', 'the kinks',
+                'led zeppelin', 'pink floyd', 'deep purple', 'black sabbath', 'iron maiden',
+                'judas priest', 'motley crue', 'guns n roses', 'van halen', 'bon jovi',
+                'foo fighters', 'pearl jam', 'alice in chains', 'stone temple pilots',
+                'red hot chili peppers', 'rage against the machine', 'system of a down',
+                'nine inch nails', 'marilyn manson', 'rob zombie', 'white zombie',
+                'daft punk', 'chemical brothers', 'prodigy', 'massive attack', 'portishead',
+                'boards of canada', 'aphex twin', 'autechre', 'squarepusher',
+                'run dmc', 'beastie boys', 'public enemy', 'wu tang clan', 'a tribe called quest',
+                'de la soul', 'cypress hill', 'outkast', 'fugees', 'lauryn hill',
+                'miles davis', 'john coltrane', 'charlie parker', 'duke ellington', 'louis armstrong',
+                'ella fitzgerald', 'billie holiday', 'nina simone', 'aretha franklin', 'ray charles',
+                'stevie wonder', 'marvin gaye', 'al green', 'otis redding', 'sam cooke',
+                'fleetwood mac', 'crosby stills nash', 'simon and garfunkel', 'hall and oates',
+                'tears for fears', 'duran duran', 'spandau ballet', 'simple minds', 'ultravox',
+                'hot water music', 'against me', 'gaslight anthem', 'hold steady', 'jawbreaker',
+                'husker du', 'dinosaur jr', 'sonic youth', 'pixies', 'pavement',
+                'guided by voices', 'built to spill', 'modest mouse', 'death cab for cutie',
+                'arcade fire', 'lcd soundsystem', 'vampire weekend', 'mgmt', 'tame impala',
+                'king gizzard', 'arctic monkeys', 'franz ferdinand', 'bloc party', 'interpol',
+                'queens of the stone age', 'them crooked vultures', 'royal blood', 'highly suspect',
+                'soft play', 'amyl and the sniffers', 'fontaines dc', 'idles', 'shame', 'sleaford mods'
+            ];
+
+            const lowerPhrase = t.toLowerCase();
+            for (const artist of knownArtists) {
+                if (lowerPhrase.startsWith(artist + ' ')) {
+                    const songTitle = t.slice(artist.length).trim();
+                    // Originalschreibweise aus der Phrase extrahieren
+                    const originalArtist = t.slice(0, artist.length);
+                    return { originalArtist, songTitle };
+                }
+            }
+
+            // Fallback: Alte Logik für unbekannte Artists
             const parts = t.split(/\s+/).filter(Boolean);
             if (parts.length < 2) return { originalArtist: '', songTitle: '' };
             if (parts[0].toLowerCase() === 'the' && parts.length >= 3)
@@ -2718,13 +2848,12 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 for (let round = 0; round < 2 && attempts < MAX_FALLBACK_ATTEMPTS; round++) {
                     for (let i = 0; i < shuffledQueries.length && attempts < MAX_FALLBACK_ATTEMPTS; i++) {
                         attempts += 1;
-                        if (attempts % 5 === 1) status.textContent = 'Suche Song… (' + attempts + ')';
                         const phrase = shuffledQueries[i];
                         const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
                         if (!originalArtist || !songTitle) continue;
-                        // Gleiche Suchstrategie für alle Geräte: Spotify zuerst (über Server), dann iTunes
-                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
-                        if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, yearMin, yearMax);
+                        // Fallback-Songs: ohne Jahresfilter suchen (iTunes gibt oft Remaster-Daten zurück)
+                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, null, null);
+                        if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, null, null);
                         if (found) {
                             const key = songKey(found.artistName, found.trackName);
                             if (playedSongKeys.has(key)) continue;
@@ -2901,6 +3030,11 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('playersGuessSection').classList.remove('visible');
             document.getElementById('result').classList.add('visible');
             document.getElementById('status').textContent = '';
+
+            // Nach der letzten Runde automatisch Ranking anzeigen
+            if (roundNumber >= totalRounds) {
+                setTimeout(() => showStandings(), 2000);
+            }
         }
 
         function showStandings() {
