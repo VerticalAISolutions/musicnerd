@@ -7,6 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>MusicNerd</title>
+    <link rel="icon" href="buttons/Music.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
@@ -276,20 +277,25 @@
             height: 32px;
             background: transparent;
             border: none;
-            color: var(--old-rose);
-            font-size: 24px;
-            font-weight: 300;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            line-height: 1;
-            transition: color 0.2s ease, transform 0.2s ease;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            opacity: 0.7;
+        }
+        .hiw-modal-close img {
+            width: 24px;
+            height: 24px;
+            filter: invert(60%) sepia(15%) saturate(500%) hue-rotate(290deg) brightness(90%) contrast(90%);
         }
         @media (hover: hover) {
             .hiw-modal-close:hover {
-                color: var(--icy-aqua);
                 transform: scale(1.1);
+                opacity: 1;
+            }
+            .hiw-modal-close:hover img {
+                filter: invert(90%) sepia(20%) saturate(500%) hue-rotate(140deg) brightness(100%) contrast(90%);
             }
         }
         .hiw-modal-title {
@@ -767,7 +773,12 @@
         }
         .play-btn .play-btn-icon {
             display: inline-block;
-            transform: translateX(2px) rotate(-0.5deg);
+            width: 60px;
+            height: 60px;
+            filter: invert(91%) sepia(27%) saturate(730%) hue-rotate(143deg) brightness(102%) contrast(101%);
+        }
+        .play-btn .pause-icon {
+            display: none;
         }
         @media (hover: hover) {
             .play-btn:hover:not(:disabled) {
@@ -779,7 +790,9 @@
         }
         .play-btn:disabled {
             cursor: not-allowed;
-            color: rgba(192, 245, 250, 0.4);
+        }
+        .play-btn:disabled .play-btn-icon {
+            opacity: 0.4;
         }
         .play-btn.loading .play-btn-icon {
             opacity: 0;
@@ -1510,7 +1523,7 @@
                     <circle class="play-loading-arc" cx="50" cy="50" r="47" fill="none" stroke-width="2.5" stroke-dasharray="28 267" stroke-linecap="round"/>
                     <circle id="playCountdownRing" class="play-countdown-progress" cx="50" cy="50" r="47" fill="none" stroke-width="3" stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
                 </svg>
-                <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><span class="play-btn-icon">▶</span><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
+                <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><img class="play-btn-icon play-icon" src="buttons/Play.svg" alt="Play"><img class="play-btn-icon pause-icon" src="buttons/Pause.svg" alt="Pause" style="display:none;"><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
             </div>
             <div class="status" id="status">Klicke zum Abspielen</div>
 
@@ -1561,7 +1574,7 @@
     <!-- How-it-works Modal -->
     <div class="hiw-modal-overlay" id="hiwModalOverlay" onclick="if (event.target === this) hideHowItWorksModal();">
         <div class="hiw-modal-box" role="dialog" aria-modal="true" aria-labelledby="hiwModalTitle">
-            <button class="hiw-modal-close" onclick="hideHowItWorksModal()" aria-label="Schließen">X</button>
+            <button class="hiw-modal-close" onclick="hideHowItWorksModal()" aria-label="Schließen"><img src="buttons/Delete.svg" alt="Schließen" width="24" height="24"></button>
             <h2 class="hiw-modal-title" id="hiwModalTitle">So funktioniert's</h2>
             <ol class="hiw-steps">
                 <li class="hiw-step">
@@ -2349,12 +2362,28 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         const PLAY_COUNTDOWN_CIRCUMFERENCE = 2 * Math.PI * 47;
         let playCountdownIntervalId = null;
 
-        function setPlayButtonDisplay(iconChar) {
+        function setPlayButtonDisplay(iconType) {
             const playBtn = document.getElementById('playBtn');
-            const icon = playBtn?.querySelector('.play-btn-icon');
+            const playIcon = playBtn?.querySelector('.play-icon');
+            const pauseIcon = playBtn?.querySelector('.pause-icon');
             const countdown = document.getElementById('playBtnCountdown');
-            if (icon) icon.textContent = iconChar;
             if (countdown) countdown.textContent = '';
+
+            if (iconType === 'pause' || iconType === 'II') {
+                if (playIcon) playIcon.style.display = 'none';
+                if (pauseIcon) pauseIcon.style.display = 'inline-block';
+            } else if (iconType === 'play' || iconType === '▶') {
+                if (playIcon) playIcon.style.display = 'inline-block';
+                if (pauseIcon) pauseIcon.style.display = 'none';
+            } else if (iconType === '' || iconType === '?') {
+                // Loading or unknown state - hide both
+                if (playIcon) playIcon.style.display = iconType === '?' ? 'inline-block' : 'none';
+                if (pauseIcon) pauseIcon.style.display = 'none';
+            } else {
+                // Default: show play
+                if (playIcon) playIcon.style.display = 'inline-block';
+                if (pauseIcon) pauseIcon.style.display = 'none';
+            }
         }
         function resetPlayCountdown() {
             if (playCountdownIntervalId) {
