@@ -798,7 +798,8 @@
             opacity: 0;
         }
         .play-btn .play-btn-countdown { display: none !important; }
-        .play-btn.playing .play-btn-icon { display: inline !important; }
+        .play-btn.playing .play-icon { display: none !important; }
+        .play-btn.playing .pause-icon { display: inline-block !important; }
         .play-btn.playing {
             color: var(--electric-aqua);
         }
@@ -1155,10 +1156,31 @@
         .standings-score {
             font-size: 16px;
             color: var(--old-rose);
+            text-align: right;
         }
         .standings-score span {
             font-weight: 700;
             color: var(--electric-aqua);
+        }
+        @media (max-width: 500px) {
+            .standings-row {
+                flex-wrap: wrap;
+                padding: 12px 14px;
+            }
+            .standings-rank {
+                font-size: 16px;
+                width: 26px;
+            }
+            .standings-name {
+                font-size: 15px;
+            }
+            .standings-score {
+                width: 100%;
+                margin-top: 6px;
+                padding-left: 26px;
+                font-size: 13px;
+                text-align: left;
+            }
         }
         .close-standings-btn {
             margin-top: 25px;
