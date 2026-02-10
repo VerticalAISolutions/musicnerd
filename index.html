@@ -874,8 +874,12 @@
             font-family: 'DM Sans', sans-serif;
             font-weight: bold;
             letter-spacing: 2px;
+            -webkit-text-security: disc;
+            text-security: disc;
         }
         .player-guess-input.revealed {
+            -webkit-text-security: none;
+            text-security: none;
             animation: revealGuess 0.5s ease forwards;
             background: rgba(135, 241, 255, 0.25);
         }
@@ -2672,7 +2676,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             container.innerHTML = players.map((p, i) => `
                 <div class="player-guess-row">
                     <span class="player-guess-name">${p.name}</span>
-                    <input type="password" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric">
+                    <input type="text" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric" autocomplete="off">
                 </div>
             `).join('');
 
@@ -2754,7 +2758,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             // Reset inputs
             document.querySelectorAll('.player-guess-input').forEach(input => {
                 input.value = '';
-                input.type = 'password';
                 input.classList.remove('submitted', 'revealed');
                 input.disabled = false;
             });
@@ -3016,7 +3019,6 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             const inputs = document.querySelectorAll('.player-guess-input');
             inputs.forEach((input, idx) => {
                 setTimeout(() => {
-                    input.type = 'text';
                     input.classList.add('revealed');
                 }, idx * 150);
             });
