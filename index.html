@@ -1098,6 +1098,35 @@
                 border-color: var(--electric-aqua);
             }
         }
+        /* Letzte Runde Overlay */
+        .last-round-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 26, 46, 0.92);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .last-round-overlay.visible {
+            display: flex;
+        }
+        .last-round-text {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--electric-aqua);
+            text-align: center;
+            animation: lastRoundPulse 2s ease-in-out;
+        }
+        @keyframes lastRoundPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            30% { transform: scale(1.1); opacity: 1; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
         .standings-overlay {
             display: none;
             position: fixed;
@@ -1580,6 +1609,11 @@
                     <button class="result-btn" onclick="showStandings()">Zwischenstand</button>
                     <button class="result-btn" onclick="loadNewSong()">Nächster Song</button>
                 </div>
+            </div>
+
+            <!-- Letzte Runde Overlay -->
+            <div class="last-round-overlay" id="lastRoundOverlay">
+                <div class="last-round-text">Letzte Runde!</div>
             </div>
 
             <!-- Standings Overlay -->
@@ -2729,11 +2763,12 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         async function loadNewSong(waitForFirstExplanation = false) {
             if (DEBUG_MODE) console.log('loadNewSong gestartet, waitForFirstExplanation:', waitForFirstExplanation);
 
-            // "Letzte Runde!" Meldung anzeigen
+            // "Letzte Runde!" Overlay anzeigen
             if (roundNumber + 1 === totalRounds && roundNumber > 0) {
-                const status = document.getElementById('status');
-                status.textContent = 'Letzte Runde!';
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                const overlay = document.getElementById('lastRoundOverlay');
+                overlay.classList.add('visible');
+                await new Promise(resolve => setTimeout(resolve, 2200));
+                overlay.classList.remove('visible');
             }
 
             guessSubmitted = false;
