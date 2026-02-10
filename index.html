@@ -2663,7 +2663,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             container.innerHTML = players.map((p, i) => `
                 <div class="player-guess-row">
                     <span class="player-guess-name">${p.name}</span>
-                    <input type="text" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric">
+                    <input type="password" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric">
                 </div>
             `).join('');
 
@@ -2998,6 +2998,11 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             });
 
             if (!allValid) return;
+
+            // Alle Eingaben aufdecken
+            document.querySelectorAll('.player-guess-input').forEach(input => {
+                input.type = 'text';
+            });
 
             guessSubmitted = true;
             document.getElementById('submitAllBtn').disabled = true;
