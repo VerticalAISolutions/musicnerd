@@ -2754,7 +2754,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             // Reset inputs
             document.querySelectorAll('.player-guess-input').forEach(input => {
                 input.value = '';
-                input.classList.remove('submitted');
+                input.type = 'password';
+                input.classList.remove('submitted', 'revealed');
                 input.disabled = false;
             });
             players.forEach(p => p.guess = null);
