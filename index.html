@@ -3021,7 +3021,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             });
 
             // Warten bis alle aufgedeckt + kurz sichtbar, dann Ergebnis zeigen
-            const revealDelay = inputs.length * 150 + 1500;
+            const revealDelay = inputs.length * 150 + 2500;
             await new Promise(r => setTimeout(r, revealDelay));
 
             const correctYear = new Date(currentSong.releaseDate).getFullYear();
