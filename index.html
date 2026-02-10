@@ -875,6 +875,15 @@
             font-weight: bold;
             letter-spacing: 2px;
         }
+        .player-guess-input.revealed {
+            animation: revealGuess 0.5s ease forwards;
+            background: rgba(135, 241, 255, 0.25);
+        }
+        @keyframes revealGuess {
+            0% { transform: scale(1.15); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
         .player-guess-input:focus {
             outline: 2px solid var(--electric-aqua);
         }
@@ -2979,7 +2988,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             document.getElementById('status').textContent = 'Gebt eure Tipps ab!';
         });
 
-        function submitAllGuesses() {
+        async function submitAllGuesses() {
             if (guessSubmitted || !currentSong) return;
 
             // Collect guesses
@@ -2999,13 +3008,21 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
             if (!allValid) return;
 
-            // Alle Eingaben aufdecken
-            document.querySelectorAll('.player-guess-input').forEach(input => {
-                input.type = 'text';
-            });
-
             guessSubmitted = true;
             document.getElementById('submitAllBtn').disabled = true;
+
+            // Alle Eingaben mit Effekt aufdecken
+            const inputs = document.querySelectorAll('.player-guess-input');
+            inputs.forEach((input, idx) => {
+                setTimeout(() => {
+                    input.type = 'text';
+                    input.classList.add('revealed');
+                }, idx * 150);
+            });
+
+            // Warten bis alle aufgedeckt + kurz sichtbar, dann Ergebnis zeigen
+            const revealDelay = inputs.length * 150 + 1500;
+            await new Promise(r => setTimeout(r, revealDelay));
 
             const correctYear = new Date(currentSong.releaseDate).getFullYear();
 
