@@ -1100,7 +1100,7 @@
         }
         /* Letzte Runde Overlay */
         .last-round-overlay {
-            display: none;
+            display: flex;
             position: fixed;
             top: 0;
             left: 0;
@@ -1110,22 +1110,29 @@
             z-index: 100;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
         }
         .last-round-overlay.visible {
-            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .last-round-overlay.fade-out {
+            opacity: 0;
         }
         .last-round-text {
             font-size: 48px;
             font-weight: 700;
             color: var(--electric-aqua);
             text-align: center;
-            animation: lastRoundPulse 2s ease-in-out;
+            transform: scale(0.5);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
         }
-        @keyframes lastRoundPulse {
-            0% { transform: scale(0.5); opacity: 0; }
-            30% { transform: scale(1.1); opacity: 1; }
-            70% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0; }
+        .last-round-overlay.visible .last-round-text {
+            transform: scale(1);
+            opacity: 1;
         }
         .standings-overlay {
             display: none;
@@ -2767,8 +2774,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             if (roundNumber + 1 === totalRounds && roundNumber > 0) {
                 const overlay = document.getElementById('lastRoundOverlay');
                 overlay.classList.add('visible');
-                await new Promise(resolve => setTimeout(resolve, 2200));
-                overlay.classList.remove('visible');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                overlay.classList.add('fade-out');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                overlay.classList.remove('visible', 'fade-out');
             }
 
             guessSubmitted = false;
