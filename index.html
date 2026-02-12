@@ -2822,7 +2822,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             guessSubmitted = false;
             currentSong = null;
             songInfoPromise = null;
-            document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
+            document.getElementById('roundCounter').textContent = '';
             const playBtn = document.getElementById('playBtn');
             const status = document.getElementById('status');
             playBtn.disabled = true;
@@ -2858,6 +2858,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 resetPlayCountdown();
                 stopLoadingStatus(status, loadingId);
                 status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                 preloadNextSongs();
                 return;
             }
@@ -2906,6 +2907,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                     resetPlayCountdown();
                     stopLoadingStatus(status, loadingId);
                     status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                    document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                     if (waitForFirstExplanation) preloadNextSongs();
                     return;
                 }
@@ -3020,6 +3022,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                             resetPlayCountdown();
                             stopLoadingStatus(status, loadingId);
                             status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                            document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                             if (waitForFirstExplanation) preloadNextSongs();
                             return;
                         }
