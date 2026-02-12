@@ -686,29 +686,42 @@
             opacity: 0.4;
         }
         .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
-            stroke-width: 1;
-            opacity: 0.22;
+            stroke-width: 1.5;
+            opacity: 0.15;
         }
-        .play-loading-tail {
-            stroke: var(--electric-aqua);
-            opacity: 0;
-            transform: rotate(-180deg);
-            transform-origin: 50px 50px;
-            stroke-linecap: round;
+        .play-loading-tail, .play-loading-arc {
+            display: none;
         }
-        .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail {
-            opacity: 0.45;
-            animation: play-loading-spin 1.4s linear infinite;
+        /* Equalizer Ladeanimation */
+        .equalizer {
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
         }
-        .play-loading-arc {
-            stroke: var(--electric-aqua);
-            opacity: 0;
-            transform: rotate(-90deg);
-            transform-origin: 50px 50px;
+        .play-btn-wrapper:has(.play-btn.loading) .equalizer {
+            display: flex;
         }
-        .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
-            opacity: 1;
-            animation: play-loading-spin 1.4s linear infinite;
+        .eq-bar {
+            width: 5px;
+            border-radius: 3px;
+            background: var(--electric-aqua);
+            animation: eqBounce 1s ease-in-out infinite;
+        }
+        .eq-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
+        .eq-bar:nth-child(2) { height: 20px; animation-delay: 0.15s; }
+        .eq-bar:nth-child(3) { height: 28px; animation-delay: 0.3s; }
+        .eq-bar:nth-child(4) { height: 18px; animation-delay: 0.45s; }
+        .eq-bar:nth-child(5) { height: 24px; animation-delay: 0.1s; }
+        @keyframes eqBounce {
+            0%, 100% { transform: scaleY(0.3); opacity: 0.5; }
+            50% { transform: scaleY(1); opacity: 1; }
         }
         .play-countdown-progress {
             stroke: var(--electric-aqua);
@@ -722,35 +735,12 @@
         .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
             visibility: hidden;
         }
-        @keyframes play-loading-spin {
-            to { transform: rotate(180deg); }
-        }
-        .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc {
-            animation-name: play-loading-spin-head;
-        }
-        @keyframes play-loading-spin-head {
-            to { transform: rotate(270deg); }
-        }
-        /* Mobil: Ladeanimation ohne BG (nur Wavy im unteren Drittel), pulsierender Ring */
+        /* Mobil: kein Background bei Ladeanimation */
         @media (max-width: 768px), (hover: none) {
             .game-screen .play-btn-wrapper,
             .game-screen .status {
                 background: none;
             }
-            .play-btn-wrapper:has(.play-btn.loading) .play-loading-tail,
-            .play-btn-wrapper:has(.play-btn.loading) .play-loading-arc,
-            .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
-                display: none !important;
-            }
-            .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
-                stroke-width: 2;
-                opacity: 0.5;
-                animation: pulse-ring 1.5s ease-in-out infinite;
-            }
-        }
-        @keyframes pulse-ring {
-            0%, 100% { opacity: 0.3; stroke-width: 2; }
-            50% { opacity: 1; stroke-width: 4; }
         }
         .play-btn {
             position: relative;
@@ -1623,6 +1613,13 @@
                     <circle id="playCountdownRing" class="play-countdown-progress" cx="50" cy="50" r="47" fill="none" stroke-width="3" stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
                 </svg>
                 <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><img class="play-btn-icon play-icon" src="buttons/Play.svg" alt="Play"><img class="play-btn-icon pause-icon" src="buttons/Pause.svg" alt="Pause" style="display:none;"><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
+                <div class="equalizer">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                </div>
             </div>
             <div class="round-counter" id="roundCounter"></div>
             <div class="status" id="status">Klicke zum Abspielen</div>
