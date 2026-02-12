@@ -686,8 +686,7 @@
             opacity: 0.4;
         }
         .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
-            stroke-width: 1.5;
-            opacity: 0.15;
+            display: none;
         }
         .play-loading-tail, .play-loading-arc {
             display: none;
@@ -697,8 +696,8 @@
             display: none;
             align-items: flex-end;
             justify-content: center;
-            gap: 4px;
-            height: 40px;
+            gap: 6px;
+            height: 70px;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -708,20 +707,25 @@
         .play-btn-wrapper:has(.play-btn.loading) .equalizer {
             display: flex;
         }
-        .eq-bar {
-            width: 5px;
-            border-radius: 3px;
-            background: var(--electric-aqua);
-            animation: eqBounce 1s ease-in-out infinite;
+        .play-btn-wrapper:has(.play-btn.loading) .play-btn {
+            opacity: 0;
         }
-        .eq-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
-        .eq-bar:nth-child(2) { height: 20px; animation-delay: 0.15s; }
-        .eq-bar:nth-child(3) { height: 28px; animation-delay: 0.3s; }
-        .eq-bar:nth-child(4) { height: 18px; animation-delay: 0.45s; }
-        .eq-bar:nth-child(5) { height: 24px; animation-delay: 0.1s; }
+        .eq-bar {
+            width: 7px;
+            border-radius: 4px;
+            transform-origin: bottom;
+            animation: eqBounce 1.2s ease-in-out infinite;
+        }
+        .eq-bar:nth-child(1) { height: 20px; animation-delay: 0s; background: var(--cherry-rose); }
+        .eq-bar:nth-child(2) { height: 35px; animation-delay: 0.2s; background: var(--old-rose); }
+        .eq-bar:nth-child(3) { height: 50px; animation-delay: 0.4s; background: var(--electric-aqua); }
+        .eq-bar:nth-child(4) { height: 40px; animation-delay: 0.15s; background: var(--old-rose); }
+        .eq-bar:nth-child(5) { height: 28px; animation-delay: 0.35s; background: var(--cherry-rose); }
+        .eq-bar:nth-child(6) { height: 45px; animation-delay: 0.25s; background: var(--electric-aqua); }
+        .eq-bar:nth-child(7) { height: 22px; animation-delay: 0.5s; background: var(--cherry-rose); }
         @keyframes eqBounce {
-            0%, 100% { transform: scaleY(0.3); opacity: 0.5; }
-            50% { transform: scaleY(1); opacity: 1; }
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1); }
         }
         .play-countdown-progress {
             stroke: var(--electric-aqua);
@@ -1614,6 +1618,8 @@
                 </svg>
                 <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><img class="play-btn-icon play-icon" src="buttons/Play.svg" alt="Play"><img class="play-btn-icon pause-icon" src="buttons/Pause.svg" alt="Pause" style="display:none;"><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
                 <div class="equalizer">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
                     <div class="eq-bar"></div>
