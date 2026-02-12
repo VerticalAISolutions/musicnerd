@@ -806,6 +806,13 @@
         .play-btn:not(.loading) .play-btn-icon {
             transition: opacity 0.25s ease;
         }
+        .round-counter {
+            font-size: 13px;
+            color: var(--old-rose);
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
         .status {
             font-size: 26px;
             font-weight: 600;
@@ -942,6 +949,15 @@
             opacity: 0.9;
             margin-top: 4px;
             margin-bottom: 8px;
+        }
+        .result-artwork {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 12px auto 8px;
+            display: block;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
         .result-song-title {
             font-size: 22px;
@@ -1227,8 +1243,13 @@
                 text-align: left;
             }
         }
-        .close-standings-btn {
+        .standings-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
             margin-top: 25px;
+        }
+        .close-standings-btn {
             padding: 14px 30px;
             font-size: 16px;
             font-family: 'DM Sans', sans-serif;
@@ -1236,6 +1257,17 @@
             background: var(--cherry-rose);
             color: white;
             border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .restart-btn {
+            padding: 14px 30px;
+            font-size: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            background: transparent;
+            color: var(--electric-aqua);
+            border: 2px solid var(--electric-aqua);
             border-radius: 10px;
             cursor: pointer;
         }
@@ -1592,6 +1624,7 @@
                 </svg>
                 <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><img class="play-btn-icon play-icon" src="buttons/Play.svg" alt="Play"><img class="play-btn-icon pause-icon" src="buttons/Pause.svg" alt="Pause" style="display:none;"><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
             </div>
+            <div class="round-counter" id="roundCounter"></div>
             <div class="status" id="status">Klicke zum Abspielen</div>
 
             <div class="players-guess-section" id="playersGuessSection">
@@ -1602,6 +1635,7 @@
             <div class="result" id="result">
                 <div class="result-year" id="resultYear"></div>
                 <div class="result-year-note" id="resultYearNote" style="display: none;"></div>
+                <img class="result-artwork" id="resultArtwork" alt="Album Cover" style="display: none;">
                 <div class="result-song-title" id="resultSongTitle"></div>
                 <div class="result-artist-name" id="resultArtistName"></div>
                 <div class="result-song-info" id="resultSongInfo" style="display: none;">
@@ -1629,7 +1663,9 @@
                     <div class="standings-title" id="standingsTitle">Zwischenstand</div>
                     <div class="standings-round" id="standingsRound"></div>
                     <div class="standings-list" id="standingsList"></div>
-                    <button class="close-standings-btn" id="standingsBtn" onclick="hideStandings()">Weiter spielen</button>
+                    <div class="standings-buttons" id="standingsButtons">
+                        <button class="close-standings-btn" id="standingsBtn" onclick="hideStandings()">Weiter spielen</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2783,6 +2819,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             guessSubmitted = false;
             currentSong = null;
             songInfoPromise = null;
+            document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
             const playBtn = document.getElementById('playBtn');
             const status = document.getElementById('status');
             playBtn.disabled = true;
@@ -3080,6 +3117,16 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 yearNoteEl.textContent = '';
                 yearNoteEl.style.display = 'none';
             }
+            // Album-Cover anzeigen
+            const artworkEl = document.getElementById('resultArtwork');
+            const artworkUrl = currentSong.artworkUrl100 ? currentSong.artworkUrl100.replace('100x100', '300x300') : '';
+            if (artworkUrl) {
+                artworkEl.src = artworkUrl;
+                artworkEl.style.display = 'block';
+            } else {
+                artworkEl.style.display = 'none';
+            }
+
             document.getElementById('resultSongTitle').textContent = currentSong.trackName || '';
             document.getElementById('resultArtistName').textContent = currentSong.artistName || '';
 
@@ -3168,6 +3215,19 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             btn.textContent = isGameOver ? 'Neues Spiel' : 'Weiter spielen';
             roundText.textContent = `Nach ${roundNumber} von ${totalRounds} Runde${roundNumber > 1 ? 'n' : ''}`;
 
+            // "Nochmal!" Button nur bei Spielende zeigen
+            const buttonsContainer = document.getElementById('standingsButtons');
+            const existingRestart = buttonsContainer.querySelector('.restart-btn');
+            if (isGameOver && !existingRestart) {
+                const restartBtn = document.createElement('button');
+                restartBtn.className = 'restart-btn';
+                restartBtn.textContent = 'Nochmal!';
+                restartBtn.onclick = restartWithSameSettings;
+                buttonsContainer.appendChild(restartBtn);
+            } else if (!isGameOver && existingRestart) {
+                existingRestart.remove();
+            }
+
             // Sort by total difference (lowest is best)
             const sorted = [...players].sort((a, b) => a.totalDiff - b.totalDiff);
 
@@ -3198,6 +3258,19 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 roundNumber = 0;
                 players.forEach(p => p.totalDiff = 0);
             }
+        }
+
+        function restartWithSameSettings() {
+            document.getElementById('standingsOverlay').classList.remove('visible');
+            roundNumber = 0;
+            players.forEach(p => { p.totalDiff = 0; p.guess = null; });
+            playedSongKeys.clear();
+            songQueue = [];
+            preloadedSongs = [];
+            document.getElementById('result').classList.remove('visible');
+            document.getElementById('playersGuessSection').classList.remove('visible');
+            renderPlayerGuessRows();
+            loadNewSong();
         }
 
         init();
