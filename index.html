@@ -283,8 +283,8 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             background: transparent;
             border: none;
             cursor: pointer;
@@ -295,9 +295,10 @@
             opacity: 0.7;
         }
         .hiw-modal-close img {
-            width: 24px;
-            height: 24px;
-            filter: invert(60%) sepia(15%) saturate(500%) hue-rotate(290deg) brightness(90%) contrast(90%);
+            width: 36px;
+            height: 36px;
+            filter: invert(91%) sepia(27%) saturate(730%) hue-rotate(143deg) brightness(102%) contrast(101%);
+            -webkit-filter: invert(91%) sepia(27%) saturate(730%) hue-rotate(143deg) brightness(102%) contrast(101%) drop-shadow(0 0 0.5px currentColor);
         }
         @media (hover: hover) {
             .hiw-modal-close:hover {
@@ -676,21 +677,25 @@
             text-align: center;
         }
         .game-screen.visible {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15vh;
+            min-height: calc(100vh - 120px);
         }
         /* Loading: EQ + Status als zentrierte Einheit */
         .game-screen.visible:has(.play-btn.loading) {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding-top: 20vh;
             min-height: calc(100vh - 120px);
         }
         .play-btn-wrapper {
             position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 15px auto;
+            width: 150px;
+            height: 150px;
+            margin: 25px auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -707,7 +712,8 @@
         .play-countdown-bg {
             stroke: var(--electric-aqua);
             stroke-width: 3;
-            opacity: 0.4;
+            opacity: 0.3;
+            stroke-linecap: round;
         }
         .play-btn-wrapper:has(.play-btn.loading) .play-countdown-bg {
             display: none;
@@ -723,7 +729,7 @@
             gap: 8px;
             height: 120px;
             z-index: 2;
-            filter: drop-shadow(0 0 12px rgba(135, 241, 255, 0.4)) drop-shadow(0 0 25px rgba(175, 18, 90, 0.3));
+            filter: none;
         }
         .play-btn-wrapper:has(.play-btn.loading) ~ .round-counter,
         .play-btn-wrapper:has(.play-btn.loading) ~ .players-guess-section,
@@ -752,13 +758,13 @@
             transform-origin: bottom;
             animation: eqBounce 1.2s ease-in-out infinite;
         }
-        .eq-bar:nth-child(1) { height: 30px; animation-delay: 0s; background: var(--cherry-rose); box-shadow: 0 0 8px rgba(175, 18, 90, 0.5); }
-        .eq-bar:nth-child(2) { height: 55px; animation-delay: 0.2s; background: var(--old-rose); box-shadow: 0 0 8px rgba(189, 139, 156, 0.4); }
-        .eq-bar:nth-child(3) { height: 85px; animation-delay: 0.4s; background: var(--electric-aqua); box-shadow: 0 0 10px rgba(135, 241, 255, 0.5); }
-        .eq-bar:nth-child(4) { height: 65px; animation-delay: 0.15s; background: var(--icy-aqua); box-shadow: 0 0 8px rgba(192, 245, 250, 0.4); }
-        .eq-bar:nth-child(5) { height: 45px; animation-delay: 0.35s; background: var(--cherry-rose); box-shadow: 0 0 8px rgba(175, 18, 90, 0.5); }
-        .eq-bar:nth-child(6) { height: 75px; animation-delay: 0.25s; background: var(--electric-aqua); box-shadow: 0 0 10px rgba(135, 241, 255, 0.5); }
-        .eq-bar:nth-child(7) { height: 35px; animation-delay: 0.5s; background: var(--old-rose); box-shadow: 0 0 8px rgba(189, 139, 156, 0.4); }
+        .eq-bar:nth-child(1) { height: 30px; animation-delay: 0s; background: var(--cherry-rose); }
+        .eq-bar:nth-child(2) { height: 55px; animation-delay: 0.2s; background: var(--old-rose); }
+        .eq-bar:nth-child(3) { height: 85px; animation-delay: 0.4s; background: var(--electric-aqua); }
+        .eq-bar:nth-child(4) { height: 65px; animation-delay: 0.15s; background: var(--icy-aqua); }
+        .eq-bar:nth-child(5) { height: 45px; animation-delay: 0.35s; background: var(--cherry-rose); }
+        .eq-bar:nth-child(6) { height: 75px; animation-delay: 0.25s; background: var(--electric-aqua); }
+        .eq-bar:nth-child(7) { height: 35px; animation-delay: 0.5s; background: var(--old-rose); }
         @keyframes eqBounce {
             0%, 100% { transform: scaleY(0.15); }
             50% { transform: scaleY(1); }
@@ -766,7 +772,6 @@
         .play-countdown-progress {
             stroke: var(--electric-aqua);
             stroke-linecap: round;
-            transition: stroke-dashoffset 0.2s linear;
             visibility: hidden;
         }
         .play-btn-wrapper:has(.play-btn.playing) .play-countdown-progress {
@@ -774,6 +779,9 @@
         }
         .play-btn-wrapper:has(.play-btn.loading) .play-countdown-progress {
             visibility: hidden;
+        }
+        #playCountdownRing {
+            transition: stroke-dashoffset 0.2s linear;
         }
         /* Mobil: kein Background bei Ladeanimation */
         @media (max-width: 768px), (hover: none) {
@@ -784,8 +792,8 @@
         }
         .play-btn {
             position: relative;
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             margin: 0;
             background: none;
@@ -803,8 +811,8 @@
         }
         .play-btn .play-btn-icon {
             display: inline-block;
-            width: 60px;
-            height: 60px;
+            width: 90px;
+            height: 90px;
             filter: invert(91%) sepia(27%) saturate(730%) hue-rotate(143deg) brightness(102%) contrast(101%);
         }
         .play-btn .pause-icon {
@@ -836,16 +844,30 @@
         .play-btn:not(.loading) .play-btn-icon {
             transition: opacity 0.25s ease;
         }
+        .play-btn:not(.loading):not(.playing):not(:disabled) {
+            animation: playPulse 2.5s ease-in-out infinite;
+        }
+        @keyframes playPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
         .round-counter {
-            font-size: 13px;
-            color: var(--old-rose);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--electric-aqua);
             text-align: center;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            background: rgba(135, 241, 255, 0.1);
+            border: 1.5px solid rgba(135, 241, 255, 0.3);
+            border-radius: 20px;
+            padding: 6px 20px;
         }
         .status {
-            font-size: 26px;
-            font-weight: 600;
+            font-size: 30px;
+            font-weight: 700;
             text-align: center;
             min-height: 2em;
             height: 2em;
@@ -853,7 +875,9 @@
             align-items: center;
             justify-content: center;
             color: var(--electric-aqua);
+            margin-top: 8px;
             margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(135, 241, 255, 0.2);
         }
         .status.status-loading {
             font-weight: 700;
@@ -881,6 +905,7 @@
         /* Player Guess Section */
         .players-guess-section {
             display: none;
+            width: 100%;
         }
         .players-guess-section.visible {
             display: block;
@@ -960,6 +985,7 @@
         /* Result */
         .result {
             position: relative;
+            width: 100%;
             margin-top: 20px;
             padding: 20px;
             padding-bottom: 60px;
@@ -1649,10 +1675,15 @@
         <div class="game-screen" id="gameScreen">
             <div class="play-btn-wrapper" id="playBtnWrapper">
                 <svg class="play-countdown-ring" viewBox="0 0 100 100" aria-hidden="true">
-                    <circle class="play-countdown-bg" cx="50" cy="50" r="47" fill="none" stroke-width="4"/>
+                    <defs>
+                        <mask id="countdownMask">
+                            <circle id="playCountdownRing" cx="50" cy="50" r="47" fill="none" stroke="white" stroke-width="10" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+                        </mask>
+                    </defs>
+                    <circle class="play-countdown-bg" cx="50" cy="50" r="47" fill="none" stroke-width="3" pathLength="300" stroke-dasharray="3 7"/>
+                    <circle class="play-countdown-progress" cx="50" cy="50" r="47" fill="none" stroke-width="3" pathLength="300" stroke-dasharray="3 7" mask="url(#countdownMask)"/>
                     <circle class="play-loading-tail" cx="50" cy="50" r="47" fill="none" stroke-width="2" stroke-dasharray="74 221" stroke-linecap="round"/>
                     <circle class="play-loading-arc" cx="50" cy="50" r="47" fill="none" stroke-width="2.5" stroke-dasharray="28 267" stroke-linecap="round"/>
-                    <circle id="playCountdownRing" class="play-countdown-progress" cx="50" cy="50" r="47" fill="none" stroke-width="3" stroke-dasharray="295.31" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
                 </svg>
                 <button type="button" class="play-btn" id="playBtn" onclick="playPreview()" aria-label="Abspielen"><img class="play-btn-icon play-icon" src="buttons/Play.svg" alt="Play"><img class="play-btn-icon pause-icon" src="buttons/Pause.svg" alt="Pause" style="display:none;"><span class="play-btn-countdown" id="playBtnCountdown"></span></button>
                 <div class="equalizer">
@@ -1666,7 +1697,7 @@
                 </div>
             </div>
             <div class="round-counter" id="roundCounter"></div>
-            <div class="status" id="status">Klicke zum Abspielen</div>
+            <div class="status" id="status">Seid ihr bereit?</div>
 
             <div class="players-guess-section" id="playersGuessSection">
                 <div id="playerGuessRows"></div>
@@ -1723,7 +1754,7 @@
     <!-- How-it-works Modal -->
     <div class="hiw-modal-overlay" id="hiwModalOverlay" onclick="if (event.target === this) hideHowItWorksModal();">
         <div class="hiw-modal-box" role="dialog" aria-modal="true" aria-labelledby="hiwModalTitle">
-            <button class="hiw-modal-close" onclick="hideHowItWorksModal()" aria-label="Schließen"><img src="buttons/Delete.svg" alt="Schließen" width="24" height="24"></button>
+            <button class="hiw-modal-close" onclick="hideHowItWorksModal()" aria-label="Schließen"><img src="buttons/Delete.svg" alt="Schließen" width="32" height="32"></button>
             <h2 class="hiw-modal-title" id="hiwModalTitle">So funktioniert's</h2>
             <ol class="hiw-steps">
                 <li class="hiw-step">
@@ -2549,7 +2580,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             if (!audio || audio.paused) return;
             const elapsed = Math.min(audio.currentTime, PREVIEW_DURATION_SEC);
             const ring = document.getElementById('playCountdownRing');
-            if (ring) ring.setAttribute('stroke-dashoffset', -((elapsed / PREVIEW_DURATION_SEC) * PLAY_COUNTDOWN_CIRCUMFERENCE) + '');
+            if (ring) ring.setAttribute('stroke-dashoffset', -(elapsed / PREVIEW_DURATION_SEC) + '');
             const countdownEl = document.getElementById('playBtnCountdown');
             if (countdownEl) countdownEl.textContent = Math.max(0, Math.ceil(PREVIEW_DURATION_SEC - elapsed));
         }
@@ -2902,7 +2933,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 setPlayButtonDisplay('▶');
                 resetPlayCountdown();
                 stopLoadingStatus(status, loadingId);
-                status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
                 document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                 preloadNextSongs();
                 return;
@@ -2951,7 +2982,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                     setPlayButtonDisplay('▶');
                     resetPlayCountdown();
                     stopLoadingStatus(status, loadingId);
-                    status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                    status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
                     document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                     if (waitForFirstExplanation) preloadNextSongs();
                     return;
@@ -3066,7 +3097,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                             setPlayButtonDisplay('▶');
                             resetPlayCountdown();
                             stopLoadingStatus(status, loadingId);
-                            status.textContent = waitForFirstExplanation ? 'Klicke zum Abspielen' : 'Weiter geht\'s';
+                            status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
                             document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                             if (waitForFirstExplanation) preloadNextSongs();
                             return;
