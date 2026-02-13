@@ -369,7 +369,7 @@
         .setup-nav {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 28px;
         }
         .setup-nav .back-btn {
             flex: 1;
@@ -394,6 +394,9 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
+        }
+        .setup-nav--full .next-btn {
+            width: 100%;
         }
         h1 {
             color: var(--electric-aqua);
@@ -440,7 +443,7 @@
             }
         }
         .setup-section {
-            margin-bottom: 25px;
+            margin-bottom: 32px;
             text-align: left;
             width: 100%;
         }
@@ -458,11 +461,13 @@
             }
         }
         .setup-label {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--electric-aqua);
-            margin-bottom: 12px;
+            color: var(--old-rose);
+            margin-bottom: 10px;
             display: block;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
         /* Player Setup */
@@ -476,8 +481,8 @@
             min-width: 50px;
             height: 44px;
             padding: 0 12px;
-            border: 2px solid var(--old-rose);
-            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(192, 245, 250, 0.25);
+            background: rgba(192, 245, 250, 0.06);
             color: var(--icy-aqua);
             border-radius: 8px;
             font-size: 18px;
@@ -493,8 +498,8 @@
         .player-count-btn {
             width: 44px;
             height: 44px;
-            border: 2px solid var(--old-rose);
-            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(192, 245, 250, 0.25);
+            background: rgba(192, 245, 250, 0.06);
             color: var(--icy-aqua);
             border-radius: 8px;
             font-size: 18px;
@@ -514,12 +519,13 @@
         }
         .player-name-input {
             padding: 12px 15px;
-            border: none;
+            border: 1px solid rgba(192, 245, 250, 0.15);
             border-radius: 8px;
-            background: rgba(192, 245, 250, 0.1);
+            background: rgba(192, 245, 250, 0.06);
             color: var(--icy-aqua);
             font-family: 'DM Sans', sans-serif;
             font-size: 16px;
+            transition: border-color 0.2s ease;
         }
         .player-name-input::placeholder {
             color: var(--old-rose);
@@ -1576,7 +1582,7 @@
                 <label class="setup-label">Anzahl Runden</label>
                 <div class="round-count" id="roundCount"></div>
             </div>
-            <div class="setup-nav">
+            <div class="setup-nav setup-nav--full">
                 <button class="next-btn" onclick="showSetupOptions()">Weiter</button>
             </div>
         </div>
