@@ -107,9 +107,14 @@
         .intro-screen {
             text-align: center;
             padding: 30px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px);
         }
         .intro-title {
-            font-size: 38px;
+            font-size: 52px;
             font-weight: 700;
             color: var(--electric-aqua);
             position: relative;
@@ -117,6 +122,7 @@
             opacity: 0;
             animation: fadeInTitle 0.8s ease-out forwards;
             animation-delay: 0.5s;
+            letter-spacing: -0.5px;
         }
         @keyframes fadeInTitle {
             to { opacity: 1; }
@@ -152,8 +158,8 @@
         }
         .intro-btn {
             width: auto;
-            padding: 16px 50px;
-            font-size: 18px;
+            padding: 18px 60px;
+            font-size: 20px;
             font-family: 'DM Sans', sans-serif;
             font-weight: 700;
             background: var(--cherry-rose);
@@ -161,6 +167,7 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
+            box-shadow: 0 4px 20px rgba(175, 18, 90, 0.4);
         }
         /* Hand-drawn circle animation */
         .intro-title-wrapper {
@@ -229,16 +236,19 @@
             }
         }
         .intro-secondary-btn {
-            display: inline-block;
-            margin-top: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 40px;
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 15px;
             font-family: 'DM Sans', sans-serif;
-            font-weight: 600;
-            color: var(--icy-aqua);
+            font-weight: 500;
+            color: var(--old-rose);
             background: transparent;
             border: none;
             cursor: pointer;
+            letter-spacing: 0.3px;
         }
         /* How-it-works Modal */
         .hiw-modal-overlay {
@@ -1394,7 +1404,7 @@
                 padding-bottom: 55px;
             }
             .intro-title {
-                font-size: 28px;
+                font-size: 36px;
             }
             .intro-lead {
                 font-size: 15px;
@@ -1433,7 +1443,7 @@
                 padding-bottom: 70px;
             }
             .intro-title {
-                font-size: 48px;
+                font-size: 60px;
             }
             .intro-lead {
                 font-size: 20px;
@@ -1487,9 +1497,10 @@
         @media (max-height: 500px) and (orientation: landscape) {
             .intro-screen {
                 padding: 15px 0;
+                min-height: auto;
             }
             .intro-title {
-                font-size: 28px;
+                font-size: 32px;
                 margin-bottom: 20px;
             }
             .intro-lead {
@@ -1547,8 +1558,7 @@
             </div>
 
             <button class="intro-btn" onclick="showSetup()">Spiel starten</button>
-            <br>
-            <button class="intro-secondary-btn" onclick="showHowItWorksModal()" id="hiwTrigger">So funktioniert's</button>
+            <button class="intro-secondary-btn" onclick="showHowItWorksModal()" id="hiwTrigger"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="opacity:0.8"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><text x="8" y="11.5" text-anchor="middle" fill="currentColor" font-size="10" font-weight="600">?</text></svg>So funktioniert's</button>
         </div>
 
         <!-- Setup Screen 1: Players -->
