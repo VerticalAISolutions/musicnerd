@@ -3085,7 +3085,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                     if (Array.isArray(arr)) queries.push(...arr);
                 });
             }
-            const MAX_FALLBACK_ATTEMPTS = 15;
+            const MAX_FALLBACK_ATTEMPTS = 40;
             const shuffledQueries = shuffleArray(queries);
             let attempts = 0;
             try {
@@ -3095,15 +3095,18 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                         const phrase = shuffledQueries[i];
                         const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
                         if (!originalArtist || !songTitle) continue;
-                        // Fallback-Songs: ohne Jahresfilter suchen (iTunes gibt oft Remaster-Daten zurück)
-                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, null, null);
+                        // Spotify kennt korrekte Original-Jahre → mit Jahresfilter suchen
+                        // iTunes kann Remaster-Daten zurückgeben → ohne Filter suchen, aber danach prüfen
+                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
                         if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, null, null);
                         if (found) {
                             const key = songKey(found.artistName, found.trackName);
                             if (playedSongKeys.has(key)) continue;
+                            applyReleaseYearOverride(found);
+                            const foundYear = new Date(found.releaseDate).getFullYear();
+                            if (foundYear < yearMin || foundYear > yearMax) continue;
                             playedSongKeys.add(key);
                             currentSong = found;
-                            applyReleaseYearOverride(currentSong);
                             const year = new Date(currentSong.releaseDate).getFullYear();
                             if (waitForFirstExplanation) {
                                 const explanation = await fetchSongInfoWithTimeout(currentSong.artistName, currentSong.trackName, year, 35000);
