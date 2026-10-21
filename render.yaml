@@ -1,0 +1,22 @@
+# Render Blueprint – Render-Dashboard: New → Blueprint → dieses Repo wählen.
+# Secrets (sync: false) fragt Render beim Anlegen ab; sie landen nie im Repo.
+services:
+  - type: web
+    name: musicnerd
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
+      # Render-Load-Balancer setzt X-Forwarded-For → Rate-Limit pro Spieler statt für alle gemeinsam
+      - key: TRUST_PROXY
+        value: "1"

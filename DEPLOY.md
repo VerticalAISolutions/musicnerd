@@ -24,6 +24,16 @@
 
 ---
 
+## Render
+
+Das Repo enthält eine Blueprint-Datei `render.yaml` (Web Service, Node, Region Frankfurt, Free-Plan, Auto-Deploy bei Push auf `main`).
+
+- **Neu anlegen:** Render-Dashboard → *New* → *Blueprint* → Repo `VerticalAISolutions/musicnerd` wählen → `OPENAI_API_KEY` (und optional Spotify) eintragen → *Apply*.
+- **Bestehender Service:** Unter *Environment* `TRUST_PROXY=1` ergänzen – sonst teilen sich hinter Renders Load-Balancer alle Spieler ein Rate-Limit. Bei aktivem Auto-Deploy reicht danach ein Push auf `main`.
+- Free-Plan schläft nach 15 Min. ohne Aufrufe ein; der erste Aufruf danach dauert ca. 30–60 s.
+
+---
+
 ## Was der Server ausliefert
 
 `server.js` liefert die App und die API von **derselben Domain** aus:

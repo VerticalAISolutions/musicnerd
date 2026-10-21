@@ -8,7 +8,8 @@
  *   3. npm install && npm start
  *
  * Der Server liefert die App (nur freigegebene Dateien, siehe PUBLIC_FILES) und die API unter /api/* aus.
- * Optional in .env: CORS_ORIGIN (nur nötig, wenn das Frontend auf einer anderen Domain läuft).
+ * Optional in .env: CORS_ORIGIN (nur nötig, wenn das Frontend auf einer anderen Domain läuft),
+ *   TRUST_PROXY=1 (hinter dem Load-Balancer eines Hosters wie Render).
  */
 
 require('dotenv').config();
@@ -101,11 +102,13 @@ const RATE_LIMITS = {
   '/api/spotify-search': 150
 };
 const rateBuckets = new Map();
-function isRateLimited(ip, route) {
-  const limit = RATE_LIMITS[route];
-  if (!limit) return false;
+// Zusätzlich ein Gesamtlimit pro Minute für die OpenAI-Endpunkte – Kostenbremse, falls jemand IPs fälscht oder viele nutzen
+const GLOBAL_RATE_LIMITS = {
+  '/api/suggest-song': 60,
+  '/api/song-info': 300
+};
+function countRequest(key, limit) {
   const now = Date.now();
-  const key = ip + '|' + route;
   let bucket = rateBuckets.get(key);
   if (!bucket || now - bucket.start >= 60000) {
     bucket = { start: now, count: 0 };
@@ -114,6 +117,13 @@ function isRateLimited(ip, route) {
   bucket.count++;
   return bucket.count > limit;
 }
+function isRateLimited(ip, route) {
+  const limit = RATE_LIMITS[route];
+  if (!limit) return false;
+  if (countRequest(ip + '|' + route, limit)) return true;
+  const globalLimit = GLOBAL_RATE_LIMITS[route];
+  return globalLimit ? countRequest('*|' + route, globalLimit) : false;
+}
 setInterval(() => {
   const now = Date.now();
   for (const [key, bucket] of rateBuckets) {
@@ -121,17 +131,20 @@ setInterval(() => {
   }
 }, 60000).unref();
 
-/** Client-IP. X-Forwarded-For nur, wenn die Anfrage vom lokalen Reverse-Proxy (nginx) kommt – sonst wäre der Header fälschbar. */
+/**
+ * Client-IP für das Rate-Limit.
+ * - TRUST_PROXY=1 (z. B. Render): Die App läuft hinter dem Load-Balancer des Hosters, X-Forwarded-For[0] ist der Client.
+ * - Sonst: X-Forwarded-For nur, wenn die Anfrage vom lokalen Reverse-Proxy (nginx) kommt – der hängt die echte IP hinten an.
+ * Ohne diese Unterscheidung landen hinter einem Proxy alle Spieler im selben Limit.
+ */
+const TRUST_PROXY = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true';
 function clientIp(req) {
   const remote = req.socket.remoteAddress || '';
+  const parts = String(req.headers['x-forwarded-for'] || '').split(',').map(x => x.trim()).filter(Boolean);
+  if (!parts.length) return remote;
+  if (TRUST_PROXY) return parts[0];
   const fromLocalProxy = remote === '127.0.0.1' || remote === '::1' || remote === '::ffff:127.0.0.1';
-  const forwarded = req.headers['x-forwarded-for'];
-  if (fromLocalProxy && forwarded) {
-    // Letzter Eintrag = von nginx angehängte echte Client-IP
-    const parts = String(forwarded).split(',').map(x => x.trim()).filter(Boolean);
-    if (parts.length) return parts[parts.length - 1];
-  }
-  return remote;
+  return fromLocalProxy ? parts[parts.length - 1] : remote;
 }
 
 // iTunes-Antworten cachen: dieselben Songs werden in vielen Spielen gesucht, und iTunes erlaubt nur ca. 20 Anfragen/Minute pro Server-IP
