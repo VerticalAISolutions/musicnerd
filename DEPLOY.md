@@ -7,48 +7,52 @@
 
 ### Auf dem Server (wo `server.js` läuft)
 
-Du hast zwei Möglichkeiten:
+1. **Umgebungsvariablen der Hosting-Plattform (empfohlen)**
+   Im Dashboard unter „Environment Variables“ / „Secrets“ eintragen:
+   - `OPENAI_API_KEY` = dein Key
+   - optional `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET`
+   - optional `PORT` (oft von der Plattform vorgegeben)
 
-1. **`.env`-Datei auf dem Server anlegen**  
-   Auf dem Server (z.B. per SSH) im Projektordner eine Datei `.env` anlegen mit z.B.:
+2. **Oder `.env`-Datei auf dem Server**
    ```env
    OPENAI_API_KEY=sk-dein-echter-key
    PORT=3001
    ```
-   Der Server liest diese Datei beim Start über `dotenv`. Wichtig: Verzeichnisrechte so setzen, dass nur der Prozess die Datei lesen kann (z.B. `chmod 600 .env`).
+   Rechte einschränken: `chmod 600 .env`.
 
-2. **Umgebungsvariablen der Hosting-Plattform nutzen (empfohlen)**  
-   Bei den meisten Anbietern (Railway, Render, Fly.io, Vercel Serverless, etc.) trägst du im Dashboard unter „Environment Variables“ / „Secrets“ ein:
-   - `OPENAI_API_KEY` = dein Key  
-   - optional `PORT` (oft von der Plattform vorgegeben).
-
-Dann musst du **keine** `.env`-Datei auf den Server hochladen – der Key bleibt nur in der Plattform-Konfiguration.
+> **Wichtig, falls die App schon einmal mit älterem `server.js` online war:** Bis zu dieser Version hat der Server *jede* Datei im Projektordner ausgeliefert – auch `/.env`. Wenn dort ein Key lag und der Server öffentlich erreichbar war, den OpenAI-Key **rotieren**.
 
 ---
 
-## Frontend: Proxy-URL für Produktion
+## Was der Server ausliefert
 
-Die App (z.B. `index.html`) ruft den Proxy unter **`OPENAI_PROXY_URL`** auf. Lokal steht dort `http://localhost:3001/api/song-info`.
+`server.js` liefert die App und die API von **derselben Domain** aus:
 
-**Beim Deployen** muss diese URL auf deinen echten API-Server zeigen:
+- **Statische Dateien:** nur die Freigabeliste `PUBLIC_FILES` in `server.js` (`index.html`, `curated-match.js`, `buttons/*.svg`, `fallback-genres/*.js`). Alles andere – `.env`, `server.js`, Doku – antwortet mit 404. Neue Dateien, die das Frontend lädt, dort eintragen.
+- **API** unter `/api/*` (nur `POST`). Das Frontend ruft sie relativ auf (`/api/song-info` usw.) – beim Deployen muss in `index.html` **nichts angepasst** werden.
 
-1. In `index.html` die Zeile mit `OPENAI_PROXY_URL` anpassen, z.B.:
-   ```javascript
-   const OPENAI_PROXY_URL = 'https://deine-api-domain.de/api/song-info';
-   ```
-   Ersetze `deine-api-domain.de` durch die echte URL, unter der dein Node-Server erreichbar ist (z.B. `https://musicnerd-api.railway.app/api/song-info`).
+Wenn ein nginx davor steht und selbst statische Dateien ausliefert: dort ebenfalls nur diese Dateien freigeben oder zumindest Dotfiles sperren (`location ~ /\. { deny all; }`).
 
-2. **Oder:** Wenn du Frontend und API unter derselben Domain auslieferst (z.B. Node serviert auch die HTML-Datei), kannst du eine relative URL verwenden:
-   ```javascript
-   const OPENAI_PROXY_URL = '/api/song-info';
-   ```
-   Dann funktioniert es lokal und in Produktion ohne Änderung, solange die App von derselben Origin aus geladen wird.
+---
+
+## Schutz der API
+
+- **Rate-Limit pro IP** (Anfragen pro Minute, `RATE_LIMITS` in `server.js`): suggest-song 10, song-info 40, itunes-search/spotify-search je 150. Darüber antwortet der Server mit 429.
+- **Hinter nginx:** Die echte Client-IP kommt aus `X-Forwarded-For` – der Header wird nur akzeptiert, wenn die Anfrage von `127.0.0.1` kommt. nginx muss ihn setzen:
+  ```nginx
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  ```
+  Ohne den Header teilen sich alle Spieler ein Limit.
+- **Erklärtexte:** Der Prompt für `/api/song-info` wird auf dem Server gebaut; der Browser schickt nur Songdaten. Der Endpunkt ist also kein freier OpenAI-Zugang.
+- **iTunes-Cache:** Suchergebnisse werden 1 Stunde im Speicher gehalten (iTunes erlaubt nur ca. 20 Anfragen/Minute pro Server-IP).
+- **CORS** ist standardmäßig aus. Nur wenn das Frontend auf einer anderen Domain liegt: `CORS_ORIGIN=https://deine-frontend-domain.de` setzen.
 
 ---
 
 ## Kurz-Checkliste
 
-- [ ] API-Key **nur** auf dem Server (`.env` oder Umgebungsvariable der Plattform), nie im Frontend oder in Git.
-- [ ] In `index.html`: `OPENAI_PROXY_URL` auf die Produktion-API-URL setzen (oder relative URL `/api/song-info` wenn gleiche Origin).
-- [ ] Server starten (z.B. `npm start` oder durch die Plattform), CORS ist im Code bereits für `*` gesetzt.
-- [ ] Optional: `PORT` in `.env` oder Umgebung setzen, falls der Hoster einen anderen Port verlangt.
+- [ ] API-Key **nur** auf dem Server (Plattform-Variable oder `.env` mit `chmod 600`), nie im Frontend oder in Git.
+- [ ] Bei vorherigem öffentlichen Betrieb mit `.env` im Projektordner: Key rotieren.
+- [ ] nginx (falls vorhanden): `/api/*` an Node weiterleiten, `X-Forwarded-For` setzen, keine Dotfiles ausliefern.
+- [ ] Server starten (`npm start` oder durch die Plattform).
+- [ ] Kurztest: `curl -I https://deine-domain/.env` → muss **404** liefern.

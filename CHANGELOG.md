@@ -247,12 +247,60 @@ Die App heißt nun durchgängig „MusicNerd“.
 
 ---
 
+## 18. Neue Genres „Partyhits“ & „Filmmusik“ + Schwierigkeit = Bekanntheit
+
+**Dateien:** `index.html`, `server.js`, `curated-match.js` (neu), `fallback-genres/partyhits.js` (neu), `fallback-genres/soundtracks.js` (neu), `test-curated-lists.js` (neu)
+
+- **Zwei neue Genres** für Leute, die keine Musiknerds sind: **Partyhits** (international + deutsche Klassiker) und **Filmmusik** (Scores wie Indiana Jones oder Star Wars sowie Film-Songs wie Eye of the Tiger oder Let It Go). Beide lassen sich mit den übrigen Genres kombinieren.
+- **Kuratiert statt LLM:** Beide Genres kommen aus handgepflegten Listen, jeder Eintrag mit **festem Jahr** (Filmmusik: Kinostart des Films, für den das Stück geschrieben wurde). Grund: iTunes führt Scores oft als Reissue (Raiders March 2008 statt 1981), und der Cover-Filter `isNoCover` sperrt alles mit „Soundtrack“. Für diese Genres gibt es keinen Suggest-API-Call. iTunes liefert nur Preview, Cover und Titel.
+- **Treffer-Logik** in `curated-match.js`, die Browser und Testskript gemeinsam nutzen: Der Hauptinterpret muss stimmen (Orchester-Zusätze sind ok, Tribute/Cover nicht), der Titel muss passen, Live, Remix und Karaoke sind gesperrt, Soundtrack-Alben und feat. sind erlaubt.
+- **Queue:** API- und kuratierte Songs werden abwechselnd gemischt. Kuratierte Einträge werden vorab gegen den Jahres-Slider gefiltert. Bei leerer Auswahl werden andere Schwierigkeitsstufen herangezogen, damit es keine Null-Ergebnisse gibt. Queue-Einträge ohne Treffer werden entfernt, statt jede Runde erneut gesucht zu werden.
+- **Auflösung:** Bei Filmmusik zeigt `resultYearNote` „Aus dem Film „…““. Eigene Erklär-Prompts und Fallback-Texte für Filmmusik und Partyhits.
+- **Datierungsfallen entfernt:** Der Kuratoren-Prompt in `server.js` suchte bisher auf allen Stufen Songs, die systematisch falsch datiert werden. Deshalb war auch „Leicht“ schwer. Jetzt gilt **Schwierigkeit = Bekanntheit** (Leicht = große Hits, Mittel = bekannte Artists jenseits des größten Hits, Schwer = Songs für Musikfans). `trap`-Schema, `isValidTrap` und `datingTraps` sind entfernt.
+- **Listen prüfen:** `node test-curated-lists.js [partyhits|soundtracks]` prüft jeden Eintrag gegen iTunes.
+
+---
+
+## 19. Hänger nach Spielende, Sicherheit, Aufräumen
+
+**Dateien:** `index.html`, `server.js`, `curated-match.js`, `fallback-genres/rock.js`, `claude.md`, `DEPLOY.md`, `ABLAUF-API.md`; entfernt: `game-test.html`, `game-spotify.html`, `api-test.html`
+
+### Hänger bei „Nochmal!“ / „Neues Spiel“
+- **„Nochmal!“** hat die Queue geleert und sofort gesucht, ohne auf die neue Songliste zu warten. Das Spiel fiel in die Notfall-Liste und kam dort nie wieder heraus. Jetzt laufen „Spiel starten“ und „Nochmal!“ über dieselbe Funktion `runGame()`.
+- **`fallback-genres/rock.js`** hatte einen Syntaxfehler (`Let's Dance`), dadurch war die Rock-Notfall-Liste komplett leer.
+- **Preloading aus dem alten Spiel** lief nach dem Neustart weiter und schob alte Songs ins neue Spiel. Neu ist eine `gameId`: Jeder Start erhöht sie, und alte Vorgänge brechen ab.
+- **„Neues Spiel“** blendete den Spielscreen per `style.display = 'none'` aus, `startGame()` setzte das nie zurück. Ergebnis: ein unsichtbarer Spielscreen.
+- **Keine Sackgasse mehr:** Statt „Kein Song gefunden“ ohne Ausweg gibt es einen Button „Nochmal versuchen“. Läuft gerade das Nachladen der Songliste, wird darauf gewartet.
+- **Kein Verlust bei kurzen Ausfällen:** Ist iTunes nur kurz nicht erreichbar, bleiben die Queue-Einträge erhalten, statt verworfen zu werden.
+
+### Sicherheit (`server.js`)
+- Der Server lieferte **jede Datei** im Projektordner aus, auch `/.env` mit dem OpenAI-Key. Jetzt gilt eine Freigabeliste (`PUBLIC_FILES`), alles andere antwortet mit 404.
+- `/api/song-info` baut den Prompt selbst. Vorher wurde freier Text aus dem Browser an OpenAI durchgereicht, der Endpunkt war also ein offener ChatGPT-Zugang.
+- Rate-Limit pro IP und Endpunkt, Body max. 10 KB, nur `POST`, Eingaben geprüft und gekürzt. CORS nur noch über `CORS_ORIGIN`.
+- Spielernamen werden escaped, bevor sie per `innerHTML` eingefügt werden.
+
+### Qualität
+- `isNoCover` blockt jetzt auch Akustik-, Stripped- und Piano-Fassungen. Vorher konnte z. B. „Creep (Acoustic)“ als Original durchgehen.
+- Der kuratierte Filter blockt neu eingespielte Fassungen und DJ-Mixe auch dann, wenn das nur im Albumtitel steht.
+- Preloading startet nach jedem Song, nicht nur nach dem ersten.
+- „Nächster Song“ ist gegen Doppelklick geschützt. Nach der letzten Runde erscheint das Endergebnis statt „Runde 6 / 5“.
+- Eine verspätete Erklärung aus der Vorrunde überschreibt nicht mehr den aktuellen Text.
+- iTunes-Antworten werden 1 h auf dem Server gecacht. Fällt der Proxy aus, sucht der Browser direkt per JSONP.
+- Die Notfall-Liste macht höchstens 20 statt 80 Suchversuche (iTunes erlaubt ca. 20 Anfragen pro Minute). Die 12 Subgenre-Blöcke sind jetzt eine Schleife (`subgenresKey`).
+
+### Aufräumen
+- Fallback-Erklärungen sind genre-neutral und nennen die Epoche („frühe 80er“). Vorher stand dort immer „Drum-Sound und Synths“, auch bei Klassik.
+- `claude.md` §6 beschreibt jetzt Schwierigkeit = Bekanntheit sowie die kuratierten Genres. `DEPLOY.md` und `ABLAUF-API.md` sind aktualisiert.
+- Alte Testseiten entfernt, `.playwright-mcp/` steht in `.gitignore`.
+
+---
+
 ## 17. So startest du alles
 
-1. **API-Key:** In `.env` hinter `OPENAI_API_KEY=` deinen OpenAI-Key eintragen.
-2. **Proxy:** Im Projektordner `npm install` und `npm start` (Server läuft auf Port 3001).
-3. **App:** `game-test.html` im Browser öffnen.
-4. **Spieloptionen:** Bei „OpenAI-Proxy-URL“ eintragen: `http://localhost:3001/api/song-info`.
-5. Spiel starten; nach „Alle Tipps abgeben“ wird die Erklärung per GPT-4.1 mini geladen (oder die Fallback-Texte, wenn kein Proxy/Fehler).
+1. **API-Key:** In `.env` hinter `OPENAI_API_KEY=` deinen OpenAI-Key eintragen (optional `SPOTIFY_CLIENT_ID`/`SPOTIFY_CLIENT_SECRET`).
+2. **Server:** Im Projektordner `npm install` und `npm start` (Port 3001).
+3. **App:** `http://localhost:3001` im Browser öffnen – der Server liefert App und API aus, nichts weiter einzutragen.
+4. **Debug:** `http://localhost:3001/?debug=1` zeigt Such- und API-Logs direkt auf der Seite.
+5. **Kuratierte Listen prüfen:** `node test-curated-lists.js` (Partyhits + Filmmusik gegen iTunes).
 
-Damit sind alle bisherigen Änderungen erfasst.
+Deployment: siehe `DEPLOY.md`.

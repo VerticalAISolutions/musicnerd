@@ -190,7 +190,7 @@
             'The White Stripes | Seven Nation Army',
             'Lynyrd Skynyrd | Sweet Home Alabama',
             'Fleetwood Mac | Dreams',
-            'David Bowie | Let's Dance',
+            'David Bowie | Lets Dance',
             'Pink Floyd | Comfortably Numb',
             'Bruce Springsteen | Born in the U.S.A.'
         ],

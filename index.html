@@ -1152,6 +1152,9 @@
                 background: var(--icy-aqua);
             }
         }
+        .retry-btn {
+            margin-bottom: 20px;
+        }
         /* Difficulty Selection */
         .difficulty-buttons {
             display: flex;
@@ -1266,6 +1269,7 @@
         }
         .standings-row {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             padding: 20px 24px;
@@ -1288,14 +1292,23 @@
         }
         .standings-name {
             flex: 1;
+            min-width: 0;
             font-size: 22px;
             font-weight: 600;
             color: var(--icy-aqua);
+            /* Name nie umbrechen ("Spieler / 2"), sondern notfalls kürzen */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        /* Score in eigener Zeile unter dem Namen – nebeneinander ist die 460px-Box zu schmal */
         .standings-score {
-            font-size: 20px;
+            width: 100%;
+            margin-top: 6px;
+            padding-left: 40px;
+            font-size: 16px;
             color: var(--old-rose);
-            text-align: right;
+            text-align: left;
         }
         .standings-score span {
             font-weight: 700;
@@ -1303,7 +1316,6 @@
         }
         @media (max-width: 500px) {
             .standings-row {
-                flex-wrap: wrap;
                 padding: 14px 16px;
             }
             .standings-rank {
@@ -1314,11 +1326,8 @@
                 font-size: 17px;
             }
             .standings-score {
-                width: 100%;
-                margin-top: 6px;
                 padding-left: 30px;
                 font-size: 15px;
-                text-align: left;
             }
         }
         .standings-buttons {
@@ -1718,6 +1727,7 @@
             </div>
             <div class="round-counter" id="roundCounter"></div>
             <div class="status" id="status">Seid ihr bereit?</div>
+            <button type="button" class="result-btn retry-btn" id="retryBtn" onclick="retryLoadSong()" style="display: none;">Nochmal versuchen</button>
 
             <div class="players-guess-section" id="playersGuessSection">
                 <div id="playerGuessRows"></div>
@@ -1804,6 +1814,7 @@
 
     <audio id="audioPlayer"></audio>
 
+    <script src="curated-match.js"></script>
     <script>
         function showSetup() {
             document.getElementById('introScreen').style.display = 'none';
@@ -1851,20 +1862,23 @@
             }
         }
 
-        /* Genre-Metadaten für UI und API. Songlisten (beginner/intermediate/expert) kommen aus fallback-genres/*.js (listsKey). */
+        /* Genre-Metadaten für UI und API. Songlisten (beginner/intermediate/expert) und Subgenre-Listen kommen aus fallback-genres/*.js (listsKey, subgenresKey).
+         * curated: Songs kommen nur aus der kuratierten Liste (mit festem Jahr), kein Suggest-API-Call. kind steuert Suche und Erklärungstext. */
         const genres = [
-            { id: 'rock', name: 'Rock', listsKey: 'genreRockLists' },
-            { id: 'pop', name: 'Pop', listsKey: 'genrePopLists' },
-            { id: 'hiphop', name: 'Hip-Hop', listsKey: 'genreHiphopLists' },
-            { id: 'electronic', name: 'Electronic', listsKey: 'genreElectronicLists' },
-            { id: 'rnb', name: 'R&B / Soul', listsKey: 'genreRnbSoulLists' },
-            { id: 'jazz', name: 'Jazz', listsKey: 'genreJazzLists' },
-            { id: 'metal', name: 'Metal', listsKey: 'genreMetalLists' },
-            { id: 'country', name: 'Country', listsKey: 'genreCountryLists' },
-            { id: 'indie', name: 'Indie', listsKey: 'genreIndieLists' },
-            { id: 'punk', name: 'Punk', listsKey: 'genrePunkLists' },
-            { id: 'klassik', name: 'Klassik', listsKey: 'genreKlassikLists' },
-            { id: 'techno', name: 'Techno', listsKey: 'genreTechnoLists' }
+            { id: 'party', name: 'Partyhits', listsKey: 'genrePartyLists', curated: true, kind: 'party' },
+            { id: 'soundtracks', name: 'Filmmusik', listsKey: 'genreSoundtrackLists', curated: true, kind: 'soundtrack' },
+            { id: 'rock', name: 'Rock', listsKey: 'genreRockLists', subgenresKey: 'fallbackRockSubgenres' },
+            { id: 'pop', name: 'Pop', listsKey: 'genrePopLists', subgenresKey: 'fallbackPopSubgenres' },
+            { id: 'hiphop', name: 'Hip-Hop', listsKey: 'genreHiphopLists', subgenresKey: 'fallbackHiphopSubgenres' },
+            { id: 'electronic', name: 'Electronic', listsKey: 'genreElectronicLists', subgenresKey: 'fallbackElectronicSubgenres' },
+            { id: 'rnb', name: 'R&B / Soul', listsKey: 'genreRnbSoulLists', subgenresKey: 'fallbackRnbSoulSubgenres' },
+            { id: 'jazz', name: 'Jazz', listsKey: 'genreJazzLists', subgenresKey: 'fallbackJazzSubgenres' },
+            { id: 'metal', name: 'Metal', listsKey: 'genreMetalLists', subgenresKey: 'fallbackMetalSubgenres' },
+            { id: 'country', name: 'Country', listsKey: 'genreCountryLists', subgenresKey: 'fallbackCountrySubgenres' },
+            { id: 'indie', name: 'Indie', listsKey: 'genreIndieLists', subgenresKey: 'fallbackIndieSubgenres' },
+            { id: 'punk', name: 'Punk', listsKey: 'genrePunkLists', subgenresKey: 'fallbackPunkSubgenres' },
+            { id: 'klassik', name: 'Klassik', listsKey: 'genreKlassikLists', subgenresKey: 'fallbackKlassikSubgenres' },
+            { id: 'techno', name: 'Techno', listsKey: 'genreTechnoLists', subgenresKey: 'fallbackTechnoSubgenres' }
         ];
 
         const difficulties = [
@@ -1882,38 +1896,9 @@
         /** Spotify-Suche über den gleichen Server (Client Credentials); primäre Quelle für Song-Previews. */
         const SPOTIFY_SEARCH_URL = '/api/spotify-search';
 
-        /** Prompt für KI-generierte Song-Erläuterung (z. B. bei API-Anbindung). */
-        const SONG_INFO_PROMPT = `Erkläre kurz (maximal 3–4 Sätze), warum dieser Song zeitlich so einzuordnen ist.
-Beziehe dich auf konkrete hörbare Merkmale (z. B. Drum-Sound, Synths, Vocal-Stil). Ton: musikbegeisterter Freund.
-Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. Jeder Satz: etwas Hörbares oder Konkretes.`;
-
-        /**
-         * Erzeugt die Song-Info zur Auflösung je nach Schwierigkeitslevel.
-         * Folgt SONG_INFO_PROMPT: konkrete hörbare Merkmale, zwei Epochen-Hinweise, warum falsch datiert, Ton: musikbegeisterter Freund.
-         */
-        function getSongInfoForDifficulty(artistName, trackName, releaseYear, difficulty) {
-            const decade = Math.floor(releaseYear / 10) * 10;
-            const decadeLabel = releaseYear < 2000 ? `${decade}er` : `${decade}`;
-
-            if (difficulty === 'beginner') {
-                return {
-                    label: '',
-                    text: `Der Drum-Sound und der Mix verraten die ${decadeLabel}-Jahre – der Vocal-Stil und das Arrangement passen genau in diese Phase.`
-                };
-            }
-            if (difficulty === 'intermediate') {
-                return {
-                    label: '',
-                    text: `Am Synth-Sound und am Arrangement hört man die ${decadeLabel}-Jahre; der Mix und die Art, wie die Stimme sitzt, sind typisch für die Zeit.`
-                };
-            }
-            if (difficulty === 'expert') {
-                return {
-                    label: '',
-                    text: `Drum-Sound und Wahl der Synths (oder Gitarrenverzerrung) sind zwei klare Anhaltspunkte für die ${decadeLabel}-Jahre – Arrangement und Mix bestätigen das.`
-                };
-            }
-            return null;
+        /** Für Text, der per innerHTML eingefügt wird (Spielernamen): "<" & Co. als Zeichen, nicht als HTML. */
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
         /** Entfernt Klammer-/Suffix-Varianten für zuverlässige Deduplizierung (z. B. "Queen (UK)" → "queen"). */
@@ -2067,19 +2052,14 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
             const searchTerm = artist + ' ' + title;
             const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
             try {
-                // iTunes-Suche über Server-Proxy (umgeht CORS-Probleme auf Mobile)
-                const res = await fetchWithTimeout('/api/itunes-search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ term: searchTerm, limit: 50 })
-                }, SEARCH_REQUEST_TIMEOUT_MS);
-                const data = await res.json();
+                const results = await itunesSearch(searchTerm);
+                if (!results) return null;
 
                 if (debug) {
-                    console.log('iTunes-Suche:', { searchTerm, resultsCount: data.results?.length });
+                    console.log('iTunes-Suche:', { searchTerm, resultsCount: results.length });
                 }
 
-                const valid = (data.results || []).filter(s => {
+                const valid = results.filter(s => {
                     if (!s.previewUrl) {
                         if (debug) console.log('  ❌ Keine Preview:', s.artistName, '-', s.trackName);
                         return false;
@@ -2096,7 +2076,7 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 });
 
                 if (debug) {
-                    console.log('iTunes gefiltert:', valid.length, 'von', data.results?.length);
+                    console.log('iTunes gefiltert:', valid.length, 'von', results.length);
                     if (valid.length > 0) {
                         console.log('  Gültige Ergebnisse:', valid.slice(0, 5).map(s => ({
                             artist: s.artistName,
@@ -2120,63 +2100,129 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 if (debug) console.log('  ✅ Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
                 return original;
             } catch (e) {
-                // Fallback: Direkte iTunes-Suche ohne Proxy (JSONP)
-                console.warn('searchItunesForOriginal: Proxy fehlgeschlagen, versuche JSONP...', e.message);
-                return await searchItunesDirectJSONP(artist, title, yearMinVal, yearMaxVal);
+                console.warn('searchItunesForOriginal:', e.message || e);
+                return null;
             }
         }
 
-        /** Direkte iTunes-Suche per JSONP (funktioniert ohne Server-Proxy). */
-        async function searchItunesDirectJSONP(artist, title, yearMinVal, yearMaxVal) {
-            const searchTerm = (artist + ' ' + title).trim();
-            if (!searchTerm) return null;
-            const debug = typeof window !== 'undefined' && window.DEBUG_SUGGEST === true;
+        /**
+         * Kuratierte Einträge (Partyhits, Filmmusik): iTunes liefert nur Preview, Cover und Titel.
+         * Das Jahr kommt aus der Liste – iTunes führt Scores oft als Reissue (z. B. Raiders March 2008 statt 1981).
+         */
+        async function findCuratedSong(entry) {
+            if (!entry || !entry.artist || !entry.song || !window.CuratedMatch) return null;
+            try {
+                const results = await itunesSearch(CuratedMatch.searchTerm(entry), { country: CuratedMatch.COUNTRY });
+                if (!results) return null;
+                const hit = CuratedMatch.pickResult(results, entry);
+                if (window.DEBUG_SUGGEST) console.log('Kuratiert:', entry.artist, '-', entry.song, hit ? '✅ ' + hit.collectionName : '❌ kein Treffer');
+                if (!hit) return null;
+                return {
+                    ...hit,
+                    // Lange Credit-Listen ("Lisa Gerrard, Gavin Greenaway, … & Hans Zimmer") → kuratierter Name
+                    artistName: hit.artistName.length > 40 ? entry.artist : hit.artistName,
+                    releaseDate: entry.year + '-01-01',
+                    yearNote: entry.film ? `Aus dem Film „${entry.film}“` : '',
+                    film: entry.film || '',
+                    kind: entry.kind
+                };
+            } catch (e) {
+                console.warn('findCuratedSong:', entry.artist, entry.song, e.message || e);
+                return null;
+            }
+        }
 
+        /** Sucht einen Queue-Eintrag: kuratiert → feste Liste, sonst Spotify (Metadaten) + iTunes (Preview). */
+        async function findSuggestion(suggestion, yearMinVal, yearMaxVal) {
+            if (suggestion.curated) return findCuratedSong(suggestion);
+            const found = await findViaSpotifyPlayViaItunes(suggestion.artist, suggestion.song, yearMinVal, yearMaxVal);
+            return found || await searchItunesForOriginal(suggestion.artist, suggestion.song, yearMinVal, yearMaxVal);
+        }
+
+        /** Genre-Namen für den Suggest-API-Call – kuratierte Genres brauchen keinen. */
+        function getSuggestGenreNames() {
+            return genres.filter((g) => selectedGenres.has(g.id) && !g.curated).map((g) => g.name);
+        }
+
+        /** Queue aus den kuratierten Listen der gewählten Genres: passende Schwierigkeit, Jahr im Slider-Bereich, noch nicht gespielt. */
+        function buildCuratedQueue() {
+            const collect = (levels) => {
+                const out = [];
+                genres.forEach((g) => {
+                    if (!g.curated || !selectedGenres.has(g.id)) return;
+                    levels.forEach((level) => {
+                        (window[g.listsKey]?.[level] || []).forEach((e) => {
+                            if (e.year < yearMin || e.year > yearMax) return;
+                            if (playedSongKeys.has(songKey(e.artist, e.song))) return;
+                            out.push({ ...e, curated: true, kind: g.kind });
+                        });
+                    });
+                });
+                return out;
+            };
+            // Enger Zeitraum: lieber andere Schwierigkeitsstufen nehmen als gar keinen Song
+            let list = collect([selectedDifficulty]);
+            if (!list.length) list = collect(difficulties.map((d) => d.id));
+            return shuffleArray(list);
+        }
+
+        /** Mischt API- und kuratierte Songs abwechselnd, damit bei z. B. Rock + Filmmusik beide Genres regelmäßig drankommen. */
+        function mergeQueues(apiList, curatedList) {
+            const out = [];
+            for (let i = 0; i < Math.max(apiList.length, curatedList.length); i++) {
+                if (i < apiList.length) out.push(apiList[i]);
+                if (i < curatedList.length) out.push(curatedList[i]);
+            }
+            return out;
+        }
+
+        /** true, wenn die letzte iTunes-Suche technisch scheiterte (Proxy UND direkt) – dann ist „kein Treffer“ nicht endgültig. */
+        let itunesUnavailable = false;
+
+        /** iTunes-Suche direkt aus dem Browser (JSONP, eigene IP des Spielers). Ergebnisliste oder null bei Fehler/Timeout. */
+        function itunesJsonp(term, limit, country) {
             return new Promise((resolve) => {
                 const callbackName = 'itunesCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-                const timeout = setTimeout(() => {
-                    delete window[callbackName];
-                    if (script.parentNode) script.parentNode.removeChild(script);
-                    if (debug) console.log('  ❌ JSONP Timeout');
-                    resolve(null);
-                }, 10000);
-
-                window[callbackName] = function(data) {
+                const script = document.createElement('script');
+                const finish = (results) => {
                     clearTimeout(timeout);
                     delete window[callbackName];
-                    if (script.parentNode) script.parentNode.removeChild(script);
-
-                    const valid = (data.results || []).filter(s => {
-                        if (!s.previewUrl) return false;
-                        if (!isNoCover(s)) return false;
-                        if (!resultArtistIsPrimary(s.artistName, artist)) return false;
-                        return true;
-                    });
-
-                    if (valid.length === 0) {
-                        if (debug) console.log('  ❌ JSONP: Keine gültigen Ergebnisse');
-                        resolve(null);
-                        return;
-                    }
-
-                    valid.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
-                    const original = valid[0];
-                    const year = new Date(original.releaseDate).getFullYear();
-
-                    if (yearMinVal != null && yearMaxVal != null && (year < yearMinVal || year > yearMaxVal)) {
-                        if (debug) console.log('  ❌ JSONP Jahr außerhalb:', year);
-                        resolve(null);
-                        return;
-                    }
-
-                    if (debug) console.log('  ✅ JSONP Gewählt:', original.artistName, '-', original.trackName, '(', year, ')');
-                    resolve(original);
+                    script.remove();
+                    resolve(results);
                 };
-
-                const script = document.createElement('script');
-                script.src = 'https://itunes.apple.com/search?term=' + encodeURIComponent(searchTerm) + '&media=music&entity=song&limit=50&callback=' + callbackName;
+                const timeout = setTimeout(() => finish(null), 10000);
+                window[callbackName] = (data) => finish(Array.isArray(data?.results) ? data.results : []);
+                script.onerror = () => finish(null);
+                script.src = 'https://itunes.apple.com/search?term=' + encodeURIComponent(term) + '&media=music&entity=song&limit=' + limit +
+                    (country ? '&country=' + country : '') + '&callback=' + callbackName;
                 document.head.appendChild(script);
             });
+        }
+
+        /**
+         * iTunes-Suche: erst über den Server-Proxy (gecacht, umgeht CORS auf Mobile), bei Fehler oder Rate-Limit direkt per JSONP.
+         * Gibt die Ergebnisliste zurück oder null, wenn beides scheiterte (setzt dann itunesUnavailable).
+         */
+        async function itunesSearch(term, { limit = 50, country = '' } = {}) {
+            let results = null;
+            try {
+                const res = await fetchWithTimeout('/api/itunes-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ term, limit, country })
+                }, SEARCH_REQUEST_TIMEOUT_MS);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data.results)) results = data.results;
+                } else {
+                    console.warn('iTunes-Proxy antwortet mit', res.status, '– suche direkt');
+                }
+            } catch (e) {
+                console.warn('iTunes-Proxy nicht erreichbar – suche direkt:', e.message || e);
+            }
+            if (!results) results = await itunesJsonp(term, limit, country);
+            itunesUnavailable = !results;
+            return results;
         }
 
         /** Parst eine Suchphrase in { originalArtist, songTitle }.
@@ -2306,6 +2352,9 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
                 trackLower.includes('reissue') || trackLower.includes('re-record')) return false;
 
             if (/\d{2,4}\s*th\s*(anniversary|year)/.test(combined) || /take\s*\d+/.test(combined)) return false;
+
+            // Akustik-/Neufassungen im Titel ("Creep (Acoustic)") – anderes Jahr, andere Aufnahme
+            if (/[(\[-]\s*(acoustic|akustik|stripped|orchestral|piano)\b/.test(trackLower)) return false;
 
             // Demos, Outtakes, Sessions
             if (combined.includes('outtake') || combined.includes(' demo') || combined.includes('(demo)') ||
@@ -2476,17 +2525,11 @@ Nenne weder Songtitel noch Erscheinungsjahr – beides steht bereits darüber. J
         }
 
         /** Holt Song-Erklärung von OpenAI über Proxy (GPT-4.1 mini). Gibt null bei Fehler oder fehlendem Proxy. */
-        async function fetchSongInfoFromOpenAI(artistName, trackName, releaseYear) {
+        async function fetchSongInfoFromOpenAI(artistName, trackName, releaseYear, song) {
             const proxyUrl = (OPENAI_PROXY_URL || '').trim();
             if (!proxyUrl) return null;
-
-            const userContent = `${SONG_INFO_PROMPT}
-
-(Kontext für dich: Song „${trackName}" von ${artistName}, Erscheinungsjahr ${releaseYear})
-
-Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Songtitel oder Jahr – das steht schon darüber.`;
-
             try {
+                // Der Prompt wird auf dem Server gebaut (je nach kind: Filmmusik, Partyhit, sonst Standard)
                 const res = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2494,8 +2537,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                         artistName,
                         trackName,
                         releaseYear,
-                        prompt: SONG_INFO_PROMPT,
-                        userContent
+                        kind: song?.kind || '',
+                        film: song?.film || ''
                     })
                 });
                 if (!res.ok) throw new Error(res.statusText);
@@ -2509,10 +2552,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         }
 
         /** Erklärung mit Timeout laden (z. B. für ersten Song / Preload). Gibt Text oder null. */
-        async function fetchSongInfoWithTimeout(artistName, trackName, releaseYear, timeoutMs = 35000) {
+        async function fetchSongInfoWithTimeout(artistName, trackName, releaseYear, timeoutMs = 35000, song) {
             try {
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeoutMs));
-                const text = await Promise.race([fetchSongInfoFromOpenAI(artistName, trackName, releaseYear), timeoutPromise]);
+                const text = await Promise.race([fetchSongInfoFromOpenAI(artistName, trackName, releaseYear, song), timeoutPromise]);
                 return (text && String(text).trim()) ? text.trim() : null;
             } catch (e) {
                 if (e.message === 'Timeout') console.warn('Song-Erklärung: Timeout nach', timeoutMs, 'ms');
@@ -2520,10 +2563,25 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             }
         }
 
-        /** Fallback-Erklärungstext (Epoche/Kurzfassung), wenn API fehlschlägt. */
-        function getFallbackExplanationText(artistName, trackName, releaseYear) {
-            const fb = getSongInfoForDifficulty(artistName, trackName, releaseYear, selectedDifficulty);
-            return (fb && fb.text) ? fb.text : 'Der Drum-Sound und der Mix verraten die Epoche – typisch für die Zeit.';
+        /** Epoche im Dativ für Fließtext: 1983 → "frühen 80ern", 2017 → "späten 2010ern". */
+        function getEraLabel(year) {
+            const decade = Math.floor(year / 10) * 10;
+            const decadeName = decade >= 1910 && decade < 2000 ? `${decade % 100}er` : `${decade}er`;
+            const pos = year % 10;
+            const part = pos <= 3 ? 'frühen' : pos <= 6 ? 'mittleren' : 'späten';
+            return `${part} ${decadeName}n`;
+        }
+
+        /** Fallback-Erklärungstext, wenn die API fehlschlägt – bewusst genre-neutral (kein „Drum-Sound“ bei Klassik). */
+        function getFallbackExplanationText(artistName, trackName, releaseYear, song) {
+            const era = getEraLabel(releaseYear);
+            if (song?.kind === 'soundtrack') {
+                return song.film
+                    ? `Filmmusik aus den ${era} – geschrieben für „${song.film}“.`
+                    : `Filmmusik aus den ${era}.`;
+            }
+            if (song?.kind === 'party') return `Ein Partyklassiker aus den ${era} – und er läuft bis heute.`;
+            return `Dieser Song stammt aus den ${era}.`;
         }
 
         const currentYear = new Date().getFullYear();
@@ -2557,6 +2615,11 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         /** Vor geladene Songs inkl. Erklärung: [{ song, explanation }], max 3. */
         let preloadedSongs = [];
         let preloadInProgress = false;
+        /** Wird bei jedem Spielstart/-ende erhöht. Async-Vorgänge (Preload, Nachladen, Suche) merken sich die ID beim Start
+         * und brechen ab, wenn sie nicht mehr stimmt – sonst landen Songs aus dem alten Spiel im neuen (Nochmal-Hänger). */
+        let gameId = 0;
+        /** Verhindert parallele loadNewSong-Aufrufe (Doppelklick auf „Nächster Song“). */
+        let loadingSong = false;
 
         const PREVIEW_DURATION_SEC = 30;
         const PLAY_COUNTDOWN_CIRCUMFERENCE = 2 * Math.PI * 47;
@@ -2722,8 +2785,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             // Button bleibt klickbar; bei 0 Genres zeigt startGame() das Popup "Bitte Genre auswählen"
         }
 
-        /** Flag: Hintergrund-Ladevorgang für Songliste aktiv */
-        let backgroundFetchInProgress = false;
+        /** Laufendes Nachladen der Songliste (Promise) oder null – loadNewSong wartet darauf, bevor es auf die Notfall-Liste ausweicht. */
+        let backgroundFetchPromise = null;
 
         function showGenrePopup() {
             document.getElementById('genrePopupOverlay').classList.add('visible');
@@ -2736,7 +2799,8 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
         const FALLBACK_SCRIPT_BY_GENRE = {
             rock: 'rock', pop: 'pop', hiphop: 'hiphop', electronic: 'electronic',
             rnb: 'rnb-soul', country: 'country', klassik: 'klassik', punk: 'punk',
-            indie: 'indie', jazz: 'jazz', techno: 'techno', metal: 'metal'
+            indie: 'indie', jazz: 'jazz', techno: 'techno', metal: 'metal',
+            party: 'partyhits', soundtracks: 'soundtracks'
         };
         const loadedFallbackGenres = new Set();
         function loadScript(src) {
@@ -2774,56 +2838,84 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 showGenrePopup();
                 return;
             }
+            players = [];
+            document.querySelectorAll('.player-name-input').forEach((input, i) => {
+                players.push({ name: input.value.trim() || `Spieler ${i+1}`, guess: null, totalDiff: 0 });
+            });
+            await runGame();
+        }
+
+        /** Setzt Spielstand und Song-Puffer zurück. Neue gameId → laufende Vorgänge des alten Spiels werden wirkungslos. */
+        function resetGameState() {
+            gameId++;
+            roundNumber = 0;
+            songQueue = [];
+            playedSongKeys = new Set();
+            preloadedSongs = [];
+            preloadInProgress = false;
+            backgroundFetchPromise = null;
+            loadingSong = false;
+            currentSong = null;
+            songInfoPromise = null;
+            guessSubmitted = false;
+            document.getElementById('audioPlayer').pause();
+            resetPlayCountdown();
+            document.getElementById('result').classList.remove('visible');
+            document.getElementById('playersGuessSection').classList.remove('visible');
+            document.getElementById('standingsOverlay').classList.remove('visible');
+            document.getElementById('retryBtn').style.display = 'none';
+        }
+
+        /** Startet ein Spiel mit den aktuellen Spielern/Einstellungen – für „Spiel starten“ und „Nochmal!“. */
+        async function runGame() {
+            resetGameState();
+            const myGame = gameId;
+            players.forEach(p => { p.guess = null; p.totalDiff = 0; });
             const statusEl = document.getElementById('status');
             const playBtnStart = document.getElementById('playBtn');
             let loadingId = null;
             try {
-                players = [];
-                document.querySelectorAll('.player-name-input').forEach((input, i) => {
-                    players.push({ name: input.value.trim() || `Spieler ${i+1}`, guess: null, totalDiff: 0 });
-                });
-                roundNumber = 0;
-                songQueue = [];
-                playedSongKeys = new Set();
-                preloadedSongs = [];
-
-                document.getElementById('setupOptions').style.display = 'none';
-                document.getElementById('gameScreen').classList.add('visible');
+                ['introScreen', 'setupPlayers', 'setupOptions'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+                const gameScreen = document.getElementById('gameScreen');
+                gameScreen.style.display = '';
+                gameScreen.classList.add('visible');
                 renderPlayerGuessRows();
-                
+
                 // Animation einblenden (unteres Drittel auf Mobile)
                 document.getElementById('wavyWrapper').classList.remove('wavy-hidden');
 
                 playBtnStart.disabled = true;
                 setPlayButtonDisplay('');
                 playBtnStart.classList.add('loading');
-                resetPlayCountdown();
+                document.getElementById('roundCounter').textContent = '';
                 loadingId = startLoadingStatus(statusEl);
 
                 await yieldToPaint();
 
                 await loadFallbackScripts(Array.from(selectedGenres));
+                if (myGame !== gameId) return stopLoadingStatus(null, loadingId);
 
-                const genreNames = genres.filter((g) => selectedGenres.has(g.id)).map((g) => g.name);
+                // Kuratierte Genres (Partyhits, Filmmusik) brauchen keinen API-Call
+                const curatedQueue = buildCuratedQueue();
+                songQueue = curatedQueue.slice();
+                const genreNames = getSuggestGenreNames();
                 if (genreNames.length && OPENAI_SUGGEST_URL) {
                     try {
                         const apiPromise = fetchSuggestSongList(genreNames, selectedDifficulty, yearMin, yearMax, 12);
                         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 30000));
                         const list = await Promise.race([apiPromise, timeoutPromise]);
+                        if (myGame !== gameId) return stopLoadingStatus(null, loadingId);
                         if (list.length) {
-                            songQueue = shuffleArray(dedupeSongList(list));
-                            if (window.DEBUG_SUGGEST) console.log('API-Songliste geladen:', songQueue.length, 'Songs');
+                            songQueue = dedupeSongList(mergeQueues(shuffleArray(list), curatedQueue));
+                            if (window.DEBUG_SUGGEST) console.log('API-Songliste geladen:', list.length, 'Songs, kuratiert:', curatedQueue.length);
                         }
                     } catch (e) {
                         console.warn('API-Fetch fehlgeschlagen oder Timeout, nutze Fallback:', e.message);
-                    } finally {
-                        stopLoadingStatus(statusEl, loadingId);
-                        loadingId = null;
                     }
-                } else {
-                    stopLoadingStatus(statusEl, loadingId);
-                    loadingId = null;
                 }
+                if (myGame !== gameId) return stopLoadingStatus(null, loadingId);
+                stopLoadingStatus(statusEl, loadingId);
+                loadingId = null;
 
                 statusEl.textContent = '';
                 await loadNewSong(true);
@@ -2831,14 +2923,13 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 // Wavy Background nach Laden ausblenden (Mobile)
                 document.getElementById('wavyWrapper').classList.add('wavy-hidden');
             } catch (e) {
-                console.error('startGame:', e);
+                console.error('runGame:', e);
+                if (myGame !== gameId) return stopLoadingStatus(null, loadingId);
                 if (loadingId) stopLoadingStatus(statusEl, loadingId);
-                playBtnStart.disabled = false;
                 playBtnStart.classList.remove('loading');
-                setPlayButtonDisplay('▶');
-                resetPlayCountdown();
-                statusEl.textContent = 'Fehler. Bitte Seite neu laden oder später erneut versuchen.';
-                // Wavy Background auch bei Fehler ausblenden
+                setPlayButtonDisplay('?');
+                statusEl.textContent = 'Da ist etwas schiefgelaufen.';
+                document.getElementById('retryBtn').style.display = '';
                 document.getElementById('wavyWrapper').classList.add('wavy-hidden');
             }
         }
@@ -2847,7 +2938,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             const container = document.getElementById('playerGuessRows');
             container.innerHTML = players.map((p, i) => `
                 <div class="player-guess-row">
-                    <span class="player-guess-name">${p.name}</span>
+                    <span class="player-guess-name">${escapeHtml(p.name)}</span>
                     <input type="password" class="player-guess-input" data-player="${i}" maxlength="4" placeholder="Jahr" inputmode="numeric" autocomplete="one-time-code" data-lpignore="true" data-1p-ignore>
                 </div>
             `).join('');
@@ -2859,50 +2950,81 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             });
         }
 
-        function backToSetup() {
-            document.getElementById('audioPlayer').pause();
-            document.getElementById('gameScreen').classList.remove('visible');
-            document.getElementById('setupOptions').style.display = 'block';
-            document.getElementById('result').classList.remove('visible');
-            document.getElementById('playersGuessSection').classList.remove('visible');
-            document.getElementById('wavyWrapper').classList.add('wavy-hidden');
-        }
-
         /** Lädt im Hintergrund bis zu 3 Songs inkl. Erklärung in preloadedSongs (nur aus songQueue). */
         async function preloadNextSongs() {
             if (preloadInProgress || preloadedSongs.length >= 3 || songQueue.length === 0) return;
+            const myGame = gameId;
             preloadInProgress = true;
-            const targetCount = 3;
             try {
-                while (preloadedSongs.length < targetCount && songQueue.length > 0) {
-                    const suggestion = songQueue[0];
-                    const wantArtist = (suggestion?.artist || '').trim();
-                    const wantSong = (suggestion?.song || '').trim();
-                    if (!wantArtist || !wantSong) {
-                        songQueue.splice(0, 1);
-                        continue;
+                while (preloadedSongs.length < 3 && songQueue.length > 0) {
+                    // Eintrag sofort aus der Queue nehmen, damit loadNewSong ihn nicht parallel sucht
+                    const suggestion = songQueue.shift();
+                    if (!suggestion?.artist || !suggestion?.song) continue;
+                    const found = await findSuggestion(suggestion, yearMin, yearMax);
+                    if (myGame !== gameId) return;
+                    if (!found && itunesUnavailable) {
+                        // iTunes gerade nicht erreichbar: Eintrag behalten, später erneut versuchen
+                        songQueue.unshift(suggestion);
+                        return;
                     }
-                    let found = await findViaSpotifyPlayViaItunes(wantArtist, wantSong, yearMin, yearMax);
-                    if (!found) found = await searchItunesForOriginal(wantArtist, wantSong, yearMin, yearMax);
-                    if (!found) {
-                        songQueue.splice(0, 1);
-                        continue;
-                    }
+                    if (!found) continue;
                     applyReleaseYearOverride(found);
                     const year = new Date(found.releaseDate).getFullYear();
-                    const explanation = await fetchSongInfoWithTimeout(found.artistName, found.trackName, year, 35000);
-                    const text = (explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(found.artistName, found.trackName, year);
-                    preloadedSongs.push({ song: found, explanation: text });
-                    songQueue.splice(0, 1);
+                    const explanation = await fetchSongInfoWithTimeout(found.artistName, found.trackName, year, 35000, found);
+                    if (myGame !== gameId) return;
+                    const text = explanation || getFallbackExplanationText(found.artistName, found.trackName, year, found);
+                    preloadedSongs.push({ song: found, explanation: text, queueKey: songKey(suggestion.artist, suggestion.song) });
                 }
             } catch (e) {
                 console.warn('Preload fehlgeschlagen:', e);
             } finally {
-                preloadInProgress = false;
+                if (myGame === gameId) preloadInProgress = false;
             }
         }
 
+        /** Holt im Hintergrund neue API-Songs (nur nicht-kuratierte Genres), höchstens ein Abruf gleichzeitig. */
+        function startBackgroundFetch() {
+            if (backgroundFetchPromise || !OPENAI_SUGGEST_URL) return;
+            const genreNames = getSuggestGenreNames();
+            if (!genreNames.length) return;
+            const myGame = gameId;
+            backgroundFetchPromise = fetchSuggestSongList(genreNames, selectedDifficulty, yearMin, yearMax, 12)
+                .then(list => {
+                    if (myGame !== gameId) return;
+                    const isKnown = (k) => playedSongKeys.has(k) || preloadedSongs.some((p) => p.queueKey === k);
+                    const newSongs = dedupeSongList(list.filter((x) => !isKnown(songKey(x.artist, x.song))));
+                    const apiPart = songQueue.filter((x) => !x.curated);
+                    const curatedPart = songQueue.filter((x) => x.curated);
+                    songQueue = dedupeSongList(mergeQueues(shuffleArray([...apiPart, ...newSongs]), curatedPart));
+                    if (window.DEBUG_SUGGEST) console.log('Nachgeladen:', newSongs.length, 'Songs');
+                    preloadNextSongs();
+                })
+                .catch(e => console.error('Nachladen fehlgeschlagen:', e))
+                .finally(() => { if (myGame === gameId) backgroundFetchPromise = null; });
+        }
+
         async function loadNewSong(waitForFirstExplanation = false) {
+            if (loadingSong) return;
+            // Nach der letzten Runde gibt es keinen weiteren Song mehr („Runde 6 / 5“)
+            if (roundNumber >= totalRounds) {
+                showStandings();
+                return;
+            }
+            loadingSong = true;
+            const myGame = gameId;
+            try {
+                await loadNewSongForGame(waitForFirstExplanation, myGame);
+            } finally {
+                if (myGame === gameId) loadingSong = false;
+            }
+        }
+
+        function retryLoadSong() {
+            document.getElementById('retryBtn').style.display = 'none';
+            loadNewSong(roundNumber === 0);
+        }
+
+        async function loadNewSongForGame(waitForFirstExplanation, myGame) {
             if (DEBUG_MODE) console.log('loadNewSong gestartet, waitForFirstExplanation:', waitForFirstExplanation);
 
             // "Letzte Runde!" Overlay anzeigen
@@ -2913,12 +3035,14 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 overlay.classList.add('fade-out');
                 await new Promise(resolve => setTimeout(resolve, 500));
                 overlay.classList.remove('visible', 'fade-out');
+                if (myGame !== gameId) return;
             }
 
             guessSubmitted = false;
             currentSong = null;
             songInfoPromise = null;
             document.getElementById('roundCounter').textContent = '';
+            const audio = document.getElementById('audioPlayer');
             const playBtn = document.getElementById('playBtn');
             const status = document.getElementById('status');
             playBtn.disabled = true;
@@ -2927,9 +3051,10 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             resetPlayCountdown();
             document.getElementById('playersGuessSection').classList.remove('visible');
             document.getElementById('result').classList.remove('visible');
+            document.getElementById('retryBtn').style.display = 'none';
             document.getElementById('submitAllBtn').disabled = false;
             const loadingId = startLoadingStatus(status, waitForFirstExplanation);
-            document.getElementById('audioPlayer').pause();
+            audio.pause();
 
             // Reset inputs
             document.querySelectorAll('.player-guess-input').forEach(input => {
@@ -2940,14 +3065,20 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             });
             players.forEach(p => p.guess = null);
 
-            // Vor geladene Songs nutzen (Erklärung ist schon da)
-            if (!waitForFirstExplanation && preloadedSongs.length > 0) {
-                const entry = preloadedSongs.shift();
-                currentSong = entry.song;
-                applyReleaseYearOverride(currentSong);
-                songInfoPromise = Promise.resolve(entry.explanation);
-                playedSongKeys.add(songKey(currentSong.artistName, currentSong.trackName));
-                document.getElementById('audioPlayer').src = currentSong.previewUrl;
+            /** Spiel wurde inzwischen neu gestartet/beendet → nur die eigenen Lade-Timer stoppen, sonst nichts anfassen. */
+            const isStale = () => {
+                if (myGame === gameId) return false;
+                stopLoadingStatus(null, loadingId);
+                return true;
+            };
+
+            /** Song gefunden → abspielbereit machen. */
+            const showSongReady = (song, explanationPromise, queueKey) => {
+                currentSong = song;
+                songInfoPromise = explanationPromise;
+                playedSongKeys.add(songKey(song.artistName, song.trackName));
+                if (queueKey) playedSongKeys.add(queueKey);
+                audio.src = song.previewUrl;
                 playBtn.disabled = false;
                 playBtn.classList.remove('loading');
                 setPlayButtonDisplay('▶');
@@ -2956,57 +3087,77 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
                 document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                 preloadNextSongs();
+            };
+
+            /** Erklärung: beim ersten Song abwarten (Spielstart), sonst im Hintergrund laden. Als Objekt, damit das Promise nicht aufgelöst wird. */
+            const explanationFor = async (song) => {
+                const year = new Date(song.releaseDate).getFullYear();
+                if (!waitForFirstExplanation) return { promise: fetchSongInfoFromOpenAI(song.artistName, song.trackName, year, song) };
+                const text = await fetchSongInfoWithTimeout(song.artistName, song.trackName, year, 35000, song);
+                return { promise: Promise.resolve(text || getFallbackExplanationText(song.artistName, song.trackName, year, song)) };
+            };
+
+            // Vor geladene Songs nutzen (Erklärung ist schon da)
+            if (!waitForFirstExplanation && preloadedSongs.length > 0) {
+                const entry = preloadedSongs.shift();
+                showSongReady(entry.song, Promise.resolve(entry.explanation), entry.queueKey);
                 return;
             }
 
-            // Nachladen im Hintergrund wenn Queue fast leer (nicht blockierend!)
-            if (songQueue.length < 3 && OPENAI_SUGGEST_URL && !backgroundFetchInProgress) {
-                const genreNames = genres.filter((g) => selectedGenres.has(g.id)).map((g) => g.name);
-                if (genreNames.length) {
-                    backgroundFetchInProgress = true;
-                    fetchSuggestSongList(genreNames, selectedDifficulty, yearMin, yearMax, 12)
-                        .then(list => {
-                            const withoutPlayed = list.filter((x) => !playedSongKeys.has(songKey(x.artist, x.song)));
-                            const newSongs = dedupeSongList(withoutPlayed);
-                            songQueue.push(...newSongs);
-                            songQueue = shuffleArray(songQueue);
-                            if (window.DEBUG_SUGGEST) console.log('Nachgeladen:', newSongs.length, 'Songs');
-                        })
-                        .catch(e => console.error('Nachladen fehlgeschlagen:', e))
-                        .finally(() => { backgroundFetchInProgress = false; });
-                }
+            // Kuratierte Songs gehen aus → Liste neu aufbauen (ohne bereits gespielte/vorgeladene)
+            if (!songQueue.some((x) => x.curated)) {
+                const refill = buildCuratedQueue().filter((x) => !preloadedSongs.some((p) => p.queueKey === songKey(x.artist, x.song)));
+                if (refill.length) songQueue = dedupeSongList(mergeQueues(songQueue, refill));
             }
+            // API-Songs nachladen, wenn die Queue fast leer ist (nicht blockierend)
+            if (songQueue.length < 3) startBackgroundFetch();
 
-            for (let i = 0; i < songQueue.length; i++) {
-                const suggestion = songQueue[i];
-                const wantArtist = (suggestion?.artist || '').trim();
-                const wantSong = (suggestion?.song || '').trim();
-                if (!wantArtist || !wantSong) continue;
-                let found = await findViaSpotifyPlayViaItunes(wantArtist, wantSong, yearMin, yearMax);
-                if (!found) found = await searchItunesForOriginal(wantArtist, wantSong, yearMin, yearMax);
-                if (found) {
-                    currentSong = found;
-                    applyReleaseYearOverride(currentSong);
-                    const year = new Date(currentSong.releaseDate).getFullYear();
-                    if (waitForFirstExplanation) {
-                        const explanation = await fetchSongInfoWithTimeout(currentSong.artistName, currentSong.trackName, year, 35000);
-                        songInfoPromise = Promise.resolve((explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(currentSong.artistName, currentSong.trackName, year));
-                    } else {
-                        songInfoPromise = fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, year);
+            /** Nimmt Einträge aus der Queue, bis einer gefunden wird.
+             * true = erledigt (Song bereit oder Spiel veraltet), 'unavailable' = iTunes gerade nicht erreichbar, false = Queue leer. */
+            const tryQueue = async () => {
+                while (songQueue.length > 0) {
+                    // Sofort aus der Queue nehmen: Treffer werden gespielt, Fehlschläge nicht jede Runde erneut gesucht
+                    const suggestion = songQueue.shift();
+                    if (!suggestion?.artist || !suggestion?.song) continue;
+                    const key = songKey(suggestion.artist, suggestion.song);
+                    if (playedSongKeys.has(key)) continue;
+                    const found = await findSuggestion(suggestion, yearMin, yearMax);
+                    if (isStale()) return true;
+                    if (!found && itunesUnavailable) {
+                        // Kein „kein Treffer“, sondern Netz-/Rate-Limit-Problem → Eintrag behalten statt verwerfen
+                        songQueue.unshift(suggestion);
+                        return 'unavailable';
                     }
-                    playedSongKeys.add(songKey(wantArtist, wantSong));
-                    songQueue.splice(i, 1);
-                    document.getElementById('audioPlayer').src = currentSong.previewUrl;
-                    playBtn.disabled = false;
-                    playBtn.classList.remove('loading');
-                    setPlayButtonDisplay('▶');
-                    resetPlayCountdown();
-                    stopLoadingStatus(status, loadingId);
-                    status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
-                    document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
-                    if (waitForFirstExplanation) preloadNextSongs();
-                    return;
+                    if (!found) continue;
+                    applyReleaseYearOverride(found);
+                    const explanation = await explanationFor(found);
+                    if (isStale()) return true;
+                    showSongReady(found, explanation.promise, key);
+                    return true;
                 }
+                return false;
+            };
+            /** Sackgasse mit „Nochmal versuchen“-Button statt endlosem Laden. */
+            const showRetry = (message) => {
+                stopLoadingStatus(status, loadingId);
+                status.textContent = message;
+                playBtn.classList.remove('loading');
+                setPlayButtonDisplay('?');
+                resetPlayCountdown();
+                document.getElementById('retryBtn').style.display = '';
+            };
+
+            let queueResult = await tryQueue();
+            if (queueResult === 'unavailable') return showRetry('Kurz keine Verbindung zur Musiksuche.');
+            if (queueResult) return;
+
+            // Songliste wird gerade geladen (z. B. direkt nach „Nochmal!“) → darauf warten statt auf die Notfall-Liste auszuweichen
+            if (backgroundFetchPromise) {
+                await Promise.race([backgroundFetchPromise, new Promise(r => setTimeout(r, 30000))]);
+                if (isStale()) return;
+                queueResult = await tryQueue();
+                if (queueResult === 'unavailable') return showRetry('Kurz keine Verbindung zur Musiksuche.');
+                if (queueResult) return;
             }
 
             try {
@@ -3014,127 +3165,47 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             } catch (e) {
                 console.warn('yieldToPaint:', e);
             }
+            if (isStale()) return;
+
+            // Notfall-Liste: statische Genre- und Subgenre-Listen aus fallback-genres/*.js (kuratierte Genres laufen über buildCuratedQueue)
             const queries = [];
             genres.forEach(g => {
-                if (!selectedGenres.has(g.id)) return;
+                if (!selectedGenres.has(g.id) || g.curated) return;
                 const lists = window[g.listsKey];
                 if (lists && Array.isArray(lists[selectedDifficulty])) queries.push(...lists[selectedDifficulty]);
+                const sub = g.subgenresKey && window[g.subgenresKey];
+                if (sub && typeof sub === 'object') {
+                    Object.values(sub).forEach(arr => {
+                        if (Array.isArray(arr)) queries.push(...arr);
+                    });
+                }
             });
-            // Zusätzlich: Genre-Subgenres als Fallback (Daten aus fallback-genres/*.js, bei Bedarf geladen)
-            if (selectedGenres.has('rock') && typeof fallbackRockSubgenres === 'object') {
-                Object.values(fallbackRockSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('pop') && typeof fallbackPopSubgenres === 'object') {
-                Object.values(fallbackPopSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('hiphop') && typeof fallbackHiphopSubgenres === 'object') {
-                Object.values(fallbackHiphopSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('electronic') && typeof fallbackElectronicSubgenres === 'object') {
-                Object.values(fallbackElectronicSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('rnb') && typeof fallbackRnbSoulSubgenres === 'object') {
-                Object.values(fallbackRnbSoulSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('country') && typeof fallbackCountrySubgenres === 'object') {
-                Object.values(fallbackCountrySubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('klassik') && typeof fallbackKlassikSubgenres === 'object') {
-                Object.values(fallbackKlassikSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            if (selectedGenres.has('punk') && typeof fallbackPunkSubgenres === 'object') {
-                Object.values(fallbackPunkSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            // Zusätzlich: Indie-Subgenres als Fallback, wenn Indie gewählt ist
-            if (selectedGenres.has('indie') && typeof fallbackIndieSubgenres === 'object') {
-                Object.values(fallbackIndieSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            // Zusätzlich: Jazz-Subgenres als Fallback, wenn Jazz gewählt ist
-            if (selectedGenres.has('jazz') && typeof fallbackJazzSubgenres === 'object') {
-                Object.values(fallbackJazzSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            // Zusätzlich: Techno-Subgenres als Fallback, wenn Techno gewählt ist
-            if (selectedGenres.has('techno') && typeof fallbackTechnoSubgenres === 'object') {
-                Object.values(fallbackTechnoSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            // Zusätzlich: Metal-Subgenres als Fallback, wenn Metal gewählt ist
-            if (selectedGenres.has('metal') && typeof fallbackMetalSubgenres === 'object') {
-                Object.values(fallbackMetalSubgenres).forEach(arr => {
-                    if (Array.isArray(arr)) queries.push(...arr);
-                });
-            }
-            const MAX_FALLBACK_ATTEMPTS = 40;
-            const shuffledQueries = shuffleArray(queries);
-            let attempts = 0;
+            // Begrenzt: jede Phrase kostet 1–2 iTunes-Anfragen, iTunes erlaubt nur ca. 20 pro Minute
+            const MAX_FALLBACK_ATTEMPTS = 20;
             try {
-                for (let round = 0; round < 2 && attempts < MAX_FALLBACK_ATTEMPTS; round++) {
-                    for (let i = 0; i < shuffledQueries.length && attempts < MAX_FALLBACK_ATTEMPTS; i++) {
-                        attempts += 1;
-                        const phrase = shuffledQueries[i];
-                        const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
-                        if (!originalArtist || !songTitle) continue;
-                        // Spotify kennt korrekte Original-Jahre → mit Jahresfilter suchen
-                        // iTunes kann Remaster-Daten zurückgeben → ohne Filter suchen, aber danach prüfen
-                        let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
-                        if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, null, null);
-                        if (found) {
-                            const key = songKey(found.artistName, found.trackName);
-                            if (playedSongKeys.has(key)) continue;
-                            applyReleaseYearOverride(found);
-                            const foundYear = new Date(found.releaseDate).getFullYear();
-                            if (foundYear < yearMin || foundYear > yearMax) continue;
-                            playedSongKeys.add(key);
-                            currentSong = found;
-                            const year = new Date(currentSong.releaseDate).getFullYear();
-                            if (waitForFirstExplanation) {
-                                const explanation = await fetchSongInfoWithTimeout(currentSong.artistName, currentSong.trackName, year, 35000);
-                                songInfoPromise = Promise.resolve((explanation && explanation.trim()) ? explanation.trim() : getFallbackExplanationText(currentSong.artistName, currentSong.trackName, year));
-                            } else {
-                                songInfoPromise = fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, year);
-                            }
-                            document.getElementById('audioPlayer').src = currentSong.previewUrl;
-                            playBtn.disabled = false;
-                            playBtn.classList.remove('loading');
-                            setPlayButtonDisplay('▶');
-                            resetPlayCountdown();
-                            stopLoadingStatus(status, loadingId);
-                            status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
-                            document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
-                            if (waitForFirstExplanation) preloadNextSongs();
-                            return;
-                        }
-                    }
+                for (const phrase of shuffleArray(queries).slice(0, MAX_FALLBACK_ATTEMPTS)) {
+                    const { originalArtist, songTitle } = parseArtistAndTitle(phrase);
+                    if (!originalArtist || !songTitle) continue;
+                    // Spotify kennt korrekte Original-Jahre → mit Jahresfilter suchen
+                    // iTunes kann Remaster-Daten zurückgeben → ohne Filter suchen, aber danach prüfen
+                    let found = await findViaSpotifyPlayViaItunes(originalArtist, songTitle, yearMin, yearMax);
+                    if (!found) found = await searchItunesForOriginal(originalArtist, songTitle, null, null);
+                    if (isStale()) return;
+                    if (!found && itunesUnavailable) break;
+                    if (!found || playedSongKeys.has(songKey(found.artistName, found.trackName))) continue;
+                    applyReleaseYearOverride(found);
+                    const foundYear = new Date(found.releaseDate).getFullYear();
+                    if (foundYear < yearMin || foundYear > yearMax) continue;
+                    const explanation = await explanationFor(found);
+                    if (isStale()) return;
+                    showSongReady(found, explanation.promise, null);
+                    return;
                 }
             } catch (e) {
                 console.error('Fallback-Suche:', e);
             }
-            stopLoadingStatus(status, loadingId);
-            status.textContent = 'Kein Song gefunden. Bitte Netz prüfen oder später erneut versuchen.';
-            playBtn.classList.remove('loading');
-            setPlayButtonDisplay('?');
-            resetPlayCountdown();
+            if (isStale()) return;
+            showRetry(itunesUnavailable ? 'Kurz keine Verbindung zur Musiksuche.' : 'Gerade kein Song gefunden.');
         }
 
         function playPreview() {
@@ -3196,6 +3267,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             if (!allValid) return;
 
             guessSubmitted = true;
+            const myGame = gameId;
             document.getElementById('submitAllBtn').disabled = true;
 
             // Alle Eingaben mit Effekt aufdecken
@@ -3210,6 +3282,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
             // Warten bis alle aufgedeckt + kurz sichtbar, dann Ergebnis zeigen
             const revealDelay = inputs.length * 150 + 2500;
             await new Promise(r => setTimeout(r, revealDelay));
+            if (myGame !== gameId) return;
 
             const correctYear = new Date(currentSong.releaseDate).getFullYear();
 
@@ -3242,23 +3315,26 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 songInfoEl.style.display = 'block';
                 songInfoEl.style.visibility = 'visible';
             }
+            const revealedSong = currentSong;
             const setExplanationText = (text) => {
+                // Verspätete Erklärung der Vorrunde darf die aktuelle nicht überschreiben
+                if (currentSong !== revealedSong) return;
                 if (songInfoTextEl && text != null) songInfoTextEl.textContent = String(text).trim() || 'Keine Erklärung verfügbar.';
             };
             setExplanationText('Erklärung wird geladen…');
 
             (async () => {
                 try {
-                    const apiText = songInfoPromise ? await songInfoPromise : await fetchSongInfoFromOpenAI(currentSong.artistName, currentSong.trackName, correctYear);
+                    const apiText = songInfoPromise ? await songInfoPromise : await fetchSongInfoFromOpenAI(revealedSong.artistName, revealedSong.trackName, correctYear, revealedSong);
                     if (apiText && apiText.trim()) {
                         setExplanationText(apiText.trim());
                     } else {
-                        setExplanationText(getFallbackExplanationText(currentSong.artistName, currentSong.trackName, correctYear));
+                        setExplanationText(getFallbackExplanationText(revealedSong.artistName, revealedSong.trackName, correctYear, revealedSong));
                         if (!apiText) console.warn('Song-Erklärung: API lieferte keinen Text – Fallback angezeigt.');
                     }
                 } catch (e) {
                     console.warn('Song-Info anzeigen:', e);
-                    setExplanationText(getFallbackExplanationText(currentSong.artistName, currentSong.trackName, correctYear));
+                    setExplanationText(getFallbackExplanationText(revealedSong.artistName, revealedSong.trackName, correctYear, revealedSong));
                 }
             })();
 
@@ -3277,7 +3353,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                     `${diff} Jahr${diff > 1 ? 'e' : ''} daneben! (dein Tipp: ${p.guess})`;
                 return `
                     <div class="player-result-row ${cls}">
-                        <span class="player-result-name">${p.name}</span>
+                        <span class="player-result-name">${escapeHtml(p.name)}</span>
                         <span class="player-result-diff">${diffText}</span>
                     </div>
                 `;
@@ -3304,7 +3380,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
             // Nach der letzten Runde automatisch Ranking anzeigen
             if (roundNumber >= totalRounds) {
-                setTimeout(() => showStandings(), 2000);
+                setTimeout(() => { if (myGame === gameId) showStandings(); }, 2000);
             }
         }
 
@@ -3344,7 +3420,7 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
                 return `
                     <div class="standings-row">
                         <span class="standings-rank">${i + 1}.</span>
-                        <span class="standings-name">${p.name}</span>
+                        <span class="standings-name">${escapeHtml(p.name)}</span>
                         <span class="standings-score">${scoreText}</span>
                     </div>
                 `;
@@ -3355,27 +3431,20 @@ Antworte nur mit dem Erklärungstext. Keine Überschrift, keine Nennung von Song
 
         function hideStandings() {
             document.getElementById('standingsOverlay').classList.remove('visible');
-            // Bei Spielende zurück zum Setup
+            // Bei Spielende zurück zum Setup („Neues Spiel“)
             if (roundNumber >= totalRounds) {
-                document.getElementById('gameScreen').style.display = 'none';
+                resetGameState();
+                // Per Klasse ausblenden, nicht per style.display – sonst bleibt der Spielscreen beim nächsten Start unsichtbar
+                document.getElementById('gameScreen').classList.remove('visible');
                 document.getElementById('introScreen').style.display = 'none';
                 document.getElementById('setupPlayers').style.display = 'block';
-                roundNumber = 0;
-                players.forEach(p => p.totalDiff = 0);
+                document.getElementById('wavyWrapper').classList.add('wavy-hidden');
             }
         }
 
+        /** „Nochmal!“: gleiche Spieler und Einstellungen, neue Songs. */
         function restartWithSameSettings() {
-            document.getElementById('standingsOverlay').classList.remove('visible');
-            roundNumber = 0;
-            players.forEach(p => { p.totalDiff = 0; p.guess = null; });
-            playedSongKeys.clear();
-            songQueue = [];
-            preloadedSongs = [];
-            document.getElementById('result').classList.remove('visible');
-            document.getElementById('playersGuessSection').classList.remove('visible');
-            renderPlayerGuessRows();
-            loadNewSong();
+            runGame();
         }
 
         init();

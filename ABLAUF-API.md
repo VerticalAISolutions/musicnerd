@@ -7,14 +7,18 @@
 - **Schwierigkeit:** Beginner / Intermediate / Expert → `selectedDifficulty`.
 - Beim Klick auf **„Spiel starten“** wird `startGame()` ausgeführt.
 
+### Ausnahme: kuratierte Genres (Partyhits, Filmmusik)
+
+Genres mit `curated: true` in `genres` (index.html) gehen **nicht** an `/api/suggest-song`. Ihre Songs kommen aus `fallback-genres/partyhits.js` bzw. `fallback-genres/soundtracks.js`, jeder Eintrag mit festem Jahr (`buildCuratedQueue()`). Pro Eintrag sucht `findCuratedSong()` über `/api/itunes-search` nur noch Preview und Cover, mit der Treffer-Logik aus `curated-match.js`. Sind nur kuratierte Genres gewählt, entfällt der Suggest-Call komplett. Bei gemischter Auswahl werden API- und kuratierte Songs abwechselnd in die Queue gelegt (`mergeQueues()`).
+
 ---
 
 ## 2. Wann der API-Call passiert
 
 Der Suggest-Song-API-Call wird an **zwei Stellen** ausgelöst:
 
-1. **Beim Start des Spiels** (`startGame()`):  
-   Sobald der User „Spiel starten“ klickt, wird die Songliste geladen und in `songQueue` geschrieben. Danach startet `loadNewSong()` und nimmt Songs aus dieser Queue.
+1. **Beim Start des Spiels** (`startGame()` bzw. „Nochmal!“ → beide über `runGame()`):  
+   Die Songliste wird geladen und in `songQueue` geschrieben. Danach startet `loadNewSong()` und nimmt Songs aus dieser Queue. Jeder Start erhöht `gameId` – laufende Vorgänge (Preload, Nachladen) eines alten Spiels erkennen das und brechen ab.
 
 2. **Beim Nachladen** (`loadNewSong()`):  
    Wenn die Queue leer ist (z. B. nach mehreren Runden), wird erneut eine Liste vom Server geholt, um die Queue aufzufüllen. Dabei werden bereits gespielte Songs herausgefiltert.
@@ -25,10 +29,7 @@ Der Suggest-Song-API-Call wird an **zwei Stellen** ausgelöst:
 
 ### URL
 
-- **Lokal:** `http://localhost:3001/api/suggest-song`
-- Abgeleitet aus `OPENAI_PROXY_URL`:  
-  `OPENAI_SUGGEST_URL = OPENAI_PROXY_URL.replace(/\/api\/song-info\/?$/, '') + '/api/suggest-song'`  
-  Also: Basis-URL des Proxys + `/api/suggest-song`.
+- Relativ zur Domain der App: `/api/suggest-song` (`OPENAI_SUGGEST_URL` in `index.html`). Lokal also `http://localhost:3001/api/suggest-song`.
 
 ### Methode & Headers
 
@@ -94,7 +95,7 @@ Der Server antwortet mit **JSON** in einem dieser Formate:
 ```
 
 - **songs:** Array von Objekten mit genau **artist** (string) und **song** (string).
-- Der Server parst die OpenAI-Antwort (die ein Objekt `{ "songs": [ { artist, song, trap }, ... ] }` enthält), filtert nach Blocklist/Duplikaten und schneidet auf `count` (max 15). Die **trap**-Daten werden nicht ans Frontend geschickt (nur bei `DEBUG_SUGGEST_SONGS=true` optional in `debug`).
+- Der Server parst die OpenAI-Antwort (ein Objekt `{ "songs": [ { artist, song }, ... ] }`), filtert nach Blocklist und Duplikaten und schneidet auf `count` (max 15). Die Schwierigkeit steuert im Prompt nur, **wie bekannt** die Songs sind.
 
 **Fehler oder keine Songs:**
 
@@ -287,3 +288,15 @@ Checkliste typischer Ursachen:
 | **Immer derselbe Song (3×)** | Entweder die API liefert Duplikate (trotz Prompt), oder der Fallback (statische Liste) wird genutzt und derselbe Eintrag wird mehrfach per Zufall getroffen; oder `playedSongKeys` wird nicht korrekt befüllt. **Prüfen:** Console-Logs für `songQueue.length` und ob `fetchSuggestSongList` überhaupt eine nicht-leere Liste zurückgibt. |
 
 **Schnell-Check:** In der Browser-Konsole (F12) nach dem Klick auf „Spiel starten“ prüfen: Gibt es einen Fehler beim `fetch` (z. B. „Failed to fetch“, „net::ERR_CONNECTION_REFUSED“)? Dann Server starten oder URL anpassen. Siehst du keine Fehler, aber trotzdem „Lade Song...“ und dann Fallback-Songs: Response vom Suggest-Song-Endpunkt prüfen (z. B. in den DevTools unter Network den Request `suggest-song` auswählen und Response ansehen – ob `songs` befüllt ist oder `error` + leeres `songs`).
+
+---
+
+## Weitere Endpunkte (Kurzfassung)
+
+| Endpunkt | Body | Antwort |
+|---|---|---|
+| `POST /api/song-info` | `{ artistName, trackName, releaseYear, kind?, film? }` – `kind` = `party` / `soundtrack` / leer | `{ text }`. Der Prompt wird **auf dem Server** gebaut; freie Texte werden nicht angenommen. |
+| `POST /api/itunes-search` | `{ term, limit?, country? }` | iTunes-Antwort (`results`), 1 h gecacht. Bei iTunes-Fehler 502 – das Frontend sucht dann direkt per JSONP (`itunesSearch()` in `index.html`). |
+| `POST /api/spotify-search` | `{ artist, song, yearMin?, yearMax? }` | `{ track }` mit Original-Erscheinungsdatum. |
+
+Alle API-Endpunkte: nur `POST`, Body max. 10 KB, Rate-Limit pro IP (429 bei Überschreitung, siehe `DEPLOY.md`).

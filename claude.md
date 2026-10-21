@@ -101,28 +101,27 @@ Die App ist **kein Streaming-Client**, sondern ein Spiel.
 
 ## 6. Schwierigkeitsgrade (zentrale Spielmechanik)
 
+**Schwierigkeit = Bekanntheit.** Es werden bewusst **keine „Datierungsfallen“** gesucht (Songs, die systematisch falsch geschätzt werden) – das hat „Leicht“ früher zu schwer gemacht.
+
 ### Beginner
-- sehr bekannte Songs
-- klare zeitliche Marker
-- große Hits, kulturell eindeutig verortbar
-- geringe Irreführung
+- große Hits, die auch Gelegenheitshörer sofort erkennen
+- Chart-Erfolge, Radio-Dauerbrenner, der bekannteste Song eines Artists
+- Test: Erkennt ein durchschnittlicher Gast auf einer Geburtstagsfeier den Song nach 10 Sekunden?
 
 ### Intermediate
-- bekannte Artists, aber:
-  - Deep Cuts
-  - weniger offensichtliche Songs
-- Übergangsjahre
-- stilistisch teils irreführend
+- bekannte Artists, aber nicht nur deren größter Hit
+- zweite/dritte Singles, bekannte Album-Tracks
 
 ### Expert
-- bewusst schwierige Auswahl:
-  - Songs, die ihrer Zeit voraus waren
-  - Retro-Produktionen
-  - lange Nachwirkungen
-- Genres und Epochen vermischen sich
-- Zielgruppe: Musiknerds
+- Songs für Musikfans: Album-Tracks, Genre-Klassiker, Kritikerlieblinge
+- keine Obskurität nur um der Schwierigkeit willen
 
 Schwierigkeitsgrad beeinflusst **Song-Auswahl**, nicht die Regeln.
+
+### Kuratierte Genres (Partyhits, Filmmusik)
+- Songs kommen aus handgepflegten Listen (`fallback-genres/partyhits.js`, `fallback-genres/soundtracks.js`) mit **festem Jahr**, nicht vom LLM.
+- Filmmusik: Jahr = Kinostart des Films, für den das Stück geschrieben wurde. Keine vorher existierenden Songs, die nur im Film liefen.
+- Neue Einträge mit `node test-curated-lists.js` gegen iTunes prüfen.
 
 ---
 
