@@ -295,6 +295,18 @@ Die App heißt nun durchgängig „MusicNerd“.
 
 ---
 
+## 20. Abwechslungsreiche Statustexte
+
+**Datei:** `index.html`
+
+- Statt fester Sätze gibt es Pools je Situation: erster Start, nächster Song, bereit, letzte Runde, beim Hören und Tipps abgeben. Insgesamt sind es rund 70 kurze Texte im Plattenkisten- und Jukebox-Ton.
+- „Shuffle-Bag“ (`pickStatusMessage`): Jeder Text kommt einmal dran, bevor sich etwas wiederholt, und nie zweimal direkt hintereinander.
+- Ist nur Filmmusik oder nur Partyhits gewählt, kommen passende Zusatztexte dazu („Popcorn bereit?“, „Der DJ legt nach“). Bei gemischter Auswahl gibt es sie nicht, weil sie sonst das Genre verraten würden.
+- Auch das Laden zwischen den Runden zeigt wechselnde Texte mit animierten Punkten statt immer „Weiter geht’s“.
+- Die Statuszeile hat eine feste Höhe für zwei Zeilen, damit längere Texte auf dem Handy nicht überlaufen.
+
+---
+
 ## 17. So startest du alles
 
 1. **API-Key:** In `.env` hinter `OPENAI_API_KEY=` deinen OpenAI-Key eintragen (optional `SPOTIFY_CLIENT_ID`/`SPOTIFY_CLIENT_SECRET`).

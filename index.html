@@ -867,8 +867,10 @@
             font-size: 30px;
             font-weight: 700;
             text-align: center;
-            min-height: 2em;
-            height: 2em;
+            /* Feste Höhe für zwei Zeilen: längere Statustexte brechen auf dem Handy um, ohne dass das Layout springt */
+            line-height: 1.15;
+            min-height: 2.4em;
+            height: 2.4em;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2405,59 +2407,101 @@
             return a;
         }
 
-        /** Lade-Meldungen: Satz für Satz mit 2 Sekunden Pause. */
-        const LOADING_MESSAGES = [
-            'Am Anfang dauert es einen kleinen Moment.',
-            'Wir bereiten alles für euch vor.',
-            'Die Songs werden ausgewählt.',
-            'Die passenden Ausschnitte werden geladen.',
-            'Ein paar Dinge sortieren sich im Hintergrund.',
-            'Das passiert nur einmal.',
-            'Danach geht es schneller.',
-            'Deutlich schneller.',
-            'Ein Song folgt dem nächsten.',
-            'Ohne lange Pausen.',
-            'Ihr müsst nichts weiter tun.',
-            'Nur kurz warten.',
-            'Dann geht es los.',
-            'Gleich.'
-        ];
-        const SENTENCE_PAUSE_MS = 2000;
+        /**
+         * Status-Texte als Pools statt fester Sätze. Kurz halten: der Status steht in 30px, auf dem Handy passen ca. 20 Zeichen pro Zeile.
+         * firstLoad/nextLoad bekommen animierte Punkte angehängt, daher ohne „…“.
+         */
+        const STATUS_MESSAGES = {
+            firstLoad: [
+                'Songs werden ausgesucht', 'Plattenkiste wird durchsucht', 'Die Nadel wird aufgesetzt', 'Mixtape wird gemischt',
+                'Die Jukebox wärmt sich auf', 'Regler werden eingepegelt', 'Platten werden entstaubt', 'Kassette wird gespult',
+                'Charts werden gewälzt', 'Boxen werden aufgedreht', 'Kopfhörer auf', 'Gleich geht’s los'
+            ],
+            nextLoad: [
+                'Nächster Song kommt', 'Wird aufgelegt', 'Nächste Platte', 'Nadel drauf', 'Plattenwechsel', 'Kassette umdrehen', 'Gleich weiter'
+            ],
+            readyFirst: ['Seid ihr bereit?', 'Alles bereit!', 'Los geht’s!', 'Play drücken – los!'],
+            ready: ['Weiter geht’s!', 'Bereit?', 'Ohren auf!', 'Nächste Runde!', 'Na, wer erkennt den?', 'Auf geht’s!', 'Play drücken!', 'Neues Glück!'],
+            readyLast: ['Finale – bereit?', 'Die letzte Runde!', 'Jetzt zählt’s!'],
+            listening: ['Hört genau hin…', 'Ohren auf…', 'Gut zuhören…', 'Welches Jahr?', 'Klingelt’s schon?', 'Achtet auf den Sound…', 'Na, erkannt?'],
+            guess: ['Gebt eure Tipps ab!', 'Welches Jahr war’s?', 'Jetzt seid ihr dran!', 'Tipps bitte!', 'Na, welches Jahr?', 'Zeit für eure Tipps!']
+        };
+        /** Zusatz-Texte, wenn NUR Filmmusik bzw. NUR Partyhits gewählt ist – bei gemischter Auswahl würden sie das Genre verraten. */
+        const THEME_STATUS_MESSAGES = {
+            soundtrack: {
+                firstLoad: ['Das Orchester stimmt ein', 'Popcorn wird gemacht', 'Licht wird gedimmt', 'Der Vorhang geht auf'],
+                nextLoad: ['Nächste Szene', 'Filmrolle wechseln', 'Nächster Film'],
+                readyFirst: ['Film ab!', 'Licht aus, Ton an!'],
+                ready: ['Film ab!', 'Popcorn bereit?', 'Nächste Szene!'],
+                listening: ['Welcher Film war das?', 'Kino im Kopf…']
+            },
+            party: {
+                firstLoad: ['Discokugel wird aufgehängt', 'Tanzfläche wird geräumt', 'Playlist wird gemischt', 'Getränke werden kalt gestellt'],
+                nextLoad: ['Der DJ legt nach', 'Nächster Hit', 'Nächster Kracher'],
+                readyFirst: ['Tanzfläche frei?', 'Party on!'],
+                ready: ['Party on!', 'Bereit zum Mitsingen?', 'Tanzfläche frei?'],
+                listening: ['Mitsingen erlaubt…', 'Kennt ihr den?', 'Lauter!']
+            }
+        };
+        const STATUS_ROTATE_MS = 2200;
 
-        /** Einfache Ladeanimation die auf allen Geräten funktioniert */
+        function getStatusTheme() {
+            if (selectedGenres.size !== 1) return '';
+            const only = genres.find((g) => selectedGenres.has(g.id));
+            return only && THEME_STATUS_MESSAGES[only.kind] ? only.kind : '';
+        }
+
+        /** „Shuffle-Bag“ je Kategorie: jeder Text kommt einmal dran, bevor sich etwas wiederholt – nie zweimal direkt hintereinander. */
+        const statusMessageBags = {};
+        const lastStatusMessage = {};
+        function pickStatusMessage(category) {
+            const theme = getStatusTheme();
+            const key = category + '|' + theme;
+            let bag = statusMessageBags[key];
+            if (!bag || !bag.length) {
+                const pool = [...STATUS_MESSAGES[category], ...((theme && THEME_STATUS_MESSAGES[theme][category]) || [])];
+                bag = statusMessageBags[key] = shuffleArray(pool);
+                // Neue Runde des Beutels soll nicht mit dem zuletzt gezeigten Text beginnen
+                if (bag.length > 1 && bag[bag.length - 1] === lastStatusMessage[category]) {
+                    [bag[0], bag[bag.length - 1]] = [bag[bag.length - 1], bag[0]];
+                }
+            }
+            const msg = bag.pop();
+            lastStatusMessage[category] = msg;
+            return msg;
+        }
+
+        /** Text, wenn ein Song abspielbereit ist – erster Song, letzte Runde oder normal. */
+        function getReadyMessage(isFirstSong) {
+            if (isFirstSong) return pickStatusMessage('readyFirst');
+            if (roundNumber + 1 === totalRounds) return pickStatusMessage('readyLast');
+            return pickStatusMessage('ready');
+        }
+
+        /** Ladeanzeige: wechselnde Texte mit animierten Punkten. Erster Start = längere Pools, danach kurze „Nächster Song“-Texte. */
         function startLoadingStatus(statusEl, isFirstLoad = true) {
             if (!statusEl) return null;
             statusEl.classList.add('status-loading');
             const handle = { intervalId: null, dotIntervalId: null };
-
-            if (!isFirstLoad) {
-                statusEl.textContent = 'Weiter geht\'s';
-                return handle;
-            }
-
-            let msgIndex = 0;
+            const category = isFirstLoad ? 'firstLoad' : 'nextLoad';
+            let current = pickStatusMessage(category);
             let dots = 0;
-            const baseText = LOADING_MESSAGES[msgIndex];
-            statusEl.textContent = baseText;
+            statusEl.textContent = current;
 
             // Pulsierende Punkte alle 400ms
             handle.dotIntervalId = setInterval(() => {
                 if (!statusEl.classList.contains('status-loading')) return;
                 dots = (dots + 1) % 4;
-                const currentBase = LOADING_MESSAGES[msgIndex] || LOADING_MESSAGES[0];
-                statusEl.textContent = currentBase + '.'.repeat(dots);
+                statusEl.textContent = current + '.'.repeat(dots);
             }, 400);
 
-            // Text wechseln alle 2 Sekunden
+            // Text wechseln, solange geladen wird
             handle.intervalId = setInterval(() => {
                 if (!statusEl.classList.contains('status-loading')) return;
-                msgIndex += 1;
-                if (msgIndex >= LOADING_MESSAGES.length) {
-                    msgIndex = 0; // Loop zurück zum Anfang
-                }
+                current = pickStatusMessage(category);
                 dots = 0;
-                statusEl.textContent = LOADING_MESSAGES[msgIndex];
-            }, SENTENCE_PAUSE_MS);
+                statusEl.textContent = current;
+            }, STATUS_ROTATE_MS);
 
             return handle;
         }
@@ -3084,7 +3128,7 @@
                 setPlayButtonDisplay('▶');
                 resetPlayCountdown();
                 stopLoadingStatus(status, loadingId);
-                status.textContent = waitForFirstExplanation ? 'Seid ihr bereit?' : 'Weiter geht\'s';
+                status.textContent = getReadyMessage(waitForFirstExplanation);
                 document.getElementById('roundCounter').textContent = `Runde ${roundNumber + 1} / ${totalRounds}`;
                 preloadNextSongs();
             };
@@ -3218,7 +3262,7 @@
                 audio.play();
                 setPlayButtonDisplay('II');
                 playBtn.classList.add('playing');
-                status.textContent = 'Hört genau hin...';
+                status.textContent = pickStatusMessage('listening');
                 if (playCountdownIntervalId) clearInterval(playCountdownIntervalId);
                 updatePlayCountdown();
                 playCountdownIntervalId = setInterval(updatePlayCountdown, 100);
@@ -3243,7 +3287,7 @@
         document.getElementById('audioPlayer').addEventListener('ended', () => {
             resetPlayCountdown();
             setPlayButtonDisplay('▶');
-            document.getElementById('status').textContent = 'Gebt eure Tipps ab!';
+            document.getElementById('status').textContent = pickStatusMessage('guess');
         });
 
         async function submitAllGuesses() {
