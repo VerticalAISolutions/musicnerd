@@ -37,7 +37,9 @@ const MIME_TYPES = {
 // [\w-] im Dateinamen schließt auch Pfad-Tricks wie "../" aus.
 const PUBLIC_FILES = [
   /^\/index\.html$/,
+  /^\/rechtliches\.html$/,
   /^\/curated-match\.js$/,
+  /^\/fonts\/[\w-]+\.woff2$/,
   /^\/buttons\/[\w-]+\.svg$/,
   /^\/fallback-genres\/[\w-]+\.js$/
 ];

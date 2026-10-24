@@ -8,9 +8,26 @@
     <meta http-equiv="Expires" content="0">
     <title>MusicNerd</title>
     <link rel="icon" href="buttons/Music.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <!-- DM Sans lokal gehostet (SIL Open Font License) – keine Verbindung zu Google, siehe Datenschutzerklärung -->
+    <link rel="preload" href="fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+        @font-face {
+            font-family: 'DM Sans';
+            font-style: normal;
+            font-weight: 100 1000;
+            font-display: swap;
+            src: url(fonts/dm-sans-latin-ext.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'DM Sans';
+            font-style: normal;
+            font-weight: 100 1000;
+            font-display: swap;
+            src: url(fonts/dm-sans-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+    </style>
     <style>
         :root {
             --electric-aqua: #87F1FF;
@@ -73,17 +90,26 @@
             padding: 15px;
             text-align: center;
             font-size: 14px;
-            color: var(--old-rose);
-            opacity: 0.7;
+            /* Helles Aqua statt Altrosa: unten liegt meist die Magenta-Welle, darauf war Altrosa kaum lesbar (~2:1) */
+            color: var(--icy-aqua);
+            text-shadow: 0 1px 3px rgba(15, 26, 46, 0.6);
         }
         .footer a {
-            color: var(--old-rose);
+            color: var(--icy-aqua);
             text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-legal {
+            margin-top: 4px;
+            font-size: 12px;
+        }
+        .footer-legal a {
+            font-weight: 500;
         }
         @media (hover: hover) {
             .footer a:hover {
-                color: var(--icy-aqua);
-                opacity: 1;
+                color: var(--electric-aqua);
+                text-decoration: underline;
             }
         }
         /* Mobile: Footer immer am Bottom, scrollt mit bei langem Inhalt */
@@ -199,6 +225,34 @@
             to {
                 stroke-dashoffset: 0;
             }
+        }
+
+        /* „Neu“-Label in den wechselnden Claims unter dem Logo */
+        .intro-text-loop-new {
+            display: inline-block;
+            padding: 2px 10px;
+            margin-right: 4px;
+            border-radius: 6px;
+            background: var(--cherry-rose);
+            color: white;
+            font-size: 0.7em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            vertical-align: 0.2em;
+        }
+        /* „Neu“-Markierung an den neuen Genres in der Auswahl (lesbar auch auf der roten, ausgewählten Kachel) */
+        .genre-new {
+            margin-left: auto;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: var(--electric-aqua);
+            color: var(--dark-blue);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            flex-shrink: 0;
         }
 
         /* Text loop animation for claims */
@@ -1639,7 +1693,7 @@
             </div>
 
             <div class="intro-text-loop" id="introTextLoop">
-                <div class="intro-text-loop-item">30 Sekunden hören.</div>
+                <div class="intro-text-loop-item"><span class="intro-text-loop-new">Neu</span> Partyhits!</div>
             </div>
 
             <button class="intro-btn" onclick="showSetup()">Spiel starten</button>
@@ -1811,7 +1865,14 @@
     </div>
 
     <footer class="footer">
-        powered by <a href="https://www.vais.one" target="_blank">Vertical AI Solutions</a>
+        powered by <a href="https://steadymade.ai" target="_blank" rel="noopener">steadymade.ai</a>
+        <!-- Neuer Tab: ein Klick mitten im Spiel soll den Spielstand nicht verwerfen -->
+        <div class="footer-legal">
+            <a href="rechtliches.html#impressum" target="_blank">Impressum</a> ·
+            <a href="rechtliches.html#datenschutz" target="_blank">Datenschutz</a> ·
+            <a href="rechtliches.html#nutzungsbedingungen" target="_blank">AGB</a> ·
+            <a href="rechtliches.html#haftungsausschluss" target="_blank">Haftungsausschluss</a>
+        </div>
     </footer>
 
     <audio id="audioPlayer"></audio>
@@ -1865,10 +1926,11 @@
         }
 
         /* Genre-Metadaten für UI und API. Songlisten (beginner/intermediate/expert) und Subgenre-Listen kommen aus fallback-genres/*.js (listsKey, subgenresKey).
-         * curated: Songs kommen nur aus der kuratierten Liste (mit festem Jahr), kein Suggest-API-Call. kind steuert Suche und Erklärungstext. */
+         * curated: Songs kommen nur aus der kuratierten Liste (mit festem Jahr), kein Suggest-API-Call. kind steuert Suche und Erklärungstext.
+         * isNew: „Neu“-Markierung in der Genre-Auswahl (passend zum Hinweis unter dem Logo). */
         const genres = [
-            { id: 'party', name: 'Partyhits', listsKey: 'genrePartyLists', curated: true, kind: 'party' },
-            { id: 'soundtracks', name: 'Filmmusik', listsKey: 'genreSoundtrackLists', curated: true, kind: 'soundtrack' },
+            { id: 'party', name: 'Partyhits', listsKey: 'genrePartyLists', curated: true, kind: 'party', isNew: true },
+            { id: 'soundtracks', name: 'Filmmusik', listsKey: 'genreSoundtrackLists', curated: true, kind: 'soundtrack', isNew: true },
             { id: 'rock', name: 'Rock', listsKey: 'genreRockLists', subgenresKey: 'fallbackRockSubgenres' },
             { id: 'pop', name: 'Pop', listsKey: 'genrePopLists', subgenresKey: 'fallbackPopSubgenres' },
             { id: 'hiphop', name: 'Hip-Hop', listsKey: 'genreHiphopLists', subgenresKey: 'fallbackHiphopSubgenres' },
@@ -2768,6 +2830,7 @@
                 <div class="genre-item ${selectedGenres.has(g.id) ? 'selected' : ''}" data-genre="${g.id}">
                     <span class="genre-checkbox"></span>
                     <span class="genre-name">${g.name}</span>
+                    ${g.isNew ? '<span class="genre-new">Neu</span>' : ''}
                 </div>
             `).join('');
 
@@ -3495,7 +3558,12 @@
 
         // Text Loop Animation für Intro (startet nach Logo-Animation)
         (function initTextLoop() {
+            // Die neuen Genres zuerst, damit sie beim Öffnen der Seite sofort sichtbar sind (erster Eintrag steht schon im HTML)
+            const NEW_LABEL = '<span class="intro-text-loop-new">Neu</span> ';
             const claims = [
+                NEW_LABEL + 'Partyhits!',
+                NEW_LABEL + 'Filmmusik!',
+                'So geht’s:',
                 '30 Sekunden hören.',
                 'Jahr tippen.',
                 'Punkte kassieren.'
